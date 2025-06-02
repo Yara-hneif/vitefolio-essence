@@ -1,0 +1,138 @@
+[
+  {
+    "id": 1,
+    "title": "PlannerX",
+    "description": "A simple to-do list app built in React and Node.js"
+  },
+  {
+    "id": 2,
+    "title": "Pokédex App",
+    "description": "Search and view details of Pokémon using external API"
+  },
+  {
+        "id": 3,
+    "title": "Meet The Team",
+    "description": "A class-room code-sharing app showcasing profiles using a GitHub API submodule.",
+    "tags": ["React", "Git Submodules", "GitHub Pages"],
+    "url": "https://github.com/Yara-hneif/meet-the-team"
+  },
+  {
+    "id": 4,
+    "title": "Weather App",
+    "description": "A weather application that fetches data from a weather API",
+    "tags": ["JavaScript", "API", "Weather"],
+    "url": "https://github.com/Yara-hneif/weather-app"
+  },
+  {
+    "id": 5,
+    "title": "Portfolio Website",
+    "description": "A personal portfolio website to showcase projects and skills",
+    "tags": ["HTML", "CSS", "JavaScript"],
+    "url": "https://github.com/Yara-hneif/portfolio-website"
+  },
+  {
+    "id": 6,
+    "title": "Blog Platform",
+    "description": "A blogging platform built with Node.js and Express",
+    "tags": ["Node.js", "Express", "MongoDB"],
+    "url": "https://github.com/Yara-hneif/blog-platform"
+  },
+  {
+    "id": 7,
+    "title": "E-commerce Site",
+    "description": "An e-commerce website with product listings and a shopping cart",
+    "tags": ["React", "Redux", "Node.js"],
+    "url": "https://github.com/Yara-hneif/e-commerce-site"
+  },
+  {
+    "id": 8,
+    "title": "Chat Application",
+    "description": "A real-time chat application using WebSockets",
+    "tags": ["WebSockets", "Node.js", "Express"],
+    "url": "https://github.com/Yara-hneif/chat-application"
+  },
+  {
+    "id": 9,
+    "title": "Task Manager",
+    "description": "A task management app with user authentication",
+    "tags": ["React", "Node.js", "MongoDB"],
+    "url": "https://github.com/Yara-hneif/task-manager"
+  },
+  {
+    "id": 10,
+    "title": "Recipe Finder",
+    "description": "An app to search and view recipes using an external API",
+    "tags": ["React", "API", "Food"],
+    "url": "https://github.com/Yara-hneif/recipe-finder"
+  },
+  {
+    "id": 11,
+    "title": "Fitness Tracker",
+    "description": "A fitness tracking app to log workouts and meals",
+    "tags": ["React", "Node.js", "MongoDB"],
+    "url": "https://github.com/Yara-hneif/fitness-tracker"
+  },
+  {
+    "id": 12,
+    "title": "Expense Tracker",
+    "description": "An app to track personal expenses and budgets",
+    "tags": ["React", "Node.js", "MongoDB"],
+    "url": "https://github.com/Yara-hneif/expense-tracker"
+  },
+  {
+    "id": 13,
+    "title": "Travel Planner",
+    "description": "A travel planning app to organize trips and itineraries",
+    "tags": ["React", "Node.js", "API"],
+    "url": "https://github.com/Yara-hneif/travel-planner"
+  },
+  {
+    "id": 14,
+    "title": "Music Player",
+    "description": "A web-based music player with playlist support",
+    "tags": ["React", "Audio API", "HTML5"],
+    "url": "https://github.com/Yara-hneif/music-player"
+  },
+  {
+    "id": 15,
+    "title": "Online Quiz",
+    "description": "An interactive quiz application with multiple-choice questions",
+    "tags": ["React", "Node.js", "Express"],
+    "url": "https://github.com/Yara-hneif/online-quiz"
+  },
+  {
+    "id": 16,
+    "title": "Portfolio Website",
+    "description": "A personal portfolio website to showcase projects and skills",
+    "tags": ["HTML", "CSS", "JavaScript"],
+    "url": "https://github.com/Yara-hneif/portfolio-website"
+  },
+  {
+    "id": 17,
+    "title": "Blog Platform",
+    "description": "A blogging platform built with Node.js and Express",
+    "tags": ["Node.js", "Express", "MongoDB"],
+    "url": "https://github.com/Yara-hneif/blog-platform"
+  },
+  {
+    "id": 18,
+    "title": "E-commerce Site",
+    "description": "An e-commerce website with product listings and a shopping cart",
+    "tags": ["React", "Redux", "Node.js"],
+    "url": "https://github.com/Yara-hneif/e-commerce-site"
+  },
+  {
+    "id": 19,
+    "title": "Chat Application",
+    "description": "A real-time chat application using WebSockets",
+    "tags": ["WebSockets", "Node.js", "Express"],
+    "url": "https://github.com/Yara-hneif/chat-application"
+  },
+  {
+    "id": 20,
+    "title": "Task Manager",
+    "description": "A task management app with user authentication",
+    "tags": ["React", "Node.js", "MongoDB"],
+    "url": "https://github.com/Yara-hneif/task-manager"
+  }
+]
