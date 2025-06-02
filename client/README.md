@@ -1,54 +1,96 @@
-# React + TypeScript + Vite
+# ✨ Vitefolio Essence
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern and visually captivating personal portfolio built with **Vite + React + TypeScript + Tailwind CSS**.  
+This project serves as a showcase of your skills, personality, and projects, with a focus on elegant design, responsiveness, and smooth interactions.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🌐 Live Demo
 
-## Expanding the ESLint configuration
+> [Coming Soon...](#)
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+---
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+## 🛠️ Tech Stack
+
+| Technology      | Description                                 |
+|-----------------|---------------------------------------------|
+| Vite            | Blazing fast frontend build tool            |
+| React           | Component-based UI library                  |
+| TypeScript      | Strongly typed JavaScript                   |
+| Tailwind CSS    | Utility-first modern CSS framework          |
+| Framer Motion   | Smooth, elegant animations                  |
+| ShadCN UI       | Headless UI components based on Radix UI    |
+| Node.js & Express | Backend API server for projects and contact |
+
+---
+
+## 📁 Folder Structure
+
+```
+vitefolio-essence/
+├── client/                 # Frontend (React + Tailwind)
+│   ├── src/
+│   │   ├── components/     # UI components
+│   │   ├── pages/          # Page views
+│   │   ├── lib/            # Utilities and API methods
+│   │   └── index.tsx       # Main entry point
+│   ├── public/             # Static assets
+│   └── tailwind.config.js  # Tailwind config
+│
+└── server/                 # Backend (Node.js + Express)
+    ├── routes/            # API routes (e.g. projects, contact)
+    ├── data/              # Optional static data (e.g. JSON)
+    └── index.js           # Server entry
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## 📦 Installation
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+```bash
+# Clone the repository
+git clone https://github.com/Yara-hneif/vitefolio-essence.git
+
+# Install client dependencies
+cd vitefolio-essence/client
+npm install
+
+# Install server dependencies
+cd ../server
+npm install
 ```
+
+---
+
+## 🚀 Development
+
+```bash
+# Start the frontend (Vite dev server)
+cd client
+npm run dev
+
+# Start the backend (Express server with nodemon)
+cd ../server
+npm run dev
+```
+
+---
+
+## 📬 Contact & Feedback
+
+For inquiries or suggestions, feel free to contact me:  
+📧 **YaraHneif131@gmail.com**
+
+---
+
+## 💡 Credits
+
+Made with ❤️ by **Yara Hneif**  
+Inspired by modern portfolios, UI kits, and creativity!
+
+---
+
+## 📜 License
+
+This project is licensed under the MIT License.
