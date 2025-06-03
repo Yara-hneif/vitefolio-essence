@@ -1,6 +1,6 @@
 export default function Admin() {
   return (
-    <div className="min-h-screen w-screen bg-gradient-to-tr from-[#edf2fb] via-[#d7e3fc] to-[#c1d3fe] flex items-center justify-center px-4 text-slate-800">
+    <div className="min-h-screen w-screen bg-gradient-to-br from-[#fff8e7] via-[#fdeff2] to-[#ffffff] flex items-center justify-center px-6 text-gray-800">
       <div className="text-center max-w-lg w-full py-20">
         <h1 className="text-4xl font-bold text-gray-700 mb-6">🔐 Admin Panel</h1>
         <p className="text-lg mb-4">This area is restricted to authorized users only.</p>
