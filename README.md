@@ -22,7 +22,7 @@ This project serves as a personal portfolio site template, offering a clean and 
 ### ***🟢 Backend***  
 
 #### **✅ Deployed on Render** 
-- #### ***🔗 Live API:  [vitefolio-server.onrender.com](https://vitefolio-server.onrender.com)***
+- #### ***🔗 Live API:  [https://vitefolio-essence.onrender.com](https://vitefolio-essence.onrender.com)***
 
 #### **Available Routes:**
 - `GET /api/projects` – Fetch all portfolio projects
