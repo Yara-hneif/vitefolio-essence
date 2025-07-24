@@ -22,8 +22,8 @@ app.use(cors());
 app.use(express.json());
 
 // Define routes for projects and contact form.
-app.use("/projects", projectsRoutes);
-app.use("/contact", contactRoutes);
+app.use("/api/projects", projectsRoutes);
+app.use("/api/contact", contactRoutes);
 
 // Health check route (homepage)
 app.get("/", (req, res) => {
