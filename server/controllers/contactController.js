@@ -2,17 +2,20 @@ import pool from "../config/db.js";
 
 export const createContact = async (req, res) => {
   try {
-    const { user_id, name, email, message } = req.body;
+    const { name, email, subject, message } = req.body;
+    // Assuming user_id is available from the request context, e.g., from authentication middleware
+    // If user_id is not available, you can set it to null or handle it accordingly
+    const user_id = req.user?.id || null;
 
-    if (!name || !email || !message) {
+    if (!name || !email || !subject || !message) {
       return res.status(400).json({ error: "All fields are required" });
     }
 
     const result = await pool.query(
-      `INSERT INTO contact (user_id, name, email, message)
-       VALUES ($1, $2, $3, $4)
+      `INSERT INTO contact (user_id, name, email, subject, message)
+       VALUES ($1, $2, $3, $4, $5)
        RETURNING *`,
-      [user_id || null, name, email, message]
+      [user_id, name, email, subject, message]
     );
 
     res.status(201).json({ success: true, contact: result.rows[0] });
