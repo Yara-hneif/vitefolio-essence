@@ -7,6 +7,9 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+console.log("🔗 API_BASE_URL:", API_BASE_URL);
+
 const Contact = () => {
   const [formData, setFormData] = useState({
     name: "",
@@ -27,22 +30,43 @@ const Contact = () => {
     }));
   };
   
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    
-    // Simulate form submission
-    setTimeout(() => {
-      console.log("Form submitted:", formData);
-      toast.success("Message sent successfully!");
-      setFormData({
-        name: "",
-        email: "",
-        subject: "",
-        message: "",
-      });
-      setIsSubmitting(false);
-    }, 1500);
+  const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setIsSubmitting(true);
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/contact`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: formData.name,
+        email: formData.email,
+        subject: formData.subject,
+        message: formData.message,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "Failed to send message");
+    }
+
+    toast.success("Message sent successfully!");
+    setFormData({
+      name: "",
+      email: "",
+      subject: "",
+      message: "",
+    });
+  } catch (err: any) {
+    toast.error(`Error: ${err.message}`);
+  } finally {
+    setIsSubmitting(false);
+  }
+
   };
   
   return (
