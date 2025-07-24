@@ -7,12 +7,13 @@ export const getAllContactsFromDB = async () => {
 };
 
 // Add a new contact
-export const addContactToDB = async ({ user_id, type, value }) => {
+export const addContactToDB = async ({ user_id, name, email, subject, message }) => {
   const result = await pool.query(
-    `INSERT INTO contact (user_id, type, value)
-     VALUES ($1, $2, $3)
+    `INSERT INTO contact (user_id, name, email, subject, message)
+     VALUES ($1, $2, $3, $4, $5)
      RETURNING *`,
-    [user_id, type, value]
+    [user_id || null, name, email, subject, message]
   );
   return result.rows[0];
 };
+
