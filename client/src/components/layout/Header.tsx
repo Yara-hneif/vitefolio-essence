@@ -1,12 +1,14 @@
-
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Menu, X } from "lucide-react";
+import { LogOut, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/contexts/AuthContext";
 import Navigation from "./Navigation";
+import UserAvatar from "../common/UserAvatar";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { isAuthenticated, user, logout } = useAuth();
 
   return (
     <header className="sticky top-0 w-full z-50">
@@ -30,6 +32,33 @@ const Header = () => {
           {/* Desktop navigation */}
           <div className="hidden md:flex md:items-center md:space-x-4">
             <Navigation mobile={false} />
+            
+            {/* Auth Section */}
+            <div className="flex items-center gap-4">
+              {isAuthenticated && user ? (
+                <>
+                  <Link to="/dashboard" className="hidden md:block">
+                    <Button variant="ghost" size="sm">Dashboard</Button>
+                  </Link>
+                  <Link to={`/u/${user.username}`} className="hidden md:flex items-center gap-2">
+                    <UserAvatar user={user} size="sm" />
+                    <span className="text-sm font-medium">{user.name}</span>
+                  </Link>
+                  <Button variant="ghost" size="sm" onClick={logout} className="hidden md:flex">
+                    <LogOut className="h-4 w-4" />
+                  </Button>
+                </>
+              ) : (
+                <div className="hidden md:flex items-center gap-2">
+                  <Button variant="ghost" size="sm" asChild>
+                    <Link to="/login">Sign In</Link>
+                  </Button>
+                  <Button size="sm" asChild>
+                    <Link to="/register">Sign Up</Link>
+                  </Button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -61,3 +90,4 @@ const Header = () => {
 };
 
 export default Header;
+

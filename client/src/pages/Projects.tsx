@@ -1,3 +1,7 @@
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { ArrowRight, Code, Filter } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -7,9 +11,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Link } from "react-router-dom";
-import { ArrowRight, Code, Filter } from "lucide-react";
-import { useState } from "react";
 import { useProjects } from "@/hooks/useProjects";
 
 type Project = {
@@ -17,7 +18,7 @@ type Project = {
   title: string;
   description: string;
   category: string;
-  tags: string[];
+  tags?: string[]; // ← make optional to avoid runtime crash
   image_url: string;
   slug: string;
   repo_url: string;
@@ -31,7 +32,8 @@ const Projects = () => {
     data: projects = [],
     isLoading,
     isError,
-  } = useProjects(); // fetch projects
+  } = useProjects();
+
   const [activeFilter, setActiveFilter] = useState<string>("All");
 
   const categories: string[] = [
@@ -47,7 +49,7 @@ const Projects = () => {
   return (
     <div className="animate-fade-in">
       <section className="relative py-20 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-accent/10 opacity-60"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-accent/10 opacity-60" />
         <div className="container px-4 md:px-6 relative z-10 text-center">
           <div className="inline-flex items-center justify-center p-1 mb-4 rounded-full bg-primary/10 text-primary">
             <Code className="h-5 w-5 mr-2" />
@@ -87,8 +89,9 @@ const Projects = () => {
             </div>
 
             {isLoading && <p>Loading projects...</p>}
-            {isError && (
-              <p className="text-red-500">Failed to load projects.</p>
+            {isError && <p className="text-red-500">Failed to load projects.</p>}
+            {!isLoading && !isError && filteredProjects.length === 0 && (
+              <p>No projects found.</p>
             )}
           </div>
 
@@ -96,16 +99,17 @@ const Projects = () => {
             {filteredProjects.map((project: Project) => (
               <Card
                 key={project.id}
-                className="card-3d border overflow-hidden rounded-xl h-full"
+               className="group card-3d border overflow-hidden rounded-xl h-full transition-all duration-500 hover:scale-[1.01] hover:shadow-2xl"
               >
                 <div className="card-3d-content h-full flex flex-col">
-                  <div className="aspect-video bg-muted relative overflow-hidden">
+                  <div className="relative aspect-video bg-gradient-to-br from-primary/10 to-accent/10 p-4 flex items-center justify-center overflow-hidden">
+                    <div className="absolute inset-0 shimmer rounded-xl z-0" />
                     <img
-                      src={project.image_url}
+                      src={project.image_url || "/default-img.png"}
                       alt={project.title}
-                      className="object-cover w-full h-full"
+                     className="object-contain max-h-full max-w-full rounded-lg transition-transform duration-500 hover:scale-105"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-tr from-primary/30 to-accent/30"></div>
+                  <div className="absolute inset-0 bg-gradient-to-tr from-primary/20 to-accent/20 pointer-events-none" />
                   </div>
                   <CardHeader>
                     <div className="flex justify-between items-start">
@@ -120,25 +124,20 @@ const Projects = () => {
                   </CardHeader>
                   <CardContent>
                     <div className="flex flex-wrap gap-2">
-                      {project.tags.map((tag) => (
-                        <span
-                          key={tag}
-                          className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-secondary text-secondary-foreground"
-                        >
-                          {tag}
-                        </span>
-                      ))}
+                      {Array.isArray(project.tags) &&
+                        project.tags.map((tag) => (
+                          <span
+                            key={tag}
+                            className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-secondary text-secondary-foreground"
+                          >
+                            {tag}
+                          </span>
+                        ))}
                     </div>
                   </CardContent>
                   <CardFooter className="flex flex-col gap-2 mt-auto">
-                    <Button
-                      asChild
-                      variant="outline"
-                      size="sm"
-                      className="rounded-full hover-lift w-full"
-                    >
-                      <Link
-                        to={`/projects/${project.slug}`}
+                    <Button asChild variant="outline" size="sm" className="rounded-full hover-lift w-full">
+                      <Link to={`/projects/${project.slug}`}
                         className="flex items-center justify-center gap-2"
                       >
                         View Details <ArrowRight className="h-4 w-4" />
