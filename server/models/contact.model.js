@@ -17,3 +17,8 @@ export const addContactToDB = async ({ user_id, name, email, subject, message })
   return result.rows[0];
 };
 
+// Delete contact by ID
+export const deleteContactFromDB = async (id) => {
+  const result = await pool.query("DELETE FROM contact WHERE id = $1 RETURNING *", [id]);
+  return result.rowCount > 0;
+};

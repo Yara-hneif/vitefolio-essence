@@ -1,4 +1,4 @@
-import pool from "../config/db.js";
+import pool from "../../config/db.js";
 import slugify from "slugify";
 
 const userId = "4a8bdb28-f98c-4940-84c4-5370f5915cf7"; 
