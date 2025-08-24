@@ -78,7 +78,7 @@ const Home = () => {
                           <p className="text-muted-foreground mb-4 text-sm">
                             A brief description of this beautiful project and the technologies used.
                           </p>
-                          <Button asChild variant="outline" size="sm" className="rounded-full hover-lift">
+                          <Button asChild variant="outline" size="sm" className="flex gap-2 rounded-full">
                             <Link to={`/projects/${item}`}>Explore Details</Link>
                           </Button>
                         </div>

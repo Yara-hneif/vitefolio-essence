@@ -11,38 +11,31 @@ import { Link } from "react-router-dom";
 import { ArrowRight, Code, Filter } from "lucide-react";
 import { useState } from "react";
 import { useProjects } from "@/hooks/useProjects";
+import { Project } from "@/types/Project";
+import { resolveImageUrl } from "@/lib/urls";
+import placeholderImg from "@/assets/images/placeholder.svg";
 
-type Project = {
-  id: string;
-  title: string;
-  description: string;
-  category: string;
-  tags: string[];
-  image_url: string;
-  slug: string;
-  repo_url: string;
-  live_url: string;
-  status: "draft" | "published";
-  created_at: string;
-};
 
 const Projects = () => {
   const {
-    data: projects = [],
+    projects,
     isLoading,
-    isError,
+    isError
   } = useProjects(); // fetch projects
+
+  const validProjects: Project[] = Array.isArray(projects) ? projects : [];
+
   const [activeFilter, setActiveFilter] = useState<string>("All");
 
   const categories: string[] = [
     "All",
-    ...Array.from(new Set(projects.map((p: Project) => p.category))) as string[],
+    ...Array.from(new Set(validProjects.map((p) => p.category))),
   ];
 
   const filteredProjects =
     activeFilter === "All"
-      ? projects
-      : projects.filter((p: Project) => p.category === activeFilter);
+      ? validProjects
+      : validProjects.filter((p) => p.category === activeFilter);
 
   return (
     <div className="animate-fade-in">
@@ -68,9 +61,9 @@ const Projects = () => {
               <h2 className="text-2xl font-bold">Explore Projects</h2>
               <div className="flex items-center gap-2 overflow-x-auto pb-2 max-w-full">
                 <Filter className="h-4 w-4 mr-1 text-muted-foreground" />
-                {categories.map((category) => (
+                {categories.map((category, index) => (
                   <Button
-                    key={category}
+                    key={`${category}-${index}`}
                     variant={
                       activeFilter === category ? "default" : "outline"
                     }
@@ -99,14 +92,21 @@ const Projects = () => {
                 className="card-3d border overflow-hidden rounded-xl h-full"
               >
                 <div className="card-3d-content h-full flex flex-col">
-                  <div className="aspect-video bg-muted relative overflow-hidden">
+                  <div className="aspect-video bg-muted relative overflow-hidden group hover:scale-[1.01] transition-transform duration-500 ease-in-out">
                     <img
-                      src={project.image_url}
+                      src={resolveImageUrl(project.image_url) ?? placeholderImg}
+                      onError={(e) => {
+                        e.currentTarget.onerror = null;
+                        e.currentTarget.src = placeholderImg; 
+                      }}
                       alt={project.title}
                       className="object-cover w-full h-full"
+                      loading="lazy"
+                      decoding="async"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-tr from-primary/30 to-accent/30"></div>
+                    <div className="absolute inset-0 bg-gradient-to-tr from-primary/30 to-accent/30 pointer-events-none"></div>
                   </div>
+
                   <CardHeader>
                     <div className="flex justify-between items-start">
                       <CardTitle className="text-xl">{project.title}</CardTitle>
@@ -120,9 +120,9 @@ const Projects = () => {
                   </CardHeader>
                   <CardContent>
                     <div className="flex flex-wrap gap-2">
-                      {project.tags.map((tag) => (
+                      {project.tags.map((tag, index) => (
                         <span
-                          key={tag}
+                          key={`${tag}-${index}`}
                           className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-secondary text-secondary-foreground"
                         >
                           {tag}
@@ -135,21 +135,22 @@ const Projects = () => {
                       asChild
                       variant="outline"
                       size="sm"
-                      className="rounded-full hover-lift w-full"
+                      className="rounded-full w-full transition-transform duration-300 ease-in-out  hover:shadow-lg"
                     >
                       <Link
                         to={`/projects/${project.slug}`}
-                        className="flex items-center justify-center gap-2"
+                        className="flex items-center justify-center gap-2 cursor-pointer"
                       >
                         View Details <ArrowRight className="h-4 w-4" />
                       </Link>
                     </Button>
+
                     <div className="flex justify-between w-full text-xs text-muted-foreground">
                       <a
                         href={project.live_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="hover:underline"
+                        className="hover:underline cursor-pointer"
                       >
                         🔗 Live Demo
                       </a>
@@ -157,12 +158,13 @@ const Projects = () => {
                         href={project.repo_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="hover:underline"
+                        className="hover:underline cursor-pointer"
                       >
                         💻 Source Code
                       </a>
                     </div>
                   </CardFooter>
+
                 </div>
               </Card>
             ))}
