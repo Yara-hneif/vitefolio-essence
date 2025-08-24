@@ -11,5 +11,6 @@
     "noUnusedParameters": false,
     "strictNullChecks": false
   },
-  "include": ["client/src"]
+  "include": ["client/src"],
 }
+  
