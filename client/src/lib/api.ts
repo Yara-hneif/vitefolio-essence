@@ -1,31 +1,69 @@
+import { Contact } from "@/types/Contact";
+import axios from "axios";
+
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
 
-/*
-const BASE_URL = import.meta.env.VITE_API_BASE_URL;
-if (!BASE_URL) throw new Error("VITE_API_BASE_URL is not defined");
-*/
+// Create a reusable Axios instance
+export const api = axios.create({
+  baseURL: BASE_URL,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
 
-// Fetch projects from the API
+// ========== Projects API ==========
+
+// Fetch all projects
 export async function fetchProjects() {
-  const res = await fetch(`${BASE_URL}/api/projects`);
-  if (!res.ok) throw new Error("Failed to fetch projects");
-  return res.json();
+  const { data } = await api.get("/api/projects");
+  return data;
 }
 
-// Fetch project details by slug
-export async function sendContact(data: {
+// Fetch project by slug
+export async function fetchProjectBySlug(slug: string) {
+  const { data } = await api.get(`/api/projects/${slug}`);
+  return data;
+}
+
+// Create a new project
+export async function createProject(projectData: any) {
+  const { data } = await api.post("/api/projects", projectData);
+  return data;
+}
+
+// Update a project by ID
+export async function updateProject(id: string, updateData: any) {
+  const { data } = await api.put(`/api/projects/${id}`, updateData);
+  return data;
+}
+
+// Delete a project by ID
+export async function deleteProject(id: string) {
+  const { data } = await api.delete(`/api/projects/${id}`);
+  return data;
+}
+
+// ========== Contact API ==========
+
+// Send contact form message
+export async function sendContactMessage(data: {
   name: string;
   email: string;
+  subject: string;
   message: string;
 }) {
-  const res = await fetch(`${BASE_URL}/api/contact`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
-  });
+  const { data: responseData } = await api.post("/api/contact", data);
+  return responseData;
+}
 
-  if (!res.ok) throw new Error("Failed to send message");
-  return res.json();
+// Get all contact messages
+export async function getAllContacts(): Promise<Contact[]> {
+  const { data } = await api.get<Contact[]>("/api/contact/all");
+  return data;
+}
+
+// Delete a contact message by ID
+export async function deleteContactMessage(id: string) {
+  const { data } = await api.delete(`/api/contact/${id}`);
+  return data;
 }
