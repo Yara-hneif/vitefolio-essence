@@ -141,3 +141,5 @@ build
 .DS_Store
 Thumbs.db
 *.logconfig.json
+
+config.json
