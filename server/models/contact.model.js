@@ -1,44 +1,24 @@
-// ESM module – safe to import on startup (no side effects)
-
 import pool from "../config/db.js";
 
-/**
- * Insert a new contact message.
- * Returns the inserted row.
- */
-export async function createContact({ name, email, message }) {
-  const { rows } = await pool.query(
-    `
-      INSERT INTO contacts (name, email, message, created_at)
-      VALUES ($1, $2, $3, NOW())
-      RETURNING id, name, email, message, created_at
-    `,
-    [name, email, message]
-  );
-  return rows[0];
-}
+// Get all contact records
+export const getAllContactsFromDB = async () => {
+  const result = await pool.query("SELECT * FROM contact ORDER BY created_at DESC");
+  return result.rows;
+};
 
-/**
- * Get latest contact messages (paged).
- */
-export async function listContacts({ limit = 50, offset = 0 } = {}) {
-  const { rows } = await pool.query(
-    `
-      SELECT id, name, email, message, created_at
-      FROM contacts
-      ORDER BY created_at DESC
-      LIMIT $1 OFFSET $2
-    `,
-    [limit, offset]
+// Add a new contact
+export const addContactToDB = async ({ user_id, name, email, subject, message }) => {
+  const result = await pool.query(
+    `INSERT INTO contact (user_id, name, email, subject, message)
+     VALUES ($1, $2, $3, $4, $5)
+     RETURNING *`,
+    [user_id || null, name, email, subject, message]
   );
-  return rows;
-}
+  return result.rows[0];
+};
 
-/**
- * Delete a contact by id.
- * Returns true if a row was deleted.
- */
-export async function deleteContact(id) {
-  const res = await pool.query(`DELETE FROM contacts WHERE id = $1`, [id]);
-  return res.rowCount > 0;
-}
+// Delete contact by ID
+export const deleteContactFromDB = async (id) => {
+  const result = await pool.query("DELETE FROM contact WHERE id = $1 RETURNING *", [id]);
+  return result.rowCount > 0;
+};
