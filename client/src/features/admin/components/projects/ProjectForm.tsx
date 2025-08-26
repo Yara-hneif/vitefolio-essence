@@ -8,7 +8,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogDescription, // ✅ add this
+  DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -114,11 +114,9 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
         if (!v) reset(defaultsFromInitial(undefined));
       }}
     >
-      {/* Option A (best): keep as-is and add DialogDescription below */}
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{mode === "edit" ? "Edit Project" : "Add Project"}</DialogTitle>
-          {/* Accessible description; sr-only keeps UI clean */}
           <DialogDescription className="sr-only">
             {mode === "edit"
               ? "Edit the selected project's details."
@@ -213,10 +211,6 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
           </DialogFooter>
         </form>
       </DialogContent>
-
-      {/* Option B (alternative): if you prefer no description element, you can:
-          <DialogContent aria-describedby={undefined}> ... </DialogContent>
-         This suppresses the warning but provides less a11y. */}
     </Dialog>
   );
 };
