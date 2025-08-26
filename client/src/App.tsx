@@ -2,66 +2,64 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, useLocation, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+
 import MainLayout from "@/components/layout/MainLayout";
 import Home from "@/pages/Home";
 import Projects from "@/pages/Projects";
 import About from "@/pages/About";
 import Contact from "@/pages/Contact";
-import Admin from "@/features/admin/pages/Admin";
 import NotFound from "@/pages/NotFound";
-import { ADMIN_SECRET } from "@/lib/config";
-import { useEffect, useState } from "react";
+
+import { AdminProvider, useAdmin } from "@/features/admin/hooks/useAdminMode";
+import AdminSidebar from "@/features/admin/components/sidebar/AdminSidebar";
+import AdminFab from "@/features/admin/components/sidebar/AdminFab";
+import AdminInboxPanel from "@/features/admin/components/inbox/AdminInboxPanel";
+import AdminProjectsPanel from "@/features/admin/components/projects/AdminProjectsPanel";
+import AdminSettingsPanel from "@/features/admin/components/settings/AdminSettingsPanel";
+
+function AdminOverlays() {
+  const { inboxOpen, closeInbox } = useAdmin();
+  return <AdminInboxPanel open={inboxOpen} onClose={closeInbox} />;
+}
+
+// Simple guard for admin-only routes
+function AdminRoute({ children }: { children: React.ReactElement }) {
+  const { isAdmin } = useAdmin();
+  if (!isAdmin) return <Navigate to="/" replace />;
+  return children;
+}
+
 const queryClient = new QueryClient();
-
-const ProtectedAdmin = ({ children }: { children: React.ReactNode }) => {
-  const location = useLocation();
-  const [isAllowed, setIsAllowed] = useState<null | boolean>(null);
-
-  useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    const key = params.get("key");
-
-    if (key === ADMIN_SECRET) {
-      localStorage.setItem("admin_access", "granted");
-      setIsAllowed(true);
-
-      params.delete("key");
-      const cleanUrl = `${location.pathname}${params.toString() ? `?${params}` : ""}`;
-      window.history.replaceState({}, "", cleanUrl);
-    } else if (localStorage.getItem("admin_access") === "granted") {
-      setIsAllowed(true);
-    } else {
-      setIsAllowed(false);
-    }
-  }, [location]);
-
-    if (isAllowed === null) return null;
-    return isAllowed ? <>{children}</> : <Navigate to="/" />;
-};
-
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
       <Sonner />
+
       <BrowserRouter>
-        <Routes>
-          <Route element={<MainLayout />}>
-            <Route path="/" element={<Home />} />
-            <Route path="/projects" element={<Projects />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/admin" element={ 
-              <ProtectedAdmin>
-                <Admin/>
-              </ProtectedAdmin>
-              }
-            />
-          </Route>
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        {/* AdminProvider must be inside BrowserRouter because it uses router hooks */}
+        <AdminProvider>
+          <Routes>
+            {/* Public layout + pages */}
+            <Route element={<MainLayout />}>
+              <Route path="/" element={<Home />} />
+              <Route path="/projects" element={<Projects />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/contact" element={<Contact />} />
+            </Route>
+            {/* 404 fallback */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+
+          {/* Floating admin UI (only renders when isAdmin === true inside these components) */}
+          <AdminSidebar />
+          <AdminFab />
+          <AdminProjectsPanel />
+          <AdminSettingsPanel />
+          <AdminOverlays />
+        </AdminProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
