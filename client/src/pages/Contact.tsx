@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -7,7 +6,9 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+// Build API url safely with or without VITE_API_BASE_URL
+const API_BASE = (import.meta.env.VITE_API_BASE_URL ?? "").replace(/\/+$/, "");
+const apiUrl = (path: string) => (API_BASE ? `${API_BASE}${path}` : path);
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -16,9 +17,8 @@ const Contact = () => {
     subject: "",
     message: "",
   });
-  
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
+
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -28,46 +28,40 @@ const Contact = () => {
       [name]: value,
     }));
   };
-  
+
   const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  setIsSubmitting(true);
+    e.preventDefault();
+    if (isSubmitting) return;
+    setIsSubmitting(true);
 
-  try {
-    const response = await fetch(`${API_BASE_URL}/contact`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        name: formData.name,
-        email: formData.email,
-        subject: formData.subject,
-        message: formData.message,
-      }),
-    });
+    try {
+      const response = await fetch(apiUrl("/api/contact"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
 
-    const data = await response.json();
+      // Try parsing JSON safely
+      let data: any = {};
+      try {
+        data = await response.json();
+      } catch {
+        // ignore parse error; we'll use response.ok
+      }
 
-    if (!response.ok) {
-      throw new Error(data.error || "Failed to send message");
+      if (!response.ok) {
+        throw new Error(data?.error || "Failed to send message");
+      }
+
+      toast.success("Message sent successfully!");
+      setFormData({ name: "", email: "", subject: "", message: "" });
+    } catch (err: any) {
+      toast.error(`Error: ${err?.message || "Unexpected error"}`);
+    } finally {
+      setIsSubmitting(false);
     }
-
-    toast.success("Message sent successfully!");
-    setFormData({
-      name: "",
-      email: "",
-      subject: "",
-      message: "",
-    });
-  } catch (err: any) {
-    toast.error(`Error: ${err.message}`);
-  } finally {
-    setIsSubmitting(false);
-  }
-
   };
-  
+
   return (
     <div className="animate-fade-in">
       {/* Hero Section */}
@@ -81,7 +75,7 @@ const Contact = () => {
           </div>
         </div>
       </section>
-      
+
       <section className="section-padding">
         <div className="container px-4 md:px-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
@@ -142,7 +136,7 @@ const Contact = () => {
                 </Button>
               </form>
             </Card>
-            
+
             {/* Contact Information */}
             <div className="space-y-8">
               <div>
@@ -185,7 +179,7 @@ const Contact = () => {
                   </div>
                 </div>
               </div>
-              
+
               <div>
                 <h2 className="text-2xl font-bold mb-6">Social Media</h2>
                 <div className="flex space-x-4">
