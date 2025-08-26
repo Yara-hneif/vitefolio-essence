@@ -8,28 +8,37 @@ import notFound from "./middleware/notFound.js";
 import logger from "./utils/logger.js";
 import adminGithubSync from "./routes/adminGithubSync.js";
 import { startScheduler } from "./services/scheduler.js";
+import adminMessagesRoutes from "./routes/admin.messages.routes.js";
+import requireAdmin from "./middleware/requireAdmin.js";
 
 dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-app.use(cors());
-
+/** CORS: allow your Vite dev origin and credentials (if needed) */
+const FRONTEND_ORIGIN = process.env.FRONTEND_ORIGIN || "http://localhost:5173";
+app.use(cors({
+  origin: FRONTEND_ORIGIN,
+  credentials: true,
+}));
 app.use(express.json());
 
+/** Public routes */
 app.use("/api/projects", projectRoutes);
 app.use("/api/contact", contactRoutes);
-app.use("/api/admin/github-sync", adminGithubSync);
 
-// Health Check
+/** Admin routes (protected with Bearer token) */
+app.use("/api/admin/messages", requireAdmin, adminMessagesRoutes);
+app.use("/api/admin/github-sync", requireAdmin, adminGithubSync);
+
+/** Health */
 app.get("/", (_, res) => res.send("📡 Vitefolio API is running!"));
 
-// Error handler middleware
+/** Error handlers */
 app.use(errorHandler);
-// 404 Not Found middleware
 app.use(notFound);
 
 app.listen(PORT, () => {
   logger.info(`🚀 Server listening on http://localhost:${PORT}`);
-  startScheduler(); // Start the GitHub sync scheduler
+  startScheduler();
 });
