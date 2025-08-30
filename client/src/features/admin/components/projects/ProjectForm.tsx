@@ -145,10 +145,11 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
               <Label htmlFor="status">Status</Label>
               <Select
                 value={watch("status") ?? "draft"}
-                onValueChange={(val: Project["status"]) =>
-                  setValue("status", val, { shouldDirty: true })
+                onValueChange={(val) =>
+                  setValue("status", val as Project["status"], { shouldDirty: true })
                 }
               >
+
                 <SelectTrigger>
                   <SelectValue placeholder="Select status" />
                 </SelectTrigger>
@@ -205,8 +206,8 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
                   ? "Saving..."
                   : "Creating..."
                 : mode === "edit"
-                ? "Save"
-                : "Create"}
+                  ? "Save"
+                  : "Create"}
             </Button>
           </DialogFooter>
         </form>
