@@ -1,6 +1,7 @@
 import express from "express";
 import {
   getAllProjects,
+  getProjectById,
   getProjectBySlug,
   createProject,
   updateProject,
@@ -10,8 +11,13 @@ import {
 const router = express.Router();
 
 router.get("/", getAllProjects);
-router.get("/:slug", getProjectBySlug);
 router.post("/", createProject);
+
+// by slug
+router.get("/:slug", getProjectBySlug);
+
+// by id
+router.get("/:id", getProjectById);
 router.put("/:id", updateProject);
 router.delete("/:id", deleteProject);
 
