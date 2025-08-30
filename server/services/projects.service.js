@@ -1,72 +1,71 @@
 import db from "../config/db.js";
 
-export const getAllProjects = async () => {
-  const result = await db.query("SELECT * FROM projects ORDER BY created_at DESC");
-  return result.rows;
-};
+// Get all projects (optionally filter by user_id)
+export async function getAllProjects(userId = null) {
+  if (userId) {
+    return db.query("SELECT * FROM projects WHERE user_id = $1 ORDER BY created_at DESC", [userId]);
+  }
+  return db.query("SELECT * FROM projects ORDER BY created_at DESC");
+}
 
-export const getProjectBySlug = async (slug) => {
-  const result = await db.query("SELECT * FROM projects WHERE slug = $1", [slug]);
-  return result.rows[0];
-};
+// Get project by ID
+export async function getProjectById(id, userId = null) {
+  if (userId) {
+    return db.query("SELECT * FROM projects WHERE id = $1 AND user_id = $2", [id, userId]);
+  }
+  return db.query("SELECT * FROM projects WHERE id = $1", [id]);
+}
 
-export const createProject = async (projectData) => {
-  const {
-    title,
-    description,
-    category,
-    tags,
-    image_url,
-    slug,
-    repo_url,
-    live_url,
-    status,
-  } = projectData;
+// Get project by slug
+export async function getProjectBySlug(slug, userId = null) {
+  if (userId) {
+    return db.query("SELECT * FROM projects WHERE slug = $1 AND user_id = $2", [slug, userId]);
+  }
+  return db.query("SELECT * FROM projects WHERE slug = $1", [slug]);
+}
 
+// Create project
+export async function createProject(project, userId) {
+  const { title, description, slug, status, image_url, live_url, repo_url, tags } = project;
   const result = await db.query(
-    `INSERT INTO projects 
-    (title, description, category, tags, image_url, slug, repo_url, live_url, status) 
-    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-    RETURNING *`,
-    [title, description, category, tags, image_url, slug, repo_url, live_url, status]
+    `INSERT INTO projects (title, description, slug, status, image_url, live_url, repo_url, tags, user_id)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING *`,
+    [title, description, slug, status || "draft", image_url, live_url, repo_url, tags || [], userId]
   );
-
   return result.rows[0];
-};
+}
 
-export const updateProject = async (id, updatedData) => {
-  const {
-    title,
-    description,
-    category,
-    tags,
-    image_url,
-    slug,
-    repo_url,
-    live_url,
-    status,
-  } = updatedData;
+// Update project
+export async function updateProject(id, updates, userId = null, isSuper = false) {
+  const fields = Object.keys(updates);
+  if (fields.length === 0) return null;
 
-  const result = await db.query(
-    `UPDATE projects SET
-      title = $1,
-      description = $2,
-      category = $3,
-      tags = $4,
-      image_url = $5,
-      slug = $6,
-      repo_url = $7,
-      live_url = $8,
-      status = $9
-    WHERE id = $10
-    RETURNING *`,
-    [title, description, category, tags, image_url, slug, repo_url, live_url, status, id]
-  );
+  const setClause = fields.map((f, i) => `${f} = $${i + 1}`).join(", ");
+  const values = Object.values(updates);
 
-  return result.rows[0];
-};
+  let query = `UPDATE projects SET ${setClause}, updated_at = NOW() WHERE id = $${fields.length + 1}`;
+  let params = [...values, id];
 
-export const deleteProject = async (id) => {
-  const result = await db.query("DELETE FROM projects WHERE id = $1 RETURNING *", [id]);
-  return result.rows[0];
-};
+  if (!isSuper && userId) {
+    query += ` AND user_id = $${fields.length + 2}`;
+    params.push(userId);
+  }
+
+  query += " RETURNING *";
+  const result = await db.query(query, params);
+  return result.rows[0] || null;
+}
+
+// Delete project
+export async function deleteProject(id, userId = null, isSuper = false) {
+  let query = "DELETE FROM projects WHERE id = $1";
+  let params = [id];
+
+  if (!isSuper && userId) {
+    query += " AND user_id = $2";
+    params.push(userId);
+  }
+
+  const result = await db.query(query, params);
+  return result.rowCount > 0;
+}
