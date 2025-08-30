@@ -28,17 +28,17 @@ export const createProjectInDB = async (project, userId = fixedUserId) => {
     title,
     slug,
     description,
-    repo_url,
-    live_url,
+    repoUrl,
+    liveUrl,
     status = "draft",
     tags = [],
   } = project;
 
   const result = await pool.query(
-    `INSERT INTO projects (title, slug, description, repo_url, live_url, status, tags, user_id)
+    `INSERT INTO projects (title, slug, description, repoUrl, liveUrl, status, tags, user_id)
      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
      RETURNING *`,
-    [title, slug, description, repo_url, live_url, status, tags, userId]
+    [title, slug, description, repoUrl, liveUrl, status, tags, userId]
   );
 
   return result.rows[0];
@@ -50,8 +50,8 @@ export const updateProjectInDB = async (id, updates) => {
     title,
     slug,
     description,
-    repo_url,
-    live_url,
+    repoUrl,
+    liveUrl,
     status,
     tags,
   } = updates;
@@ -61,13 +61,13 @@ export const updateProjectInDB = async (id, updates) => {
       title = $1,
       slug = $2,
       description = $3,
-      repo_url = $4,
-      live_url = $5,
+      repoUrl = $4,
+      liveUrl = $5,
       status = $6,
       tags = $7
      WHERE id = $8
      RETURNING *`,
-    [title, slug, description, repo_url, live_url, status, tags, id]
+    [title, slug, description, repoUrl, liveUrl, status, tags, id]
   );
 
   return result.rows[0];

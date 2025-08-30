@@ -104,14 +104,14 @@ export async function fetchPublicRepos(username, includeTopics = true, token) {
 
 // --- Database helpers ---
 
-/** Read existing unique keys (slug, repo_url) to avoid duplicates. */
+/** Read existing unique keys (slug, repoUrl) to avoid duplicates. */
 async function getExistingKeys() {
-  const { rows } = await pool.query(`SELECT slug, repo_url FROM projects`);
+  const { rows } = await pool.query(`SELECT slug, repoUrl FROM projects`);
   const slugSet = new Set();
   const urlSet = new Set();
   for (const r of rows) {
     if (r.slug) slugSet.add(String(r.slug).toLowerCase());
-    if (r.repo_url) urlSet.add(String(r.repo_url).toLowerCase().trim());
+    if (r.repoUrl) urlSet.add(String(r.repoUrl).toLowerCase().trim());
   }
   return { slugSet, urlSet };
 }
@@ -123,7 +123,7 @@ async function getExistingKeys() {
 async function insertDraftProject(p) {
   const text = `
     INSERT INTO projects
-      (title, slug, status, category, description, image_url, live_url, repo_url, tags)
+      (title, slug, status, category, description, imageUrl, liveUrl, repoUrl, tags)
     VALUES
       ($1,    $2,   $3,     $4,       $5,          $6,        $7,      $8,       $9)
     ON CONFLICT (slug) DO NOTHING
@@ -135,9 +135,9 @@ async function insertDraftProject(p) {
     "draft",
     p.category ?? null,
     p.description ?? null,
-    p.image_url ?? null,
-    p.live_url ?? null,
-    p.repo_url ?? null,
+    p.imageUrl ?? null,
+    p.liveUrl ?? null,
+    p.repoUrl ?? null,
     Array.isArray(p.tags) ? p.tags : [],
   ];
   const res = await pool.query(text, values);
@@ -148,7 +148,7 @@ async function insertDraftProject(p) {
 
 /**
  * Sync public repos and create new ones as DRAFT projects.
- * New = not present by slug OR repo_url.
+ * New = not present by slug OR repoUrl.
  * @param {{ username: string, includeTopics: boolean, token?: string }} opts
  * @returns {Promise<{created:number, failed:number}>}
  */
@@ -188,11 +188,11 @@ export async function syncNewReposAsDraft(opts) {
         slug: slugify(r.name),
         category: "Open Source",
         description: r.description ?? null,
-        image_url: repoOgImage(r.owner?.login, r.name),
-        live_url:
+        imageUrl: repoOgImage(r.owner?.login, r.name),
+        liveUrl:
           (r.homepage && r.homepage.trim()) ||
           (r.has_pages ? pagesUrl(r.owner?.login, r.name) : null),
-        repo_url: r.html_url,
+        repoUrl: r.html_url,
         tags,
       };
 
@@ -200,7 +200,7 @@ export async function syncNewReposAsDraft(opts) {
       if (rowCount > 0) {
         created += 1;
         slugSet.add(payload.slug.toLowerCase());
-        if (payload.repo_url) urlSet.add(payload.repo_url.toLowerCase());
+        if (payload.repoUrl) urlSet.add(payload.repoUrl.toLowerCase());
       }
     } catch (e) {
       failed += 1;

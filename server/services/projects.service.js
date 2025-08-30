@@ -26,11 +26,11 @@ export async function getProjectBySlug(slug, userId = null) {
 
 // Create project
 export async function createProject(project, userId) {
-  const { title, description, slug, status, image_url, live_url, repo_url, tags } = project;
+  const { title, description, slug, status, imageUrl, liveUrl, repoUrl, tags } = project;
   const result = await db.query(
-    `INSERT INTO projects (title, description, slug, status, image_url, live_url, repo_url, tags, user_id)
+    `INSERT INTO projects (title, description, slug, status, imageUrl, liveUrl, repoUrl, tags, user_id)
      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING *`,
-    [title, description, slug, status || "draft", image_url, live_url, repo_url, tags || [], userId]
+    [title, description, slug, status || "draft", imageUrl, liveUrl, repoUrl, tags || [], userId]
   );
   return result.rows[0];
 }
