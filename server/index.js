@@ -10,6 +10,7 @@ import adminGithubSync from "./routes/adminGithubSync.js";
 import { startScheduler } from "./services/scheduler.js";
 import adminMessagesRoutes from "./routes/admin.messages.routes.js";
 import requireAdmin from "./middleware/requireAdmin.js";
+//import { ClerkExpressRequireAuth } from "@clerk/clerk-sdk-node";
 
 dotenv.config();
 const app = express();
@@ -30,6 +31,11 @@ app.use("/api/contact", contactRoutes);
 /** Admin routes (protected with Bearer token) */
 app.use("/api/admin/messages", requireAdmin, adminMessagesRoutes);
 app.use("/api/admin/github-sync", requireAdmin, adminGithubSync);
+
+/** Clerk routes */
+//app.use("/api/protected", ClerkExpressRequireAuth(), (req, res) => {
+//  res.json({ message: "You are authenticated with Clerk!", userId: req.auth.userId });
+//});
 
 /** Health */
 app.get("/", (_, res) => res.send("📡 Vitefolio API is running!"));
