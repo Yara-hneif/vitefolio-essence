@@ -40,6 +40,12 @@ export const getProjectBySlug = async (req, res, next) => {
     next(error);
   }
 };
+export async function getProjectById(req, res) {
+  const { id } = req.params;
+  const { rows } = await db.query("SELECT * FROM projects WHERE id = $1", [id]);
+  if (!rows[0]) return res.status(404).json({ message: "Not found" });
+  res.json(rows[0]);
+}
 
 // POST /api/projects
 export const createProject = async (req, res, next) => {
