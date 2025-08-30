@@ -15,7 +15,6 @@ import { Project } from "@/types/Project";
 import { resolveImageUrl } from "@/lib/urls";
 import placeholderImg from "@/assets/images/placeholder.svg";
 
-
 const Projects = () => {
   const {
     projects,
@@ -29,13 +28,13 @@ const Projects = () => {
 
   const categories: string[] = [
     "All",
-    ...Array.from(new Set(validProjects.map((p) => p.category))),
+    ...Array.from(new Set(validProjects.map((p) => p.category ?? "Uncategorized"))),
   ];
 
   const filteredProjects =
     activeFilter === "All"
       ? validProjects
-      : validProjects.filter((p) => p.category === activeFilter);
+      : validProjects.filter((p) => (p.category ?? "Uncategorized") === activeFilter);
 
   return (
     <div className="animate-fade-in">
@@ -64,13 +63,10 @@ const Projects = () => {
                 {categories.map((category, index) => (
                   <Button
                     key={`${category}-${index}`}
-                    variant={
-                      activeFilter === category ? "default" : "outline"
-                    }
+                    variant={activeFilter === category ? "default" : "outline"}
                     size="sm"
-                    className={`rounded-full whitespace-nowrap ${
-                      activeFilter === category ? "" : "neu-element"
-                    }`}
+                    className={`rounded-full whitespace-nowrap ${activeFilter === category ? "" : "neu-element"
+                      }`}
                     onClick={() => setActiveFilter(category)}
                   >
                     {category}
@@ -94,12 +90,14 @@ const Projects = () => {
                 <div className="card-3d-content h-full flex flex-col">
                   <div className="aspect-video bg-muted relative overflow-hidden group hover:scale-[1.01] transition-transform duration-500 ease-in-out">
                     <img
-                      src={resolveImageUrl(project.image_url) ?? placeholderImg}
+                      src={
+                        resolveImageUrl(project.imageUrl ?? "") || placeholderImg
+                      }
                       onError={(e) => {
                         e.currentTarget.onerror = null;
-                        e.currentTarget.src = placeholderImg; 
+                        e.currentTarget.src = placeholderImg;
                       }}
-                      alt={project.title}
+                      alt={project.title ?? "Untitled Project"}
                       className="object-cover w-full h-full"
                       loading="lazy"
                       decoding="async"
@@ -109,25 +107,33 @@ const Projects = () => {
 
                   <CardHeader>
                     <div className="flex justify-between items-start">
-                      <CardTitle className="text-xl">{project.title}</CardTitle>
+                      <CardTitle className="text-xl">
+                        {project.title ?? "Untitled Project"}
+                      </CardTitle>
                       <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">
-                        {project.category}
+                        {project.category ?? "Uncategorized"}
                       </span>
                     </div>
                     <CardDescription className="line-clamp-2">
-                      {project.description}
+                      {project.description ?? "No description available."}
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="flex flex-wrap gap-2">
-                      {project.tags.map((tag, index) => (
-                        <span
-                          key={`${tag}-${index}`}
-                          className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-secondary text-secondary-foreground"
-                        >
-                          {tag}
+                      {project.tags && project.tags.length > 0 ? (
+                        project.tags.map((tag, index) => (
+                          <span
+                            key={`${tag}-${index}`}
+                            className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-secondary text-secondary-foreground"
+                          >
+                            {tag}
+                          </span>
+                        ))
+                      ) : (
+                        <span className="text-xs text-muted-foreground">
+                          No tags
                         </span>
-                      ))}
+                      )}
                     </div>
                   </CardContent>
                   <CardFooter className="flex flex-col gap-2 mt-auto">
@@ -138,7 +144,7 @@ const Projects = () => {
                       className="rounded-full w-full transition-transform duration-300 ease-in-out  hover:shadow-lg"
                     >
                       <Link
-                        to={`/projects/${project.slug}`}
+                        to={`/projects/${project.slug ?? ""}`}
                         className="flex items-center justify-center gap-2 cursor-pointer"
                       >
                         View Details <ArrowRight className="h-4 w-4" />
@@ -146,25 +152,32 @@ const Projects = () => {
                     </Button>
 
                     <div className="flex justify-between w-full text-xs text-muted-foreground">
-                      <a
-                        href={project.live_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="hover:underline cursor-pointer"
-                      >
-                        🔗 Live Demo
-                      </a>
-                      <a
-                        href={project.repo_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="hover:underline cursor-pointer"
-                      >
-                        💻 Source Code
-                      </a>
+                      {project.liveUrl ? (
+                        <a
+                          href={project.liveUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="hover:underline cursor-pointer"
+                        >
+                          🔗 Live Demo
+                        </a>
+                      ) : (
+                        <span>No demo</span>
+                      )}
+                      {project.repoUrl ? (
+                        <a
+                          href={project.repoUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="hover:underline cursor-pointer"
+                        >
+                          💻 Source Code
+                        </a>
+                      ) : (
+                        <span>No repo</span>
+                      )}
                     </div>
                   </CardFooter>
-
                 </div>
               </Card>
             ))}

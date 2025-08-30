@@ -2,67 +2,171 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { SignedIn, SignedOut, RedirectToSignIn } from "@clerk/clerk-react";
+import { initBuilder } from "@/components/builder";
 
+// Layouts & pages
 import MainLayout from "@/components/layout/MainLayout";
+import Landing from "@/pages/Landing";
 import Home from "@/pages/Home";
 import Projects from "@/pages/Projects";
 import About from "@/pages/About";
 import Contact from "@/pages/Contact";
 import NotFound from "@/pages/NotFound";
+import ProjectDetails from "@/pages/ProjectDetails";
 
+// Dashboard
+import DashboardLayout from "@/components/dashboard/DashboardLayout";
+import Dashboard from "@/pages/dashboard/Dashboard";
+import DashboardProjects from "@/pages/dashboard/Projects";
+import NewProject from "@/pages/dashboard/NewProject";
+import Profile from "@/pages/dashboard/Profile";
+import Editor from "@/pages/dashboard/Editor";
+
+// Public profile
+import PublicProfile from "@/pages/PublicProfile";
+import PublicSite from "./pages/PublicSite";
+
+// Admin
 import { AdminProvider, useAdmin } from "@/features/admin/hooks/useAdminMode";
 import AdminSidebar from "@/features/admin/components/sidebar/AdminSidebar";
 import AdminFab from "@/features/admin/components/sidebar/AdminFab";
 import AdminInboxPanel from "@/features/admin/components/inbox/AdminInboxPanel";
 import AdminProjectsPanel from "@/features/admin/components/projects/AdminProjectsPanel";
 import AdminSettingsPanel from "@/features/admin/components/settings/AdminSettingsPanel";
+import Admin from "@/features/admin/pages/Admin";
+import AdminMessages from "@/features/admin/pages/AdminMessages";
+import AdminAccessGuard from "@/features/admin/guards/AdminAccessGuard";
+import { AuthProvider as LegacyAuthProvider } from "@/contexts/AuthContext";
+
+// Auth
+import Login from "@/pages/auth/Login";
+import Register from "@/pages/auth/Register";
+import AuthGuard from "@/components/auth/AuthGuard";
+
+initBuilder();
+
+const queryClient = new QueryClient();
 
 function AdminOverlays() {
   const { inboxOpen, closeInbox } = useAdmin();
   return <AdminInboxPanel open={inboxOpen} onClose={closeInbox} />;
 }
 
-// Simple guard for admin-only routes
-function AdminRoute({ children }: { children: React.ReactElement }) {
-  const { isAdmin } = useAdmin();
-  if (!isAdmin) return <Navigate to="/" replace />;
-  return children;
+function AdminUI() {
+  const { pathname } = useLocation();
+  const onAdmin = pathname === "/admin" || pathname.startsWith("/admin/");
+  if (!onAdmin) return null;
+  return (
+    <>
+      <AdminSidebar />
+      <AdminFab />
+      <AdminProjectsPanel />
+      <AdminSettingsPanel />
+      <AdminOverlays />
+    </>
+  );
 }
 
-const queryClient = new QueryClient();
-
-const App = () => (
+export default function App() {
+  return (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
       <Sonner />
 
-      <BrowserRouter>
-        {/* AdminProvider must be inside BrowserRouter because it uses router hooks */}
         <AdminProvider>
+          <LegacyAuthProvider>
+
           <Routes>
-            {/* Public layout + pages */}
+              {/* Public marketing/normal routes */}
+              <Route path="/" element={<Landing />} />
+
+              <Route path="/demo" element={<MainLayout />}>
+                <Route index element={<Home />} />
+              </Route>
+
             <Route element={<MainLayout />}>
-              <Route path="/" element={<Home />} />
               <Route path="/projects" element={<Projects />} />
+              <Route path="/projects/:slug" element={<ProjectDetails />} />
               <Route path="/about" element={<About />} />
               <Route path="/contact" element={<Contact />} />
             </Route>
-            {/* 404 fallback */}
+
+              {/* Auth routes */}
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+
+              {/* Builder.io powered public sites */}
+              <Route path="/u/:username" element={<PublicSite />} />
+              <Route path="/u/:username/:pageSlug" element={<PublicSite />} />
+
+              {/* Legacy public profile (fallback) */}
+              <Route path="/profile/:username" element={<PublicProfile />} />
+
+              {/* Protected dashboard (Clerk) */}
+              <Route
+                path="/dashboard"
+                element={
+                  <AuthGuard>
+                    <DashboardLayout />
+                  </AuthGuard>
+                }
+              >
+                <Route index element={<Dashboard />} />
+                <Route path="projects" element={<DashboardProjects />} />
+                <Route path="projects/new" element={<NewProject />} />
+                <Route path="profile" element={<Profile />} />
+              </Route>
+
+              {/* Redirect signed-out users who hit /dashboard/* */}
+              <Route
+                path="/dashboard/*"
+                element={
+                  <AuthGuard>
+                    <RedirectToSignIn />
+                  </AuthGuard>
+                }
+              />
+
+              {/* Protected editor */}
+              <Route
+                path="/editor/:pageId"
+                element={
+                  <SignedIn>
+                    <Editor />
+                  </SignedIn>
+                }
+              />
+
+              {/* Admin routes (protected via AdminAccessGuard) */}
+              <Route
+                path="/admin"
+                element={
+                  <AdminAccessGuard>
+                    <Admin />
+                  </AdminAccessGuard>
+                }
+              />
+              <Route
+                path="/admin/messages"
+                element={
+                  <AdminAccessGuard>
+                    <AdminMessages />
+                  </AdminAccessGuard>
+                }
+              />
+
+              {/* 404 */}
             <Route path="*" element={<NotFound />} />
           </Routes>
 
-          {/* Floating admin UI (only renders when isAdmin === true inside these components) */}
-          <AdminSidebar />
-          <AdminFab />
-          <AdminProjectsPanel />
-          <AdminSettingsPanel />
-          <AdminOverlays />
+            {/* Admin floating UI that appears only on /admin* */}
+            <AdminUI />
+          </LegacyAuthProvider>
         </AdminProvider>
-      </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
 );
-
-export default App;
+}

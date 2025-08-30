@@ -3,6 +3,8 @@ import { ArrowLeft, ExternalLink, Github } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { useProject } from "@/hooks/useProject";
+import { resolveImageUrl } from "@/lib/urls";
+import placeholderImg from "@/assets/images/placeholder.svg";
 
 const ProjectDetails = () => {
   const { slug } = useParams();
@@ -16,6 +18,7 @@ const ProjectDetails = () => {
 
   return (
     <div className="max-w-4xl mx-auto p-6 animate-fade-in">
+      {/* Back Button */}
       <div className="mb-4">
         <Button variant="outline" asChild>
           <Link to="/projects" className="flex items-center gap-2">
@@ -24,17 +27,31 @@ const ProjectDetails = () => {
         </Button>
       </div>
 
-      <div className="rounded-lg shadow border relative aspect-video bg-gradient-to-br from-primary/10 to-accent/10 p-4 flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0 shimmer rounded-xl z-0" />
+      {/* Card Container */}
+      <div className="card-3d-content rounded-lg shadow border bg-gradient-to-br from-primary/10 to-accent/10 overflow-hidden flex flex-col md:flex-row">
+        
+        {/* Image */}
+        <div className="relative w-full md:w-1/2 aspect-video md:aspect-auto">
           <img
-          src={project.image_url || "/default-img.png"}
-          alt={project.title}
-          className="w-full object-cover max-h-96"
+            src={resolveImageUrl(project.imageUrl || "") || placeholderImg}
+            onError={(e) => {
+              e.currentTarget.onerror = null;
+              e.currentTarget.src = placeholderImg;
+            }}
+            alt={project.title}
+            className="object-cover w-full h-full"
+            loading="lazy"
+            decoding="async"
           />
-        <div className="p-6">
+          <div className="absolute inset-0 bg-gradient-to-tr from-primary/20 to-accent/20 pointer-events-none"></div>
+        </div>
+
+        {/* Content */}
+        <div className="p-6 flex flex-col justify-center w-full md:w-1/2">
           <h1 className="text-3xl font-bold mb-2">{project.title}</h1>
           <p className="text-muted-foreground mb-4">{project.description}</p>
 
+          {/* Tags */}
           <div className="flex flex-wrap gap-2 mb-4">
             {Array.isArray(project.tags) && project.tags.length > 0 ? (
               project.tags.map((tag: string) => (
@@ -48,26 +65,30 @@ const ProjectDetails = () => {
             ) : (
               <span className="text-sm text-muted-foreground">No tags available</span>
             )}
-
           </div>
 
+          {/* Links */}
           <div className="flex gap-4">
-            <a
-              href={project.live_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-primary hover:underline text-sm inline-flex items-center gap-1"
-            >
-              <ExternalLink className="h-4 w-4" /> Live Demo
-            </a>
-            <a
-              href={project.repo_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-muted-foreground hover:underline text-sm inline-flex items-center gap-1"
-            >
-              <Github className="h-4 w-4" /> Source Code
-            </a>
+            {project.live_url && (
+              <a
+                href={project.live_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary hover:underline text-sm inline-flex items-center gap-1"
+              >
+                <ExternalLink className="h-4 w-4" /> Live Demo
+              </a>
+            )}
+            {project.repo_url && (
+              <a
+                href={project.repo_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-muted-foreground hover:underline text-sm inline-flex items-center gap-1"
+              >
+                <Github className="h-4 w-4" /> Source Code
+              </a>
+            )}
           </div>
         </div>
       </div>

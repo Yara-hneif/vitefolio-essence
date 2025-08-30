@@ -1,13 +1,19 @@
+// client/src/types/Project.ts
 export type Project = {
   id: string;
   title: string;
-  description: string;
+  category?: string;
   slug: string;
-  category: string;
-  tags: string[];
-  image_url: string;
-  repo_url: string;
-  live_url: string;
-  status: "draft" | "published";
-  created_at: string;
+  description?: string;
+  url?: string;
+  liveUrl?: string;   
+  repoUrl?: string;
+  coverImage?: string;
+  imageUrl?: string;
+  tags?: string[];
+  sortOrder?: number;
+  createdAt?: string;
+  updatedAt?: string;
+  status?: "draft" | "published";
+
 };
