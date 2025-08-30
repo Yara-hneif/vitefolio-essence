@@ -1,107 +1,35 @@
-import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
-import { supabase } from "@/lib/supabase";
-import type { Session, User as SupabaseUser } from "@supabase/supabase-js";
+// client/src/features/admin/guards/ProtectedAdmin.tsx
+import { useEffect, useMemo } from "react";
+import { useLocation, Navigate } from "react-router-dom";
+import { setAdminSecret as applyAdminHeader } from "@/lib/api";
 
-type SocialLinks = {
-  github?: string;
-  linkedin?: string;
-  twitter?: string;
-  website?: string;
-};
+const ENV_SECRET = import.meta.env.VITE_ADMIN_SECRET || "CHANGE_ME";
+const STORAGE_KEYS = ["ADMIN_SECRET", "admin_secret"];
 
-type AuthUser = {
-  id: string;
-  email?: string;
-  name?: string;
-  username?: string;
-  bio?: string;
-  skills?: string[];
-  socialLinks?: SocialLinks;
-  avatarUrl?: string;
-};
+function getStoredSecret(): string | null {
+  for (const k of STORAGE_KEYS) {
+    const v = localStorage.getItem(k);
+    if (v) return v;
+  }
+  return null;
+}
 
-type RegisterPayload = { username: string; name: string; email: string; password: string };
+function storeSecret(secret: string) {
+  for (const k of STORAGE_KEYS) localStorage.setItem(k, secret);
+  try { applyAdminHeader?.(secret); } catch {}
+}
 
-type AuthCtx = {
-  user: AuthUser | null;
-  loading: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  register: (p: RegisterPayload) => Promise<void>;
-  logout: () => Promise<void>;
-};
+export default function ProtectedAdmin({ children }: { children: React.ReactNode }) {
+  const location = useLocation();
 
-const Ctx = createContext<AuthCtx>({} as AuthCtx);
-export const useAuth = () => useContext(Ctx);
-
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<AuthUser | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  // hydrate session on boot + listen to changes
   useEffect(() => {
-    let mounted = true;
+    const params = new URLSearchParams(location.search);
+    const fromQuery = params.get("admin");
+    if (fromQuery) storeSecret(fromQuery);
+  }, [location.search]);
 
-    const init = async () => {
-      const { data }: { data: { session: Session | null } } = await supabase.auth.getSession();
-      const sUser = data.session?.user;
-      if (mounted) {
-        setUser(sUser ? mapSupabaseUser(sUser) : null);
-        setLoading(false);
-      }
-    };
-    init();
+  const authorized = useMemo(() => getStoredSecret() === ENV_SECRET, []);
 
-    const { data: listener } = supabase.auth.onAuthStateChange(
-      (_event: string, session: Session | null) => {
-        const sUser = session?.user;
-        setUser(sUser ? mapSupabaseUser(sUser) : null);
-      }
-    );
-
-    return () => {
-      mounted = false;
-      listener?.subscription.unsubscribe();
-    };
-  }, []);
-
-  const login = async (email: string, password: string) => {
-    setLoading(true);
-    const { error, data } = await supabase.auth.signInWithPassword({ email, password });
-    setLoading(false);
-    if (error) throw new Error(error.message);
-    const sUser = data.user;
-    setUser(sUser ? mapSupabaseUser(sUser) : null);
-  };
-
-  const register = async ({ username, name, email, password }: RegisterPayload) => {
-    setLoading(true);
-    const { error, data } = await supabase.auth.signUp({
-      email,
-      password,
-      options: { data: { username, name } },
-    });
-    setLoading(false);
-    if (error) throw new Error(error.message);
-    const sUser = data.user;
-    setUser(sUser ? mapSupabaseUser(sUser) : null);
-  };
-
-  const logout = async () => {
-    await supabase.auth.signOut();
-    setUser(null);
-  };
-
-  const value = useMemo(() => ({ user, loading, login, register, logout }), [user, loading]);
-  return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
-};
-
-// ✅ helper: maps SupabaseUser into AuthUser
-function mapSupabaseUser(sUser: SupabaseUser): AuthUser {
-  return {
-    id: sUser.id,
-    email: sUser.email ?? undefined,
-    name: (sUser.user_metadata as any)?.name,
-    username: (sUser.user_metadata as any)?.username,
-    avatarUrl: (sUser.user_metadata as any)?.avatar_url,
-  };
+  if (!authorized) return <Navigate to="/" replace />;
+  return <>{children}</>;
 }
