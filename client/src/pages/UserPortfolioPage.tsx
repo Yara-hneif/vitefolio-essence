@@ -1,26 +1,29 @@
 import { useParams } from "react-router-dom";
-import { useAuth } from "@/features/auth/AuthProvider";
+import { useAuth as useAppAuth } from "@/context/AuthContext";
 
 export default function UserPortfolioPage() {
   const { handle } = useParams();
-  const { user, getHandle } = useAuth();
+  const { user } = useAppAuth();
 
-  const isOwner = user && getHandle() === handle;
+  const isOwner = user && user.username === handle;
 
-  // In a next release, fetch user's real projects from your API.
-  // For now, derive basic profile from auth metadata:
   const displayName =
-    user?.user_metadata?.name ||
-    user?.user_metadata?.full_name ||
+    user?.name ||
     (handle ? handle[0].toUpperCase() + handle.slice(1) : "User");
 
-  const avatar = user?.user_metadata?.avatar_url || user?.user_metadata?.picture;
+  const avatar = user?.avatarUrl;
 
   return (
     <div className="min-h-screen">
       <header className="border-b">
         <div className="max-w-4xl mx-auto p-6 flex items-center gap-4">
-          {avatar && <img src={avatar} alt="avatar" className="w-16 h-16 rounded-full object-cover" />}
+          {avatar && (
+            <img
+              src={avatar}
+              alt="avatar"
+              className="w-16 h-16 rounded-full object-cover"
+            />
+          )}
           <div>
             <h1 className="text-3xl font-bold">{displayName}</h1>
             <p className="text-muted-foreground">@{handle}</p>
@@ -37,7 +40,8 @@ export default function UserPortfolioPage() {
         <section>
           <h2 className="text-xl font-semibold mb-2">About</h2>
           <p className="text-muted-foreground">
-            This is your personal portfolio page. In future releases, you will customize sections, colors, and layout.
+            This is your personal portfolio page. In future releases, you will
+            customize sections, colors, and layout.
           </p>
         </section>
 
@@ -46,11 +50,15 @@ export default function UserPortfolioPage() {
           <ul className="grid md:grid-cols-2 gap-4">
             <li className="border rounded-xl p-4">
               <h3 className="font-semibold">Sample Project</h3>
-              <p className="text-sm text-muted-foreground">Describe your awesome work here.</p>
+              <p className="text-sm text-muted-foreground">
+                Describe your awesome work here.
+              </p>
             </li>
             <li className="border rounded-xl p-4">
               <h3 className="font-semibold">Another Project</h3>
-              <p className="text-sm text-muted-foreground">Add links, screenshots and tags.</p>
+              <p className="text-sm text-muted-foreground">
+                Add links, screenshots and tags.
+              </p>
             </li>
           </ul>
         </section>

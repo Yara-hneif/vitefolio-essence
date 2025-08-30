@@ -38,7 +38,7 @@ import AdminSettingsPanel from "@/features/admin/components/settings/AdminSettin
 import Admin from "@/features/admin/pages/Admin";
 import AdminMessages from "@/features/admin/pages/AdminMessages";
 import AdminAccessGuard from "@/features/admin/guards/AdminAccessGuard";
-import { AuthProvider as LegacyAuthProvider } from "@/contexts/AuthContext";
+import { AuthProvider as LegacyAuthProvider } from "@/context/AuthContext";
 
 // Auth
 import Login from "@/pages/auth/Login";
