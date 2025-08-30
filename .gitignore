@@ -143,3 +143,4 @@ Thumbs.db
 *.logconfig.json
 
 config.json
+.history/
