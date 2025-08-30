@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { type InternalAxiosRequestConfig, type AxiosResponse } from "axios";
 import { Contact } from "@/types/Contact";
 import { Project } from "@/types/Project";
 
@@ -12,18 +12,19 @@ const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "";
 /** Single shared axios instance */
 export const api = axios.create({
   baseURL: BASE_URL,
-  withCredentials: true, // OK even if you use bearer; required only if you switch to cookie auth later
+  withCredentials: true,
   headers: { "Content-Type": "application/json" },
 });
 
 /* ---------------------------------------------------------------
-   Admin secret header (x-admin-secret) – keep enabled if you use it
+   Admin secret header (x-admin-secret)
 ---------------------------------------------------------------- */
 const ADMIN_SECRET_KEY = "admin_secret";
 const ADMIN_HEADER = import.meta.env.VITE_ADMIN_HEADER || "x-admin-secret";
 const ADMIN_SECRET_ENV = import.meta.env.VITE_ADMIN_SECRET as string | undefined;
 
 export function setAdminSecret(secret?: string) {
+  if (typeof window === "undefined") return;
   if (secret) {
     localStorage.setItem(ADMIN_SECRET_KEY, secret);
     api.defaults.headers.common[ADMIN_HEADER] = secret;
@@ -33,22 +34,12 @@ export function setAdminSecret(secret?: string) {
   }
 }
 
-// initialize admin header from storage/env at boot
-(function initAdminHeader() {
+// initialize admin header from storage/env at boot (browser only)
+if (typeof window !== "undefined") {
   const fromStorage = localStorage.getItem(ADMIN_SECRET_KEY);
   const secret = fromStorage || ADMIN_SECRET_ENV;
   if (secret) api.defaults.headers.common[ADMIN_HEADER] = secret;
-})();
-
-// keep admin header in sync on every request
-api.interceptors.request.use((cfg) => {
-  const fromStorage = localStorage.getItem(ADMIN_SECRET_KEY) || ADMIN_SECRET_ENV;
-  if (fromStorage) {
-    cfg.headers = cfg.headers ?? {};
-    (cfg.headers as any)[ADMIN_HEADER] = fromStorage;
-  }
-  return cfg;
-});
+}
 
 /* ---------------------------------------------------------------
    Clerk token (primary) with legacy fallback
@@ -67,6 +58,7 @@ const TOKEN_KEY = "auth_token"; // legacy fallback
 const LEGACY_ENV_TOKEN = import.meta.env.VITE_ADMIN_TOKEN as string | undefined;
 
 export function setAuthToken(token?: string) {
+  if (typeof window === "undefined") return;
   if (token) {
     localStorage.setItem(TOKEN_KEY, token);
     api.defaults.headers.common.Authorization = `Bearer ${token}`;
@@ -81,45 +73,62 @@ export function setAuthToken(token?: string) {
  * 1) Try Clerk -> fresh JWT per request
  * 2) Else fallback to legacy token from localStorage/env
  */
-api.interceptors.request.use(async (config) => {
-  // Try Clerk first
-  try {
-    if (window.Clerk) {
-      if (!window.Clerk.loaded && typeof window.Clerk.load === "function") {
-        await window.Clerk.load();
-  }
-      const token = await window.Clerk.session?.getToken();
-      if (token) {
+api.interceptors.request.use(
+  async (config: InternalAxiosRequestConfig) => {
+    // Admin header sync
+    if (typeof window !== "undefined") {
+      const fromStorage = localStorage.getItem(ADMIN_SECRET_KEY) || ADMIN_SECRET_ENV;
+      if (fromStorage) {
         config.headers = config.headers ?? {};
-        (config.headers as any).Authorization = `Bearer ${token}`;
-        return config;
-}
+        (config.headers as any)[ADMIN_HEADER] = fromStorage;
+      }
     }
-  } catch {
-    // ignore and fallback
-  }
 
-  // Fallback legacy token
-  const legacy = localStorage.getItem(TOKEN_KEY) || LEGACY_ENV_TOKEN;
-  if (legacy) {
-    config.headers = config.headers ?? {};
-    (config.headers as any).Authorization = `Bearer ${legacy}`;
-  }
-  return config;
-});
+    // Try Clerk first
+    try {
+      if (typeof window !== "undefined" && window.Clerk) {
+        if (!window.Clerk.loaded && typeof window.Clerk.load === "function") {
+          await window.Clerk.load();
+        }
+        const token = await window.Clerk.session?.getToken();
+        if (token) {
+          config.headers = config.headers ?? {};
+          (config.headers as any).Authorization = `Bearer ${token}`;
+          return config;
+        }
+      }
+    } catch {
+      // ignore and fallback
+    }
+
+    // Fallback legacy token
+    if (typeof window !== "undefined") {
+      const legacy = localStorage.getItem(TOKEN_KEY) || LEGACY_ENV_TOKEN;
+      if (legacy) {
+        config.headers = config.headers ?? {};
+        (config.headers as any).Authorization = `Bearer ${legacy}`;
+      }
+    } else if (LEGACY_ENV_TOKEN) {
+      config.headers = config.headers ?? {};
+      (config.headers as any).Authorization = `Bearer ${LEGACY_ENV_TOKEN}`;
+    }
+
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
 
 /* ---------------------------------------------------------------
    Optional 401 handling
 ---------------------------------------------------------------- */
 api.interceptors.response.use(
-  (res) => res,
+  (res: AxiosResponse) => res,
   (err) => {
     if (err?.response?.status === 401) {
-      // Optionally clear token and trigger app-level sign-in flow
       // setAuthToken(undefined);
       // window.dispatchEvent(new Event("unauthorized"));
     }
-    throw err;
+    return Promise.reject(err);
   }
 );
 
@@ -135,9 +144,10 @@ function normalizeProject(p: any): Project {
     slug: p.slug,
     category: p.category,
     tags: p.tags,
-    imageUrl: p.imageUrl ?? p.imageUrl,
-    repoUrl: p.repoUrl ?? p.repoUrl,
-    liveUrl: p.liveUrl ?? p.liveUrl,
+    // ✅ دعم snake_case من السيرفر
+    imageUrl: p.imageUrl ?? p.image_url,
+    repoUrl: p.repoUrl ?? p.repo_url,
+    liveUrl: p.liveUrl ?? p.live_url,
     status: p.status,
     createdAt: p.createdAt ?? p.created_at,
   };
