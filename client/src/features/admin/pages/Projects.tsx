@@ -262,11 +262,11 @@ export default function AdminProjectsPage() {
                 <div>
                   <div className="font-medium">{p.title}</div>
                   <div className="text-xs text-muted-foreground">
-                    {p.repo_url ? (
+                    {p.repoUrl ? (
                       <>
                         Source:{" "}
-                        <a className="underline" href={p.repo_url} target="_blank" rel="noreferrer">
-                          {p.repo_url}
+                        <a className="underline" href={p.repoUrl} target="_blank" rel="noreferrer">
+                          {p.repoUrl}
                         </a>
                       </>
                     ) : (

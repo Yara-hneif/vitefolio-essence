@@ -28,9 +28,9 @@ type ProjectFormValues = {
   slug?: string;
   status?: Project["status"];
   description?: string;
-  image_url?: string;
-  live_url?: string;
-  repo_url?: string;
+  imageUrl?: string;
+  liveUrl?: string;
+  repoUrl?: string;
   tags?: string[];
 };
 
@@ -47,9 +47,9 @@ const defaultsFromInitial = (initial?: Partial<Project>): ProjectFormValues => {
     slug: initial?.slug ?? "",
     status: (initial?.status as Project["status"]) ?? "draft",
     description: initial?.description ?? "",
-    image_url: initial?.image_url ?? "",
-    live_url: initial?.live_url ?? "",
-    repo_url: initial?.repo_url ?? "",
+    imageUrl: initial?.imageUrl ?? "",
+    liveUrl: initial?.liveUrl ?? "",
+    repoUrl: initial?.repoUrl ?? "",
     tags: Array.isArray(initial?.tags) ? initial?.tags : [],
   };
 };
@@ -97,9 +97,9 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
       slug: emptyToUndefined(data.slug),
       status: data.status,
       description: emptyToUndefined(data.description),
-      image_url: emptyToUndefined(data.image_url),
-      live_url: emptyToUndefined(data.live_url),
-      repo_url: emptyToUndefined(data.repo_url),
+      imageUrl: emptyToUndefined(data.imageUrl),
+      liveUrl: emptyToUndefined(data.liveUrl),
+      repoUrl: emptyToUndefined(data.repoUrl),
       tags: (data.tags ?? []).filter(Boolean),
     };
     await onSubmit(payload);
@@ -165,18 +165,18 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
             </div>
 
             <div className="col-span-2">
-              <Label htmlFor="image_url">Image URL</Label>
-              <Input id="image_url" {...register("image_url")} />
+              <Label htmlFor="imageUrl">Image URL</Label>
+              <Input id="imageUrl" {...register("imageUrl")} />
             </div>
 
             <div className="col-span-2">
-              <Label htmlFor="live_url">Live URL</Label>
-              <Input id="live_url" {...register("live_url")} />
+              <Label htmlFor="liveUrl">Live URL</Label>
+              <Input id="liveUrl" {...register("liveUrl")} />
             </div>
 
             <div className="col-span-2">
-              <Label htmlFor="repo_url">Repo URL</Label>
-              <Input id="repo_url" {...register("repo_url")} />
+              <Label htmlFor="repoUrl">Repo URL</Label>
+              <Input id="repoUrl" {...register("repoUrl")} />
             </div>
 
             <div className="col-span-2">
