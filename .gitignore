@@ -140,4 +140,8 @@ dist
 build
 .DS_Store
 Thumbs.db
-*.log
+*.logconfig.json
+
+config.json
+.history/
+backup.dump
