@@ -22,15 +22,17 @@ export default defineConfig({
     chunkSizeWarningLimit: 1500,
     rollupOptions: {
       output: {
-        manualChunks: {
-          react: ['react', 'react-dom'],
-          vendor: ['axios', 'zustand', 'react-hook-form', '@tanstack/react-query'],
-          builder: ['@builder.io/react', '@builder.io/sdk'],
-          supabase: ['@supabase/supabase-js'],
-          animations: ['framer-motion'],
-          ui: ['lucide-react'],
-        },
+      manualChunks(id) {
+        if (!id.includes('node_modules')) return;
+        if (id.includes('react')) return 'react';
+        if (id.includes('@supabase')) return 'supabase';
+        if (id.includes('@builder.io')) return 'builder';
+        if (id.includes('framer-motion')) return 'animations';
+        if (id.includes('lucide-react') || id.includes('@radix-ui')) return 'ui';
+        return 'vendor';
+      },
+    },
       },
     },
   },
-})
+)
