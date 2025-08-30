@@ -135,9 +135,9 @@ function normalizeProject(p: any): Project {
     slug: p.slug,
     category: p.category,
     tags: p.tags,
-    imageUrl: p.imageUrl ?? p.image_url,
-    repoUrl: p.repoUrl ?? p.repo_url,
-    liveUrl: p.liveUrl ?? p.live_url,
+    imageUrl: p.imageUrl ?? p.imageUrl,
+    repoUrl: p.repoUrl ?? p.repoUrl,
+    liveUrl: p.liveUrl ?? p.liveUrl,
     status: p.status,
     createdAt: p.createdAt ?? p.created_at,
   };

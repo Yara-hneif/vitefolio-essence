@@ -69,9 +69,9 @@ const ProjectDetails = () => {
 
           {/* Links */}
           <div className="flex gap-4">
-            {project.live_url && (
+            {project.liveUrl && (
               <a
-                href={project.live_url}
+                href={project.liveUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-primary hover:underline text-sm inline-flex items-center gap-1"
@@ -79,9 +79,9 @@ const ProjectDetails = () => {
                 <ExternalLink className="h-4 w-4" /> Live Demo
               </a>
             )}
-            {project.repo_url && (
+            {project.repoUrl && (
               <a
-                href={project.repo_url}
+                href={project.repoUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-muted-foreground hover:underline text-sm inline-flex items-center gap-1"
