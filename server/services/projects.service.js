@@ -1,71 +1,54 @@
-import db from "../config/db.js";
+import { supabase } from "../config/supabase.js";
 
-// Get all projects (optionally filter by user_id)
+// Get all projects
 export async function getAllProjects(userId = null) {
-  if (userId) {
-    return db.query("SELECT * FROM projects WHERE user_id = $1 ORDER BY created_at DESC", [userId]);
-  }
-  return db.query("SELECT * FROM projects ORDER BY created_at DESC");
+  let query = supabase.from("projects").select("*").order("created_at", { ascending: false });
+  if (userId) query = query.eq("user_id", userId);
+  const { data, error } = await query;
+  if (error) throw error;
+  return data;
 }
 
 // Get project by ID
 export async function getProjectById(id, userId = null) {
-  if (userId) {
-    return db.query("SELECT * FROM projects WHERE id = $1 AND user_id = $2", [id, userId]);
-  }
-  return db.query("SELECT * FROM projects WHERE id = $1", [id]);
+  let query = supabase.from("projects").select("*").eq("id", id).single();
+  if (userId) query = query.eq("user_id", userId);
+  const { data, error } = await query;
+  if (error) throw error;
+  return data;
 }
 
-// Get project by slug
+// Get project by Slug
 export async function getProjectBySlug(slug, userId = null) {
-  if (userId) {
-    return db.query("SELECT * FROM projects WHERE slug = $1 AND user_id = $2", [slug, userId]);
-  }
-  return db.query("SELECT * FROM projects WHERE slug = $1", [slug]);
+  let query = supabase.from("projects").select("*").eq("slug", slug).single();
+  if (userId) query = query.eq("user_id", userId);
+  const { data, error } = await query;
+  if (error) throw error;
+  return data;
 }
 
 // Create project
 export async function createProject(project, userId) {
-  const { title, description, slug, status, imageUrl, liveUrl, repoUrl, tags } = project;
-  const result = await db.query(
-    `INSERT INTO projects (title, description, slug, status, imageUrl, liveUrl, repoUrl, tags, user_id)
-     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING *`,
-    [title, description, slug, status || "draft", imageUrl, liveUrl, repoUrl, tags || [], userId]
-  );
-  return result.rows[0];
+  const payload = { ...project, user_id: userId, status: project.status || "draft" };
+  const { data, error } = await supabase.from("projects").insert([payload]).single();
+  if (error) throw error;
+  return data;
 }
 
 // Update project
 export async function updateProject(id, updates, userId = null, isSuper = false) {
-  const fields = Object.keys(updates);
-  if (fields.length === 0) return null;
-
-  const setClause = fields.map((f, i) => `${f} = $${i + 1}`).join(", ");
-  const values = Object.values(updates);
-
-  let query = `UPDATE projects SET ${setClause}, updated_at = NOW() WHERE id = $${fields.length + 1}`;
-  let params = [...values, id];
-
-  if (!isSuper && userId) {
-    query += ` AND user_id = $${fields.length + 2}`;
-    params.push(userId);
-  }
-
-  query += " RETURNING *";
-  const result = await db.query(query, params);
-  return result.rows[0] || null;
+  let query = supabase.from("projects").update({ ...updates, updated_at: new Date().toISOString() }).eq("id", id);
+  if (!isSuper && userId) query = query.eq("user_id", userId);
+  const { data, error } = await query.single();
+  if (error) throw error;
+  return data;
 }
 
 // Delete project
 export async function deleteProject(id, userId = null, isSuper = false) {
-  let query = "DELETE FROM projects WHERE id = $1";
-  let params = [id];
-
-  if (!isSuper && userId) {
-    query += " AND user_id = $2";
-    params.push(userId);
-  }
-
-  const result = await db.query(query, params);
-  return result.rowCount > 0;
+  let query = supabase.from("projects").delete().eq("id", id);
+  if (!isSuper && userId) query = query.eq("user_id", userId);
+  const { error } = await query;
+  if (error) throw error;
+  return true;
 }
