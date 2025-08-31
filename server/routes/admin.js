@@ -1,40 +1,23 @@
-const express = require("express");
-const fs = require("fs");
-const path = require("path");
+import { Router } from "express";
+import requireAdmin from "../middleware/requireAdmin.js";
+import { supabase } from "../config/supabase.js";
+import crypto from "crypto";
 
-const ADMIN_SECRET = process.env.ADMIN_SECRET;
-const DATA_FILE = path.join(__dirname, "..", "data", "messages.json");
-
-function ensureDataFile() {
-  if (!fs.existsSync(DATA_FILE)) {
-    fs.writeFileSync(JSON.stringify({ items: [], total: 0 }, null, 2));
-  }
-}
-function readStore() {
-  ensureDataFile();
-  return JSON.parse(fs.readFileSync(DATA_FILE, "utf8"));
-}
-function writeStore(s) {
-  fs.writeFileSync(DATA_FILE, JSON.stringify(s, null, 2), "utf8");
-}
-
-function requireAdmin(req, res, next) {
-  const secret = req.headers["x-admin-secret"];
-  if (!ADMIN_SECRET || secret !== ADMIN_SECRET) {
-    return res.status(401).json({ error: "unauthorized" });
-  }
-  next();
-}
-
-const router = express.Router();
+const router = Router();
 router.use(requireAdmin);
 
-// GET /api/admin/messages
-router.get("/messages", (req, res) => {
-  const { q = "", page = 1, pageSize = 50 } = req.query;
-  const store = readStore();
-  let items = store.items || [];
 
+router.get("/", async (req, res) => {
+  const { q = "", page = 1, pageSize = 50 } = req.query;
+
+  const { data, error } = await supabase
+    .from("contact")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) return res.status(500).json({ error: error.message });
+
+  let items = data || [];
   if (q) {
     const qq = String(q).toLowerCase();
     items = items.filter((m) =>
@@ -44,54 +27,70 @@ router.get("/messages", (req, res) => {
     );
   }
 
-  const p = Number(page) || 1;
-  const ps = Number(pageSize) || 50;
+  const p = Math.max(1, Number(page) || 1);
+  const ps = Math.max(1, Number(pageSize) || 50);
   const start = (p - 1) * ps;
   const slice = items.slice(start, start + ps);
 
   res.json({ items: slice, total: items.length, page: p, pageSize: ps });
 });
 
-router.patch("/messages/:id", express.json(), (req, res) => {
+router.patch("/:id", async (req, res) => {
   const { id } = req.params;
   const patch = req.body || {};
-  const store = readStore();
-  const idx = store.items.findIndex((m) => m.id === id);
-  if (idx === -1) return res.status(404).json({ error: "not found" });
 
-  store.items[idx] = { ...store.items[idx], ...patch, updated_at: new Date().toISOString() };
-  writeStore(store);
-  res.json(store.items[idx]);
+  const { data, error } = await supabase
+    .from("contact")
+    .update({ ...patch, updated_at: new Date().toISOString() })
+    .eq("id", id)
+    .single();
+
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data);
 });
 
-router.delete("/messages/:id", (req, res) => {
+router.delete("/:id", async (req, res) => {
   const { id } = req.params;
-  const store = readStore();
-  const before = store.items.length;
-  store.items = store.items.filter((m) => m.id !== id);
-  store.total = store.items.length;
-  writeStore(store);
-  res.json({ ok: true, removed: before - store.items.length });
-});
-
-router.delete("/messages", express.json(), (req, res) => {
-  const ids = Array.isArray(req.body?.ids) ? req.body.ids : [];
-  const store = readStore();
-  const before = store.items.length;
-  store.items = store.items.filter((m) => !ids.includes(m.id));
-  store.total = store.items.length;
-  writeStore(store);
-  res.json({ ok: true, removed: before - store.items.length });
-});
-
-router.post("/messages/:id/reply", express.json(), (req, res) => {
-  const { id } = req.params;
-  const store = readStore();
-  const idx = store.items.findIndex((m) => m.id === id);
-  if (idx === -1) return res.status(404).json({ error: "not found" });
-  store.items[idx].replied_at = new Date().toISOString();
-  writeStore(store);
+  const { error } = await supabase.from("contact").delete().eq("id", id);
+  if (error) return res.status(500).json({ error: error.message });
   res.json({ ok: true });
 });
 
-module.exports = router;
+router.delete("/", async (req, res) => {
+  const ids = Array.isArray(req.body?.ids) ? req.body.ids : [];
+  if (!ids.length) return res.json({ ok: true, removed: 0 });
+
+  const { error } = await supabase.from("contact").delete().in("id", ids);
+  if (error) return res.status(500).json({ error: error.message });
+  res.json({ ok: true });
+});
+
+router.post("/:id/reply", async (req, res) => {
+  const { id } = req.params;
+  const { error } = await supabase
+    .from("contact")
+    .update({ replied_at: new Date().toISOString(), updated_at: new Date().toISOString() })
+    .eq("id", id);
+  if (error) return res.status(500).json({ error: error.message });
+  res.json({ ok: true });
+});
+
+router.post("/__seed", async (_req, res) => {
+  const now = new Date().toISOString();
+  const msg = {
+    id: crypto.randomUUID(),
+    name: "Test User",
+    email: "test@example.com",
+    subject: "Hello!",
+    message: "This is a test message",
+    is_read: false,
+    is_starred: false,
+    created_at: now,
+    updated_at: now,
+  };
+  const { error } = await supabase.from("contact").insert([msg]);
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(msg);
+});
+
+export default router;
