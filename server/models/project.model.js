@@ -1,80 +1,72 @@
-import pool from "../config/db.js";
+import { supabase } from "../config/supabase.js";
 
-// dynamic user ID
-// This should be replaced with actual user ID logic in a real application.
-const fixedUserId = "4a8bdb28-f98c-4940-84c4-5370f5915cf7";
+async function getUserIdFromRequest(req) {
+  const token = req.headers.authorization?.replace("Bearer ", "");
+  if (!token) throw new Error("❌ Missing Authorization token");
 
-// 1. Get all published projects for a user
-export const getAllProjectsFromDB = async (userId = fixedUserId) => {
-  const result = await pool.query(
-    `SELECT * FROM projects WHERE user_id = $1 ORDER BY created_at DESC`,
-    [userId]
-  );
-  return result.rows;
+  const { data: { user }, error } = await supabase.auth.getUser(token);
+  if (error || !user) throw new Error("❌ Invalid or expired token");
+
+  return user.id;
+}
+
+// Get all projects
+export const getAllProjectsFromDB = async (req) => {
+  const userId = await getUserIdFromRequest(req);
+  const { data, error } = await supabase
+    .from("projects")
+    .select("*")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false });
+  if (error) throw error;
+  return data;
 };
 
-// 2. Get project by slug
-export const getProjectBySlugFromDB = async (userId = fixedUserId, slug) => {
-  const result = await pool.query(
-    `SELECT * FROM projects WHERE user_id = $1 AND slug = $2`,
-    [userId, slug]
-  );
-  return result.rows[0];
+// Get project by slug
+export const getProjectBySlugFromDB = async (req, slug) => {
+  const userId = await getUserIdFromRequest(req);
+  const { data, error } = await supabase
+    .from("projects")
+    .select("*")
+    .eq("user_id", userId)
+    .eq("slug", slug)
+    .single();
+  if (error) throw error;
+  return data;
 };
 
-// 3. Create new project
-export const createProjectInDB = async (project, userId = fixedUserId) => {
-  const {
-    title,
-    slug,
-    description,
-    repoUrl,
-    liveUrl,
-    status = "draft",
-    tags = [],
-  } = project;
-
-  const result = await pool.query(
-    `INSERT INTO projects (title, slug, description, repoUrl, liveUrl, status, tags, user_id)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-     RETURNING *`,
-    [title, slug, description, repoUrl, liveUrl, status, tags, userId]
-  );
-
-  return result.rows[0];
+// Create project
+export const createProjectInDB = async (req, project) => {
+  const userId = await getUserIdFromRequest(req);
+  const { data, error } = await supabase
+    .from("projects")
+    .insert([{ ...project, user_id: userId, status: project.status || "draft" }])
+    .single();
+  if (error) throw error;
+  return data;
 };
 
-// 4. Update existing project
-export const updateProjectInDB = async (id, updates) => {
-  const {
-    title,
-    slug,
-    description,
-    repoUrl,
-    liveUrl,
-    status,
-    tags,
-  } = updates;
-
-  const result = await pool.query(
-    `UPDATE projects SET 
-      title = $1,
-      slug = $2,
-      description = $3,
-      repoUrl = $4,
-      liveUrl = $5,
-      status = $6,
-      tags = $7
-     WHERE id = $8
-     RETURNING *`,
-    [title, slug, description, repoUrl, liveUrl, status, tags, id]
-  );
-
-  return result.rows[0];
+// Update project
+export const updateProjectInDB = async (req, id, updates) => {
+  const userId = await getUserIdFromRequest(req);
+  const { data, error } = await supabase
+    .from("projects")
+    .update({ ...updates, updated_at: new Date().toISOString() })
+    .eq("id", id)
+    .eq("user_id", userId)
+    .single();
+  if (error) throw error;
+  return data;
 };
 
-// 5. Delete project
-export const deleteProjectFromDB = async (id) => {
-  const result = await pool.query(`DELETE FROM projects WHERE id = $1`, [id]);
-  return result.rowCount > 0;
+// Delete project
+export const deleteProjectFromDB = async (req, id) => {
+  const userId = await getUserIdFromRequest(req);
+  const { error } = await supabase
+    .from("projects")
+    .delete()
+    .eq("id", id)
+    .eq("user_id", userId);
+  if (error) throw error;
+  return true;
 };
