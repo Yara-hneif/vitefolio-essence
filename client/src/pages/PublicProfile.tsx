@@ -1,12 +1,12 @@
-import React from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useParams, Link } from "react-router-dom";
+import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/context/AuthContext";
-import { useProjects } from "@/hooks/useProjects";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import UserAvatar from "@/components/common/UserAvatar";
-import { Github, Linkedin, Twitter, Globe, ArrowLeft, Mail } from "lucide-react";
+import { Github, Linkedin, Twitter, Globe, ArrowLeft, Mail, Loader2 } from "lucide-react";
 
 type SocialLinks = {
   github?: string;
@@ -15,41 +15,120 @@ type SocialLinks = {
   website?: string;
 };
 
-type PublicProfileShape = {
+type Profile = {
   id: string;
+  username: string;
   name?: string;
-  username?: string;
   email?: string;
   bio?: string;
   skills?: string[];
+  avatar_url?: string;
   socialLinks?: SocialLinks;
-  avatarUrl?: string;
+};
+
+type Project = {
+  id: string;
+  user_id: string;
+  title: string;
+  description?: string;
+  slug: string;
+  cover_image?: string;
+  live_url?: string;
+  repo_url?: string;
+  tags?: string[];
+  created_at?: string;
 };
 
 export default function PublicProfile() {
-  const { username } = useParams<{ username: string }>();
-  const { user, loading } = useAuth();
-  const { projects = [], isLoading: loadingProjects } = useProjects();
+  const { handle, username: usernameFromProfileRoute } = useParams();
+  const username = handle || usernameFromProfileRoute;
 
-  // استنتج بروفايل بسيط من المستخدم الحالي فقط (بدون mockUsers)
-  const profile: PublicProfileShape | null =
-    user && user.username && username && user.username === username
-      ? {
-        id: user.id,
-        name: user.name,
-        username: user.username,
-        email: user.email,
-        bio: (user as any)?.bio,
-        skills: ((user as any)?.skills as string[]) || [],
-        socialLinks: (user as any)?.socialLinks as SocialLinks,
-        avatarUrl: (user as any)?.avatarUrl,
+  const { user: currentUser } = useAuth();
+  const [loading, setLoading] = useState(true);
+  const [profile, setProfile] = useState<Profile | null>(null);
+  const [projects, setProjects] = useState<Project[]>([]);
+
+  const isOwner = useMemo(
+    () => !!(currentUser?.username && username && currentUser.username === username),
+    [currentUser?.username, username]
+  );
+
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      if (!username) {
+        setProfile(null);
+        setProjects([]);
+        setLoading(false);
+        return;
       }
-      : null;
 
-  if (loading || loadingProjects) {
+      setLoading(true);
+
+      const optimisticProfile: Partial<Profile> | null =
+        isOwner && currentUser
+          ? {
+            id: currentUser.id,
+            username: currentUser.username!,
+            name: currentUser.name,
+            email: currentUser.email,
+            bio: (currentUser as any)?.bio,
+            skills: ((currentUser as any)?.skills as string[]) || [],
+            avatar_url: (currentUser as any)?.avatarUrl,
+            socialLinks: (currentUser as any)?.socialLinks as SocialLinks,
+          }
+          : null;
+
+      if (mounted && optimisticProfile) setProfile((prev) => ({ ...(prev || {} as Profile), ...optimisticProfile } as Profile));
+
+      const { data: prof, error: profErr } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("username", username)
+        .maybeSingle();
+
+      if (profErr || !prof) {
+        if (mounted) {
+          setProfile(null);
+          setProjects([]);
+          setLoading(false);
+        }
+        return;
+      }
+
+      const mergedProfile: Profile = {
+        id: prof.id,
+        username: prof.username,
+        name: prof.name ?? optimisticProfile?.name,
+        email: prof.email ?? optimisticProfile?.email,
+        bio: prof.bio ?? optimisticProfile?.bio,
+        skills: prof.skills ?? optimisticProfile?.skills ?? [],
+        avatar_url: prof.avatar_url ?? optimisticProfile?.avatar_url,
+        socialLinks: prof.socialLinks ?? optimisticProfile?.socialLinks,
+      };
+
+      const { data: projs, error: pjErr } = await supabase
+        .from("projects")
+        .select("*")
+        .eq("user_id", prof.id)
+        .order("created_at", { ascending: false });
+
+      if (mounted) {
+        setProfile(mergedProfile);
+        setProjects(pjErr || !projs ? [] : projs);
+        setLoading(false);
+      }
+    })();
+
+    return () => {
+      mounted = false;
+    };
+  }, [username, isOwner, currentUser]);
+
+  if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-muted-foreground">Loading…</div>
+      <div className="flex items-center justify-center h-[60vh]">
+        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
       </div>
     );
   }
@@ -62,17 +141,31 @@ export default function PublicProfile() {
           <p className="text-muted-foreground">
             We couldn’t find a profile for <span className="font-medium">@{username}</span>.
           </p>
-          <Button asChild>
-            <Link to="/">Go Home</Link>
-          </Button>
+
+          <div className="flex gap-3 justify-center">
+            {/* Go Home → يروح للصفحة الرئيسية ويبقى فيها */}
+            <Button asChild>
+              <Link to="/" replace>
+                Go Home
+              </Link>
+            </Button>
+
+            {/* زر تسجيل الخروج */}
+            <Button
+              variant="outline"
+              onClick={async () => {
+                await supabase.auth.signOut();
+                window.location.href = "/"; // يوجّه مباشرة للـ landing
+              }}
+            >
+              Logout
+            </Button>
+          </div>
         </div>
       </div>
     );
   }
 
-  // مؤقتًا: نعرض كل المشاريع (لا يوجد ownerId في Project حالياً)
-  // إذا أضفتِ ownerId لاحقاً، يمكنكِ فلترة المشاريع هنا.
-  const allProjects = projects;
 
   return (
     <div className="min-h-screen bg-background">
@@ -89,7 +182,7 @@ export default function PublicProfile() {
       </header>
 
       <div className="container px-4 py-8 max-w-6xl mx-auto">
-        {/* Profile Header */}
+        {/* Profile header */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
           <div className="lg:col-span-2">
             <div className="flex flex-col sm:flex-row gap-6 items-start">
@@ -97,12 +190,11 @@ export default function PublicProfile() {
                 user={{
                   name: profile.name || profile.username || "User",
                   username: profile.username,
-                  avatar: profile.avatarUrl, // ← بدل src
+                  avatar: profile.avatar_url,
                 }}
                 size="lg"
                 className="h-24 w-24"
               />
-
 
               <div className="flex-1 space-y-4">
                 <div>
@@ -112,9 +204,7 @@ export default function PublicProfile() {
                   )}
                 </div>
 
-                {profile.bio && (
-                  <p className="text-lg text-muted-foreground">{profile.bio}</p>
-                )}
+                {profile.bio && <p className="text-lg text-muted-foreground">{profile.bio}</p>}
 
                 {/* Social Links */}
                 {profile.socialLinks && Object.keys(profile.socialLinks).length > 0 && (
@@ -172,7 +262,7 @@ export default function PublicProfile() {
           <Card>
             <CardContent className="p-6 text-center space-y-4">
               <div>
-                <p className="text-2xl font-bold">{allProjects.length}</p>
+                <p className="text-2xl font-bold">{projects.length}</p>
                 <p className="text-sm text-muted-foreground">Total Projects</p>
               </div>
             </CardContent>
@@ -198,11 +288,11 @@ export default function PublicProfile() {
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold">Projects</h2>
             <div className="text-sm text-muted-foreground">
-              {allProjects.length} project{allProjects.length !== 1 ? "s" : ""}
+              {projects.length} project{projects.length !== 1 ? "s" : ""}
             </div>
           </div>
 
-          {allProjects.length === 0 ? (
+          {projects.length === 0 ? (
             <Card>
               <CardContent className="py-12 text-center">
                 <p className="text-muted-foreground">No projects to display</p>
@@ -210,17 +300,19 @@ export default function PublicProfile() {
             </Card>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {allProjects.map((p) => (
-                <Card key={p.id} className="overflow-hidden">
-                  {(p.coverImage || (p as any).imageUrl) && (
+              {projects.map((p) => (
+                <Card key={p.id} className="overflow-hidden hover-lift">
+                  {p.cover_image && (
                     <img
-                      src={p.coverImage || (p as any).imageUrl}
+                      src={p.cover_image}
                       alt={p.title}
                       className="w-full h-40 object-cover"
                     />
                   )}
-                  <CardContent className="p-4">
-                    <h3 className="font-semibold">{p.title}</h3>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-base">{p.title}</CardTitle>
+                  </CardHeader>
+                  <CardContent className="pt-0">
                     {p.description && (
                       <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
                         {p.description}
@@ -234,23 +326,13 @@ export default function PublicProfile() {
                       ))}
                     </div>
                     <div className="mt-3 flex gap-3 text-sm">
-                      {p.url && (
-                        <a className="underline" href={p.url} target="_blank" rel="noreferrer">
+                      {p.live_url && (
+                        <a className="underline" href={p.live_url} target="_blank" rel="noreferrer">
                           Live
                         </a>
                       )}
-                      {(p as any).liveUrl && !p.url && (
-                        <a className="underline" href={(p as any).liveUrl} target="_blank" rel="noreferrer">
-                          Live
-                        </a>
-                      )}
-                      {p.repoUrl && (
-                        <a
-                          className="underline text-muted-foreground"
-                          href={p.repoUrl}
-                          target="_blank"
-                          rel="noreferrer"
-                        >
+                      {p.repo_url && (
+                        <a className="underline text-muted-foreground" href={p.repo_url} target="_blank" rel="noreferrer">
                           Repo
                         </a>
                       )}

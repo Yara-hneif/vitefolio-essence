@@ -1,61 +1,57 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '@/context/AuthContext';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
-import { Loader2, Mail, Lock, User, AtSign, ArrowLeft, Github, Linkedin } from 'lucide-react';
-import { toast } from 'sonner';
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "@/context/AuthContext";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { Loader2, Mail, Lock, User, AtSign, ArrowLeft, Github, Linkedin } from "lucide-react";
+import { toast } from "sonner";
 
 const Register = () => {
   const [formData, setFormData] = useState({
-    username: '',
-    name: '',
-    email: '',
-    password: '',
-    confirmPassword: ''
+    username: "",
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
   });
-  const { register, loading } = useAuth();
+  const { register, loading, loginWithProvider } = useAuth();
   const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (formData.password !== formData.confirmPassword) {
-      toast.error('Passwords do not match');
+      toast.error("Passwords do not match");
       return;
     }
 
     if (formData.password.length < 6) {
-      toast.error('Password must be at least 6 characters');
+      toast.error("Password must be at least 6 characters");
       return;
     }
-    
+
     try {
       await register({
         username: formData.username,
         name: formData.name,
         email: formData.email,
-        password: formData.password
+        password: formData.password,
       });
-      toast.success('Account created successfully!');
-      navigate('/dashboard');
+      toast.success("Account created successfully!");
+      navigate("/dashboard");
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to create account');
+      toast.error(error instanceof Error ? error.message : "Failed to create account");
     }
-  };
-
-  const handleSocialLogin = (provider: string) => {
-    toast.info(`${provider} registration will be available soon`);
   };
 
   return (
@@ -66,18 +62,18 @@ const Register = () => {
             variant="ghost"
             size="sm"
             className="mb-4 hover-lift"
-            onClick={() => navigate('/')}
+            onClick={() => navigate("/")}
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Home
           </Button>
-          
+
           <div className="flex items-center justify-center mb-4">
             <div className="w-16 h-16 rounded-full bg-gradient-to-r from-primary to-accent flex items-center justify-center text-white text-2xl font-bold">
               VP
             </div>
           </div>
-          
+
           <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
             Join Us
           </h1>
@@ -89,48 +85,46 @@ const Register = () => {
         <Card className="glass shadow-2xl border-0">
           <CardHeader className="text-center">
             <CardTitle className="text-2xl">Create New Account</CardTitle>
-            <CardDescription>
-              Choose your preferred registration method
-            </CardDescription>
+            <CardDescription>Choose your preferred registration method</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             {/* Social Login Buttons */}
             <div className="space-y-3">
-              <Button 
-                type="button" 
-                variant="outline" 
-                className="w-full h-12 hover-lift transition-all duration-300" 
-                onClick={() => handleSocialLogin('Gmail')}
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full h-12 hover-lift transition-all duration-300"
+                onClick={() => loginWithProvider("google")}
               >
                 <Mail className="h-5 w-5 mr-3 text-red-500" />
-                <span className="font-medium">Continue with Gmail</span>
+                <span className="font-medium">Continue with Google</span>
               </Button>
-              
-              <Button 
-                type="button" 
-                variant="outline" 
-                className="w-full h-12 hover-lift transition-all duration-300" 
-                onClick={() => handleSocialLogin('GitHub')}
+
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full h-12 hover-lift transition-all duration-300"
+                onClick={() => loginWithProvider("github")}
               >
                 <Github className="h-5 w-5 mr-3" />
                 <span className="font-medium">Continue with GitHub</span>
               </Button>
-              
-              <Button 
-                type="button" 
-                variant="outline" 
-                className="w-full h-12 hover-lift transition-all duration-300" 
-                onClick={() => handleSocialLogin('LinkedIn')}
+
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full h-12 hover-lift transition-all duration-300"
+                onClick={() => loginWithProvider("linkedin")}
               >
                 <Linkedin className="h-5 w-5 mr-3 text-blue-600" />
                 <span className="font-medium">Continue with LinkedIn</span>
               </Button>
-              
-              <Button 
-                type="button" 
-                variant="outline" 
-                className="w-full h-12 hover-lift transition-all duration-300" 
-                onClick={() => handleSocialLogin('Facebook')}
+
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full h-12 hover-lift transition-all duration-300"
+                onClick={() => loginWithProvider("facebook")}
               >
                 <div className="w-5 h-5 mr-3 bg-blue-600 rounded text-white flex items-center justify-center text-sm font-bold">
                   f
@@ -236,9 +230,9 @@ const Register = () => {
                 </div>
               </div>
 
-              <Button 
-                type="submit" 
-                className="w-full h-12 hover-lift transition-all duration-300" 
+              <Button
+                type="submit"
+                className="w-full h-12 hover-lift transition-all duration-300"
                 disabled={loading}
               >
                 {loading ? (
@@ -247,17 +241,14 @@ const Register = () => {
                     Creating Account...
                   </>
                 ) : (
-                  'Create Account'
+                  "Create Account"
                 )}
               </Button>
             </form>
 
             <div className="text-center text-sm">
               <span className="text-muted-foreground">Already have an account? </span>
-              <Link 
-                to="/login" 
-                className="text-primary hover:underline font-medium"
-              >
+              <Link to="/login" className="text-primary hover:underline font-medium">
                 Sign In
               </Link>
             </div>

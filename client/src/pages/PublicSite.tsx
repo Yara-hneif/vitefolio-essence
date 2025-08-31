@@ -10,23 +10,34 @@ export default function PublicSite() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let mounted = true;
+
     if (!apiKey) {
       console.warn("Builder.io public key not found");
       setLoading(false);
       return;
     }
 
-    const q = encodeURIComponent(JSON.stringify({ "data.siteSlug": username, "data.slug": slug }));
+    const q = encodeURIComponent(
+      JSON.stringify({ "data.siteSlug": username, "data.slug": slug })
+    );
+
     fetch(`https://cdn.builder.io/api/v3/content/page?apiKey=${apiKey}&limit=1&query=${q}`)
-      .then(r => r.json())
-      .then(res => {
+      .then((r) => r.json())
+      .then((res) => {
+        if (!mounted) return;
         setContent(res?.results?.[0] || null);
         setLoading(false);
       })
       .catch(() => {
+        if (!mounted) return;
         setContent(null);
         setLoading(false);
       });
+
+    return () => {
+      mounted = false;
+    };
   }, [username, slug, apiKey]);
 
   if (loading) {
@@ -48,8 +59,8 @@ export default function PublicSite() {
           <p className="text-muted-foreground mb-8">
             The page you're looking for doesn't exist or hasn't been published yet.
           </p>
-          <a 
-            href="/" 
+          <a
+            href="/"
             className="inline-block px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
           >
             Go Home
