@@ -5,15 +5,12 @@ import {
   updateProjectInDB,
   deleteProjectFromDB,
 } from "../models/project.model.js";
-
 import logger from "../utils/logger.js";
-
-const fixedUserId = "4a8bdb28-f98c-4940-84c4-5370f5915cf7"; // Replace later with auth
 
 // GET /api/projects
 export const getAllProjects = async (req, res, next) => {
   try {
-    const projects = await getAllProjectsFromDB(fixedUserId);
+    const projects = await getAllProjectsFromDB(req);
     logger.info("✅ Retrieved all projects from DB");
     res.status(200).json(projects);
   } catch (error) {
@@ -26,7 +23,7 @@ export const getAllProjects = async (req, res, next) => {
 export const getProjectBySlug = async (req, res, next) => {
   try {
     const { slug } = req.params;
-    const project = await getProjectBySlugFromDB(fixedUserId, slug);
+    const project = await getProjectBySlugFromDB(req, slug);
 
     if (!project) {
       logger.warn(`⚠️ Project not found for slug: ${slug}`);
@@ -40,18 +37,12 @@ export const getProjectBySlug = async (req, res, next) => {
     next(error);
   }
 };
-export async function getProjectById(req, res) {
-  const { id } = req.params;
-  const { rows } = await db.query("SELECT * FROM projects WHERE id = $1", [id]);
-  if (!rows[0]) return res.status(404).json({ message: "Not found" });
-  res.json(rows[0]);
-}
 
 // POST /api/projects
 export const createProject = async (req, res, next) => {
   try {
     const projectData = req.body;
-    const newProject = await createProjectInDB(projectData, fixedUserId);
+    const newProject = await createProjectInDB(req, projectData);
 
     logger.info(`✅ Project created: ${newProject.title}`);
     res.status(201).json(newProject);
@@ -66,8 +57,7 @@ export const updateProject = async (req, res, next) => {
   try {
     const { id } = req.params;
     const updateData = req.body;
-
-    const updated = await updateProjectInDB(id, updateData);
+    const updated = await updateProjectInDB(req, id, updateData);
 
     if (!updated) {
       logger.warn(`⚠️ Attempted to update non-existing project with ID: ${id}`);
@@ -86,7 +76,7 @@ export const updateProject = async (req, res, next) => {
 export const deleteProject = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const deleted = await deleteProjectFromDB(id);
+    const deleted = await deleteProjectFromDB(req, id);
 
     if (!deleted) {
       logger.warn(`⚠️ Attempted to delete non-existing project with ID: ${id}`);
