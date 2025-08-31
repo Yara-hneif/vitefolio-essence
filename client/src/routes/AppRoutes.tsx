@@ -1,6 +1,8 @@
 import { Routes, Route } from "react-router-dom";
 import { lazy, Suspense } from "react";
 import AppLoader from "@/components/common/AppLoader";
+import UserPortfolioPage from "@/pages/UserPortfolioPage";
+import { useParams } from "react-router-dom";
 
 // Public pages
 const Home = lazy(() => import("@/pages/Home"));
@@ -11,8 +13,9 @@ const Login = lazy(() => import("@/pages/auth/Login"));
 const Register = lazy(() => import("@/pages/auth/Register"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
 
-// Special pages
-const UserPortfolioPage = lazy(() => import("@/pages/UserPortfolioPage"));
+// User profile / public portfolio
+const PublicProfile = lazy(() => import("@/pages/PublicProfile"));
+// const { handle } = useParams<{ handle: string }>();
 
 // Admin
 const Admin = lazy(() => import("@/features/admin/pages/Admin"));
@@ -31,8 +34,10 @@ export default function AppRoutes() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
-        {/* User portfolio */}
-        <Route path="/@:handle" element={<UserPortfolioPage />} />
+        {/* User portfolio by handle */}
+        <Route path="/:handle" element={<PublicProfile />} />
+        <Route path="/profile/:username" element={<PublicProfile />} />
+        <Route path="/u/:username" element={<UserPortfolioPage />} />
 
         {/* Admin */}
         <Route

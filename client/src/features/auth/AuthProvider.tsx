@@ -115,12 +115,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     await supabase.auth.signOut();
   };
 
-  const signInWithProvider = async (provider: "google" | "github" | "facebook" | "linkedin_oidc") => {
+  const signInWithProvider = async (
+    provider: "google" | "github" | "facebook" | "linkedin_oidc"
+  ) => {
     await supabase.auth.signInWithOAuth({
       provider,
-      options: { redirectTo: window.location.origin },
+      options: {
+        redirectTo: `${window.location.origin}/dashboard`,
+      },
     });
   };
+
 
   const getHandle = () => {
     const mapped = mapSbUser(sbUser);

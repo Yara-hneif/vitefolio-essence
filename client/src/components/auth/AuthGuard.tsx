@@ -1,36 +1,27 @@
-import { useAuth } from '@/context/AuthContext';
 import { PropsWithChildren } from "react";
-import {
-  SignedIn,
-  SignedOut,
-  RedirectToSignIn,
-  ClerkLoading,
-  ClerkLoaded,
-} from "@clerk/clerk-react";
+import { Navigate, useLocation } from "react-router-dom";
 import { Loader2 } from "lucide-react";
-import { useLocation } from "react-router-dom";
+import { useAuth } from "@/context/AuthContext";
 
 export default function AuthGuard({ children }: PropsWithChildren) {
-  const { pathname, search } = useLocation();
-  const redirectUrl = `${pathname}${search || ""}`;
+  const { user, loading } = useAuth();
+  const location = useLocation();
 
-  return (
-<>
-      <ClerkLoading>
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="flex items-center gap-2">
-            <Loader2 className="h-6 w-6 animate-spin text-primary" />
-            <span className="text-muted-foreground">Loading...</span>
-          </div>
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="flex items-center gap-2">
+          <Loader2 className="h-6 w-6 animate-spin text-primary" />
+          <span className="text-muted-foreground">Loading...</span>
         </div>
-      </ClerkLoading>
+      </div>
+    );
+  }
 
-      <ClerkLoaded>
-        <SignedIn>{children}</SignedIn>
-        <SignedOut>
-          <RedirectToSignIn redirectUrl={redirectUrl} />
-        </SignedOut>
-      </ClerkLoaded>
-    </>
-  );
+  if (!user) {
+    // redirect to login, preserve current location
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  return <>{children}</>;
 }

@@ -3,7 +3,6 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
-import { SignedIn, SignedOut, RedirectToSignIn } from "@clerk/clerk-react";
 import { initBuilder } from "@/components/builder";
 
 // Layouts & pages
@@ -38,12 +37,11 @@ import AdminSettingsPanel from "@/features/admin/components/settings/AdminSettin
 import Admin from "@/features/admin/pages/Admin";
 import AdminMessages from "@/features/admin/pages/AdminMessages";
 import AdminAccessGuard from "@/features/admin/guards/AdminAccessGuard";
-import { AuthProvider as LegacyAuthProvider } from "@/context/AuthContext";
+import { AuthProvider, useAuth } from "@/context/AuthContext";
 
 // Auth
 import Login from "@/pages/auth/Login";
 import Register from "@/pages/auth/Register";
-import AuthGuard from "@/components/auth/AuthGuard";
 
 initBuilder();
 
@@ -69,17 +67,24 @@ function AdminUI() {
   );
 }
 
+// Supabase-based guard
+function RequireAuth({ children }: { children: React.ReactNode }) {
+  const { user, loading } = useAuth();
+  if (loading) return <p>Loading...</p>;
+  if (!user) return <Navigate to="/login" replace />;
+  return <>{children}</>;
+}
+
 export default function App() {
   return (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
 
         <AdminProvider>
-          <LegacyAuthProvider>
-
-          <Routes>
+          <AuthProvider>
+            <Routes>
               {/* Public marketing/normal routes */}
               <Route path="/" element={<Landing />} />
 
@@ -87,12 +92,12 @@ export default function App() {
                 <Route index element={<Home />} />
               </Route>
 
-            <Route element={<MainLayout />}>
-              <Route path="/projects" element={<Projects />} />
-              <Route path="/projects/:slug" element={<ProjectDetails />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/contact" element={<Contact />} />
-            </Route>
+              <Route element={<MainLayout />}>
+                <Route path="/projects" element={<Projects />} />
+                <Route path="/projects/:slug" element={<ProjectDetails />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/contact" element={<Contact />} />
+              </Route>
 
               {/* Auth routes */}
               <Route path="/login" element={<Login />} />
@@ -102,16 +107,17 @@ export default function App() {
               <Route path="/u/:username" element={<PublicSite />} />
               <Route path="/u/:username/:pageSlug" element={<PublicSite />} />
 
-              {/* Legacy public profile (fallback) */}
+              {/* Public profile */}
               <Route path="/profile/:username" element={<PublicProfile />} />
+              <Route path="/:handle" element={<PublicProfile />} />
 
-              {/* Protected dashboard (Clerk) */}
+              {/* Protected dashboard */}
               <Route
                 path="/dashboard"
                 element={
-                  <AuthGuard>
+                  <RequireAuth>
                     <DashboardLayout />
-                  </AuthGuard>
+                  </RequireAuth>
                 }
               >
                 <Route index element={<Dashboard />} />
@@ -120,23 +126,13 @@ export default function App() {
                 <Route path="profile" element={<Profile />} />
               </Route>
 
-              {/* Redirect signed-out users who hit /dashboard/* */}
-              <Route
-                path="/dashboard/*"
-                element={
-                  <AuthGuard>
-                    <RedirectToSignIn />
-                  </AuthGuard>
-                }
-              />
-
               {/* Protected editor */}
               <Route
                 path="/editor/:pageId"
                 element={
-                  <SignedIn>
+                  <RequireAuth>
                     <Editor />
-                  </SignedIn>
+                  </RequireAuth>
                 }
               />
 
@@ -159,14 +155,14 @@ export default function App() {
               />
 
               {/* 404 */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+              <Route path="*" element={<NotFound />} />
+            </Routes>
 
             {/* Admin floating UI that appears only on /admin* */}
             <AdminUI />
-          </LegacyAuthProvider>
+          </AuthProvider>
         </AdminProvider>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
 }

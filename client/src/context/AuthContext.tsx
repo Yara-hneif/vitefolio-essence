@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { supabase } from "@/lib/supabase";
-import type { Session, User as SupabaseUser, AuthChangeEvent } from "@supabase/supabase-js";
+import type { Session, User as SupabaseUser, AuthChangeEvent, Provider } from "@supabase/supabase-js";
 
 type SocialLinks = {
   github?: string;
@@ -28,6 +28,7 @@ type AuthCtx = {
   login: (email: string, password: string) => Promise<void>;
   register: (p: RegisterPayload) => Promise<void>;
   logout: () => Promise<void>;
+  loginWithProvider: (provider: Provider) => Promise<void>;
 };
 
 const Ctx = createContext<AuthCtx>({} as AuthCtx);
@@ -36,7 +37,6 @@ export const useAuth = () => useContext(Ctx);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
-
 
   const mapSupabaseUser = (sUser: SupabaseUser): AuthUser => {
     const meta = (sUser.user_metadata || {}) as Record<string, any>;
@@ -103,11 +103,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setUser(data.user ? mapSupabaseUser(data.user) : null);
   };
 
+  const loginWithProvider = async (provider: Provider) => {
+    setLoading(true);
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider,
+      options: {
+        redirectTo: window.location.origin, 
+      },
+    });
+    setLoading(false);
+    if (error) throw new Error(error.message);
+  };
+
   const logout = async () => {
     await supabase.auth.signOut();
     setUser(null);
   };
 
-  const value = useMemo(() => ({ user, loading, login, register, logout }), [user, loading]);
+  const value = useMemo(
+    () => ({ user, loading, login, register, logout, loginWithProvider }),
+    [user, loading]
+  );
+
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 };
