@@ -22,6 +22,20 @@ export const getAllProjectsFromDB = async (req) => {
   return data;
 };
 
+// Get project by ID
+export const getProjectById = async (req, id) => {
+  const userId = await getUserIdFromRequest(req);
+  const { data, error } = await supabase
+    .from("projects")
+    .select("*")
+    .eq("id", id)
+    .eq("user_id", userId)
+    .single();
+
+  if (error) throw error;
+  return data;
+};
+
 // Get project by slug
 export const getProjectBySlugFromDB = async (req, slug) => {
   const userId = await getUserIdFromRequest(req);

@@ -4,10 +4,12 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseAnonKey = process.env.SUPABASE_ANON_KEY;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const supabaseKey = supabaseServiceKey || supabaseAnonKey;
 
-if (!supabaseUrl || !supabaseServiceKey) {
-  throw new Error("❌ Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY in .env");
+if (!supabaseUrl || !supabaseKey) {
+  throw new Error("❌ Missing Supabase URL or Key in environment variables");
 }
 
-export const supabase = createClient(supabaseUrl, supabaseServiceKey);
+export const supabase = createClient(supabaseUrl, supabaseKey);
