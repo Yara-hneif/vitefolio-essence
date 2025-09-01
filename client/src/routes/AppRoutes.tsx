@@ -1,26 +1,28 @@
 import { Routes, Route } from "react-router-dom";
 import { lazy, Suspense } from "react";
 import AppLoader from "@/components/common/AppLoader";
+import MainLayout from "@/components/layout/MainLayout";
 
 // Public pages
-const Home = lazy(() => import("@/pages/profolio/Home"));
-const Projects = lazy(() => import("@/pages/profolio/Projects"));
-const ProjectDetails = lazy(() => import("@/pages/profolio/ProjectDetails"));
-const Contact = lazy(() => import("@/pages/profolio/Contact"));
-const Login = lazy(() => import("@/pages/auth/Login"));
-const Register = lazy(() => import("@/pages/auth/Register"));
+const Home = lazy(() => import("@/pages/main/demo/Home"));
+const Projects = lazy(() => import("@/pages/main/demo/Projects"));
+const ProjectDetails = lazy(() => import("@/pages/main/demo/ProjectDetails"));
+const Contact = lazy(() => import("@/pages/main/demo/Contact"));
+const Login = lazy(() => import("@/pages/main/auth/Login"));
+const Register = lazy(() => import("@/pages/main/auth/Register"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
 const Landing = lazy(() => import("@/pages/main/Landing"));
 
 // User profile & public sites
 const UserPortfolioPage = lazy(() => import("@/pages/profolio/UserPortfolioPage"));
 const PublicProfile = lazy(() => import("@/pages/profolio/PublicProfile"));
-const PublicSite = lazy(() => import("@/pages/main/PublicSite"));
+const PublicSite = lazy(() => import("@/pages/profolio/PublicSite"));
 
 // Admin
 const Admin = lazy(() => import("@/features/admin/pages/Admin"));
 const AdminMessages = lazy(() => import("@/features/admin/pages/AdminMessages"));
 import ProtectedAdmin from "@/features/admin/guards/ProtectedAdmin";
+import About from "@/pages/main/demo/About";
 
 // Dashboard
 const DashboardLayout = lazy(() => import("@/components/layout/DashboardLayout"));
@@ -38,22 +40,32 @@ export default function AppRoutes() {
   return (
     <Suspense fallback={<AppLoader />}>
       <Routes>
+
         {/* Public */}
-        <Route path="/" element={<Landing />} />
-        <Route path="/demo" element={<Home />} />
-        <Route path="/projects" element={<Projects />} />
-        <Route path="/projects/:slug" element={<ProjectDetails />} />
-        <Route path="/contact" element={<Contact />} />
+        <Route index element={<Landing />} />
+
+        <Route element={<MainLayout />}>
+          {/* Demo */}
+          <Route path="/demo" element={<Home />} />
+          <Route path="/demo/projects" element={<Projects />} />
+          <Route path="/demo/projects/:slug" element={<ProjectDetails />} />
+          <Route path="/demo/contact" element={<Contact />} />
+          <Route path="/demo/about" element={<About />} />
+        </Route>
+
+    
+          {/* Public profiles and sites */}
+          <Route path="/profile/:username" element={<PublicProfile />} />
+          <Route path="/u/:username" element={<UserPortfolioPage />} />
+          <Route path="/u/:username/:pageSlug" element={<PublicSite />} />
+
+
+        {/* Auth */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
 
-        {/* User profile */}
-        <Route path="/profile/:username" element={<PublicProfile />} />
-        <Route path="/u/:username" element={<UserPortfolioPage />} />
-        <Route path="/u/:username/:pageSlug" element={<PublicSite />} />
-
-        {/* Dashboard (protected via higher-order component in App.tsx) */}
+        {/* Dashboard */}
         <Route path="/dashboard" element={<DashboardLayout />}>
           <Route index element={<Dashboard />} />
           <Route path="sites" element={<Sites />} />

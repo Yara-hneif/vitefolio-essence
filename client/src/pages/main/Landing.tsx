@@ -17,16 +17,11 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import StackPreview3D from "@/components/layout/LandingPage/3d/StackPreview3D";
 import TiltCard from "@/components/layout/LandingPage/3d/TiltCard";
-import FloorGrid3D from "@/components/ui/effects/FloorGrid3D";
-import TrustBar from "@/components/layout/LandingPage/3d/TrustBar";
-import LandingLayout from "@/components/layout/LandingLayout";
-import LandingNav from "@/components/Navigation/LandingNav";
 import ContactDialog from "@/components/dialogs/ContactDialog"; 
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useReducedMotion } from "framer-motion";
 
 const TemplatePreview = lazy(() => import("@/components/layout/LandingPage/TemplatePreview"));
-const OrbitBadges = lazy(() => import("@/components/layout/LandingPage/3d/OrbitBadges"));
 
 
 export default function Landing() {
@@ -107,7 +102,8 @@ export default function Landing() {
 
       <main className="container mx-auto max-w-screen-2xl px-[clamp(16px,4vw,32px)] overflow-x-hidden">
         {/* HERO */}
-        <section className="relative min-h-[min(82vh,780px)] flex flex-col items-center text-center px-4 sm:px-6 lg:px-8 pt-6 md:pt-10">
+
+        <section className="section-padding relative rounded-3xl bg-muted/30 mt-8 min-h-[min(82vh,780px)] flex flex-col items-center text-center px-4 sm:px-6 lg:px-8 pt-6 md:pt-10">
           {/* Hero Badge */}
           <div className="flex items-center justify-center mt-2 sm:mt-0 mb-2 animate-fade-in">
             <Badge variant="secondary" className="text-primary font-semibold px-4 py-2 shimmer">

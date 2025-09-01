@@ -1,3 +1,4 @@
+import { AlignCenter } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 export default function LandingNav({
@@ -35,7 +36,7 @@ export default function LandingNav({
     : "flex items-center gap-4";
 
   return (
-    <nav className={baseClass}>
+    <nav className={baseClass }>
       <button onClick={() => go("features")} className="hover:text-primary text-left">
         Features
       </button>
