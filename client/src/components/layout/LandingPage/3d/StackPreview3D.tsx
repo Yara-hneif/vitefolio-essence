@@ -1,4 +1,4 @@
-import Tilt3D from "@/components/effects/Tilt3D";
+import Tilt3D from "@/components/ui/effects/Tilt3D";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 export default function StackPreview3D({ className = "" }: { className?: string }) {
