@@ -1,6 +1,6 @@
 import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react-swc";
-import path from "path";
+import react from "@vitejs/plugin-react";
+import path from "node:path";
 
 export default defineConfig({
   plugins: [react()],
@@ -17,31 +17,14 @@ export default defineConfig({
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
+    dedupe: ["react", "react-dom"],
   },
   build: {
-    chunkSizeWarningLimit: 1500,
-    rollupOptions: {
-      onwarn(warning, warn) {
-        if (warning.code === "EVAL" && /@builder\.io/.test(String(warning.id ?? ""))) {
-          return;
-        }
-        warn(warning);
-      },
-      output: {
-        manualChunks(id) {
-          if (!id.includes("node_modules")) return;
-          if (id.includes("react")) return "react";
-          if (id.includes("@supabase")) return "supabase";
-          if (id.includes("@builder.io")) return "builder";
-          if (id.includes("framer-motion")) return "animations";
-          if (id.includes("lucide-react") || id.includes("@radix-ui")) return "ui";
-          return "vendor";
-        },
-      },
-    },
+    target: "es2020",
+    sourcemap: true, 
+    commonjsOptions: { transformMixedEsModules: true },
   },
-
   optimizeDeps: {
-    include: [],
+    include: ["react", "react-dom", "use-sync-external-store"],
   },
 });
