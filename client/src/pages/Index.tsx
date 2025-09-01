@@ -1,5 +1,5 @@
 
-import Home from "./Home";
+import Home from "./profolio/Home";
 
 const Index = () => {
   return <Home />;
