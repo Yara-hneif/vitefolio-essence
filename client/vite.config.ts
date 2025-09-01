@@ -21,6 +21,12 @@ export default defineConfig({
   build: {
     chunkSizeWarningLimit: 1500,
     rollupOptions: {
+      onwarn(warning, warn) {
+        if (warning.code === "EVAL" && /@builder\.io/.test(String(warning.id ?? ""))) {
+          return;
+        }
+        warn(warning);
+      },
       output: {
         manualChunks(id) {
           if (!id.includes("node_modules")) return;

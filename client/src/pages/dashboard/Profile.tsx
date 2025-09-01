@@ -78,8 +78,7 @@ export default function Profile() {
           bio: profileData.bio,
           skills: profileData.skills,
           socialLinks: profileData.socialLinks,
-          // احتفظي بالـ avatarUrl الحالي إن كان موجودًا في الميتاداتا
-          avatarUrl: user?.avatarUrl,
+          avatarUrl: user?.avatar,
         },
       });
       if (error) throw error;
@@ -123,7 +122,7 @@ export default function Profile() {
               user={{
                 name: user?.name || user?.username || user?.email || "User",
                 username: user?.username,
-                avatar: user?.avatarUrl, // مهم: UserAvatar يتوقع avatar وليس avatarUrl
+                avatar: user?.avatar,
               }}
               size="lg"
               className="h-20 w-20"
