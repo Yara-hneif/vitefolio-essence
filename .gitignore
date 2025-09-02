@@ -145,3 +145,4 @@ Thumbs.db
 config.json
 .history/
 backup.dump
+client/bundle-analysis.html
