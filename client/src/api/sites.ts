@@ -102,7 +102,6 @@ export async function createSiteFromTemplate(title: string, slug: string) {
   const user = (await supabase.auth.getUser()).data.user;
   if (!user) throw new Error("Not authenticated");
 
-  // إنشاء موقع جديد
   const { data: site, error: siteError } = await supabase
     .from("sites")
     .insert({
@@ -117,7 +116,6 @@ export async function createSiteFromTemplate(title: string, slug: string) {
 
   if (siteError) throw siteError;
 
-  // إضافة صفحة Home افتراضية
   const { data: page, error: pageError } = await supabase
     .from("site_pages")
     .insert({

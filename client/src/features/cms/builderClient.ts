@@ -1,13 +1,13 @@
 import { builder, Builder } from '@builder.io/react';
-import Hero from '@/components/builder/blocks/Hero';
-import AboutSection from '@/components/builder/blocks/AboutSection';
-import ContactSection from '@/components/builder/blocks/ContactSection';
-import Footer from '@/components/builder/blocks/Footer';
-import ImageBlock from '@/components/builder/blocks/ImageBlock';
-import Navbar from '@/components/builder/blocks/Navbar';
-import ProjectsGrid from '@/components/builder/blocks/ProjectsGrid';
-import Button from '@/components/builder/blocks/Button';
-import RichText from '@/components/builder/blocks/RichText';
+import Hero from '@/features/builder/blocks/Hero';
+import AboutSection from '@/features/builder/blocks/AboutSection';
+import ContactSection from '@/features/builder/blocks/ContactSection';
+import Footer from '@/features/builder/blocks/Footer';
+import ImageBlock from '@/features/builder/blocks/ImageBlock';
+import Navbar from '@/features/builder/blocks/Navbar';
+import ProjectsGrid from '@/features/builder/blocks/ProjectsGrid';
+import Button from '@/features/builder/blocks/Button';
+import RichText from '@/features/builder/blocks/RichText';
 
 builder.init(import.meta.env.VITE_BUILDER_PUBLIC_KEY!);
 

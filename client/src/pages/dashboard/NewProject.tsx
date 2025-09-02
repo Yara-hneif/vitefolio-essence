@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/navigation/button";
+import { Input } from "@/components/ui/form/input";
+import { Label } from "@/components/ui/form/label";
+import { Textarea } from "@/components/ui/form/textarea";
+import { Badge } from "@/components/ui/data-display/badge";
 import { Plus, X, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import { useProjects } from "@/hooks/useProjects";
@@ -44,8 +44,8 @@ export default function NewProject() {
         slug: slugify(title),
         description: desc,
         repoUrl: github || undefined,
-        url: live || undefined,         // أو liveUrl لو API عندك تستخدمه
-        coverImage: image || undefined, // أو imageUrl
+        url: live || undefined,      
+        coverImage: image || undefined,
         tags,
       });
       toast.success("Project created");

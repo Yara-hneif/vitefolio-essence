@@ -1,8 +1,8 @@
 import React, { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/navigation/button";
+import { Input } from "@/components/ui/form/input";
+import { Badge } from "@/components/ui/data-display/badge";
 import { useProjects } from "@/hooks/useProjects";
 
 export default function DashboardProjects() {

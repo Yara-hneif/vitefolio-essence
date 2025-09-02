@@ -1,8 +1,13 @@
+import { Suspense, lazy } from "react";
 
-import Home from "./main/demo/Home";
+const Home = lazy(() => import("@/pages/demo/Home"));
 
 const Index = () => {
-  return <Home />;
+  return (
+    <Suspense fallback={<div className="p-8 text-center">Loading...</div>}>
+      <Home />
+    </Suspense>
+  );
 };
 
 export default Index;

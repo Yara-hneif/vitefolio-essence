@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import UserAvatar from './UserAvatar';
-import { Badge } from '@/components/ui/badge';
+import { Badge } from '@/components/ui/data-display/badge';
 import { cn } from '@/lib/utils';
 
 interface Collaborator {

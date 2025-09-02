@@ -1,6 +1,6 @@
-// src/features/admin/pages/Admin.tsx
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import AdminProjects from "./AdminProjects";
+import { Suspense, lazy } from "react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/navigation/tabs";
+const AdminProjects = lazy(() => import("@/features/admin/pages/AdminProjects")); 
 
 const Admin = () => {
   return (

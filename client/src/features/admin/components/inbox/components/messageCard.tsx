@@ -1,6 +1,6 @@
-import { Contact } from "@/types/Contact";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Contact } from "@/utils/types/Contact";
+import { Button } from "@/components/ui/navigation/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/data-display/card";
 
 type Props = {
   message: Contact;

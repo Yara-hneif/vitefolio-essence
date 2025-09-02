@@ -4,7 +4,6 @@ import { cn } from "@/lib/utils";
 type Props = {
   mobile?: boolean;
   onItemClick?: () => void;
-  /** اختياري: لفرض البادئة يدويًا بدل الكشف من المسار */
   prefix?: "/demo" | "";
 };
 

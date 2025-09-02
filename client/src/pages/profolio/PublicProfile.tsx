@@ -2,9 +2,9 @@ import { useEffect, useMemo, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/context/AuthContext";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/navigation/button";
+import { Badge } from "@/components/ui/data-display/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/data-display/card";
 import UserAvatar from "@/components/common/UserAvatar";
 import { Github, Linkedin, Twitter, Globe, ArrowLeft, Mail, Loader2 } from "lucide-react";
 
@@ -143,19 +143,18 @@ export default function PublicProfile() {
           </p>
 
           <div className="flex gap-3 justify-center">
-            {/* Go Home → يروح للصفحة الرئيسية ويبقى فيها */}
+            {/* Go Home*/}
             <Button asChild>
               <Link to="/" replace>
                 Go Home
               </Link>
             </Button>
 
-            {/* زر تسجيل الخروج */}
             <Button
               variant="outline"
               onClick={async () => {
                 await supabase.auth.signOut();
-                window.location.href = "/"; // يوجّه مباشرة للـ landing
+                window.location.href = "/";
               }}
             >
               Logout

@@ -1,6 +1,6 @@
 import React, { lazy, Suspense } from "react";
 
-const TemplatePreview = lazy(() => import("@/components/layout/LandingPage/TemplatePreview"));
+const TemplatePreview = lazy(() => import("@/components/LandingPage/TemplatePreview"));
 
 export default function TemplateShowcase() {
   return (

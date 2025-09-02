@@ -1,17 +1,17 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route , Navigate } from "react-router-dom";
 import { lazy, Suspense } from "react";
 import AppLoader from "@/components/common/AppLoader";
 import MainLayout from "@/components/layout/MainLayout";
 
 // Public pages
-const Home = lazy(() => import("@/pages/main/demo/Home"));
-const Projects = lazy(() => import("@/pages/main/demo/Projects"));
-const ProjectDetails = lazy(() => import("@/pages/main/demo/ProjectDetails"));
-const Contact = lazy(() => import("@/pages/main/demo/Contact"));
-const Login = lazy(() => import("@/pages/main/auth/Login"));
-const Register = lazy(() => import("@/pages/main/auth/Register"));
+const Home = lazy(() => import("@/pages/demo/Home"));
+const Projects = lazy(() => import("@/pages/demo/Projects"));
+const ProjectDetails = lazy(() => import("@/pages/demo/ProjectDetails"));
+const Contact = lazy(() => import("@/pages/demo/Contact"));
+const Login = lazy(() => import("@/pages/auth/Login"));
+const Register = lazy(() => import("@/pages/auth/Register"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
-const Landing = lazy(() => import("@/pages/main/Landing"));
+const Landing = lazy(() => import("@/pages/Landing"));
 
 // User profile & public sites
 const UserPortfolioPage = lazy(() => import("@/pages/profolio/UserPortfolioPage"));
@@ -21,8 +21,8 @@ const PublicSite = lazy(() => import("@/pages/profolio/PublicSite"));
 // Admin
 const Admin = lazy(() => import("@/features/admin/pages/Admin"));
 const AdminMessages = lazy(() => import("@/features/admin/pages/AdminMessages"));
-import ProtectedAdmin from "@/features/admin/guards/ProtectedAdmin";
-import About from "@/pages/main/demo/About";
+const ProtectedAdmin  = lazy(() => import("@/features/admin/guards/ProtectedAdmin"));
+const About  = lazy(() => import( "@/pages/demo/About"));
 
 // Dashboard
 const DashboardLayout = lazy(() => import("@/components/layout/DashboardLayout"));

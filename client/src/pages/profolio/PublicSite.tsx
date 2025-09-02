@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { BuilderComponent } from '@builder.io/react';
 import { getSiteBySlug, getHomePage } from '@/api/sites';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/navigation/button';
 
 export default function PublicSite() {
   const { slug } = useParams<{ slug: string }>();

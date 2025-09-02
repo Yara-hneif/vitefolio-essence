@@ -1,15 +1,15 @@
 import { useUser } from "@clerk/clerk-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/navigation/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+} from "@/components/ui/data-display/card";
+import { Badge } from "@/components/ui/data-display/badge";
 import { FolderOpen, Plus, Users, Eye, BarChart3, TrendingUp } from "lucide-react";
 
 import { listSites, listPages, Site, SitePage } from "@/api/sites";

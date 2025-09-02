@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/navigation/button";
+import { Input } from "@/components/ui/form/input";
+import { Textarea } from "@/components/ui/form/textarea";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/overlay/dialog";
 
 export default function LandingContactDialog({
   open,
@@ -31,7 +31,7 @@ export default function LandingContactDialog({
     else {
       alert("✅ Message sent successfully to admin!");
       setForm({ name: "", email: "", subject: "", message: "" });
-      onOpenChange(false); // أغلق الـ Dialog بعد النجاح
+      onOpenChange(false); 
     }
   };
 

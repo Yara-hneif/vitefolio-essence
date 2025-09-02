@@ -2,11 +2,11 @@ import { useUser } from "@clerk/clerk-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { createProject, updateProject, getProject } from "@/api/projects";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/navigation/button";
+import { Input } from "@/components/ui/form/input";
+import { Label } from "@/components/ui/form/label";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/data-display/card";
+import { Textarea } from "@/components/ui/form/textarea";
 
 export default function ProjectForm() {
   const { user } = useUser();

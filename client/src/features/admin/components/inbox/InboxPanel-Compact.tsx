@@ -14,15 +14,15 @@ import {
   ChevronRight,
 } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Textarea } from "@/components/ui/textarea";
-import { Switch } from "@/components/ui/switch";
+import { Button } from "@/components/ui/navigation/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/data-display/card";
+import { Input } from "@/components/ui/form/input";
+import { Label } from "@/components/ui/form/label";
+import { Badge } from "@/components/ui/data-display/badge";
+import { Separator } from "@/components/ui/data-display/separator";
+import { ScrollArea } from "@/components/ui/layout/scroll-area";
+import { Textarea } from "@/components/ui/form/textarea";
+import { Switch } from "@/components/ui/effects/switch";
 
 type Message = {
   id: string;

@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/navigation/button";
+import { Input } from "@/components/ui/form/input";
+import { Label } from "@/components/ui/form/label";
+import { Textarea } from "@/components/ui/form/textarea";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/data-display/card";
+import { Badge } from "@/components/ui/data-display/badge";
 import UserAvatar from "@/components/common/UserAvatar";
 import { Plus, X, Save, Eye } from "lucide-react";
 import { Link } from "react-router-dom";

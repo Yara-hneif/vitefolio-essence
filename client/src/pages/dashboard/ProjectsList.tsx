@@ -2,9 +2,9 @@ import { useUser } from "@clerk/clerk-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { listProjects, deleteProject, Project } from "@/api/projects";
-import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/navigation/button";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/data-display/card";
+import { Badge } from "@/components/ui/data-display/badge";
 import { Trash2, Edit, Plus } from "lucide-react";
 
 export default function ProjectsList() {

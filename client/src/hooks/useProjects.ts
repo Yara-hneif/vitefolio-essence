@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Project } from "@/types/Project";
+import { Project } from "@/utils/types/Project";
 import { api } from "@/lib/api";
 
 const fetchProjects = async (): Promise<Project[]> => {

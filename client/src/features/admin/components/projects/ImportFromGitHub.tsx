@@ -5,11 +5,11 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-} from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
+} from "@/components/ui/overlay/dialog";
+import { Label } from "@/components/ui/form/label";
+import { Input } from "@/components/ui/form/input";
+import { Button } from "@/components/ui/navigation/button";
+import { Checkbox } from "@/components/ui/form/checkbox";
 import { Github } from "lucide-react";
 
 type Props = {

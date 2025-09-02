@@ -3,14 +3,14 @@ import { useAdmin } from "@/features/admin/hooks/useAdminMode";
 import { toast } from "sonner";
 import { X, UserRound, Paintbrush, ShieldCheck, Save, RefreshCw } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Switch } from "@/components/ui/switch";
+import { Button } from "@/components/ui/navigation/button";
+import { Input } from "@/components/ui/form/input";
+import { Label } from "@/components/ui/form/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/form/select";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/data-display/card";
+import { Separator } from "@/components/ui/data-display/separator";
+import { ScrollArea } from "@/components/ui/layout/scroll-area";
+import { Switch } from "@/components/ui/effects/switch";
 import { api } from "@/lib/api";
 
 type SettingsState = {

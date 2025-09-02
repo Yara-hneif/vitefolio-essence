@@ -1,6 +1,6 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/data-display/card";
 import { Github, Globe, Share } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/navigation/button";
 
 const items = [
   { icon: Github, title: "GitHub", desc: "Import projects and link repos." },

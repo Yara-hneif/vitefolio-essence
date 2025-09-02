@@ -1,3 +1,4 @@
+// src/lib/authService.ts
 import { supabase } from "@/lib/supabase";
 import { UserResource } from "@clerk/types";
 
@@ -26,5 +27,23 @@ export async function syncUserToSupabase(
     console.error("❌ Failed to sync user to Supabase:", error.message);
   } else {
     console.log("✅ User synced to Supabase");
+  }
+}
+
+/**
+ * Delete a Clerk user from Supabase and remove related data.
+ * Call this before deleting the user from Clerk.
+ */
+export async function deleteUserFromSupabase(clerkId: string) {
+  try {
+    // Delete related records from all user-related tables
+    await supabase.from("contacts").delete().eq("user_id", clerkId);
+    await supabase.from("projects").delete().eq("user_id", clerkId);
+    await supabase.from("profiles").delete().eq("clerk_id", clerkId);
+
+    console.log("✅ User and related data deleted from Supabase");
+  } catch (err: any) {
+    console.error("❌ Failed to delete user from Supabase:", err.message);
+    throw err;
   }
 }

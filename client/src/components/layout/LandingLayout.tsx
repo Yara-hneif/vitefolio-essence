@@ -1,6 +1,8 @@
+import { Suspense, lazy } from "react";
 import { Outlet } from "react-router-dom";
-import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
+const Header = lazy(() => import("@/components/layout/partials/Header"));
+const Footer = lazy(() => import("@/components/layout/partials/Footer"));
+const AdminUI = lazy(() => import("@/components/layout/partials/AdminUI"));
 
 export default function LandingLayout() {
   return (
@@ -9,6 +11,7 @@ export default function LandingLayout() {
       <main className="flex-1">
         <Outlet />
       </main>
+      <AdminUI />
       <Footer />
     </div>
   );

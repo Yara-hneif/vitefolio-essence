@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/data-display/card";
 import { Layers, Rocket, Paintbrush, ShieldCheck } from "lucide-react";
 
 const items = [

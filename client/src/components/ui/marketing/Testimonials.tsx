@@ -1,4 +1,4 @@
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/data-display/card";
 
 const items = [
   { name: "Maya A.", role: "Frontend Dev", quote: "Clean, fast, and easy to tailor. Love the defaults." },

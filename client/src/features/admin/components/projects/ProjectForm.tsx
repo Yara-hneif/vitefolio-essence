@@ -1,8 +1,8 @@
 // src/features/admin/components/ProjectForm.tsx
 import React, { useMemo } from "react";
 import { useForm } from "react-hook-form";
-import { Project } from "@/types/Project";
-import { Button } from "@/components/ui/button";
+import { Project } from "@/utils/types/Project";
+import { Button } from "@/components/ui/navigation/button";
 import {
   Dialog,
   DialogContent,
@@ -10,16 +10,16 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+} from "@/components/ui/overlay/dialog";
+import { Input } from "@/components/ui/form/input";
+import { Label } from "@/components/ui/form/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@/components/ui/form/select";
 
 type ProjectFormValues = {
   id?: string;

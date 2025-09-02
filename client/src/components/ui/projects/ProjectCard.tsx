@@ -1,10 +1,10 @@
 import { Link } from "react-router-dom";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/data-display/card";
+import { Badge } from "@/components/ui/data-display/badge";
+import { Button } from "@/components/ui/navigation/button";
 import { Github, ExternalLink, Eye, Edit, Trash2, Calendar } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Project } from "@/types/Project";
+import { Project } from "@/utils/types/Project";
 
 interface ProjectCardProps {
   project: Project;
@@ -67,7 +67,6 @@ export default function ProjectCard({
           </div>
         )}
 
-        {/* روابط خارجية */}
         <div className="flex items-center gap-2">
           {project.repoUrl && (
             <Button variant="outline" size="sm" asChild>
@@ -95,7 +94,6 @@ export default function ProjectCard({
           )}
         </div>
 
-        {/* أزرار إدارية */}
         {showActions && (
           <div className="flex items-center gap-2 pt-2">
             <Button variant="ghost" size="sm" asChild>

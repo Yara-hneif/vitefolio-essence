@@ -14,7 +14,6 @@ type Project = {
 };
 
 export default function UserPortfolioPage() {
-  // دعم /@:handle أو /profile/:username
   const { handle, username } = useParams();
   const slug = handle || username;
 
@@ -37,7 +36,6 @@ export default function UserPortfolioPage() {
 
       setLoading(true);
 
-      // 1) جلب بروفايل المستخدم
       const { data: prof } = await supabase.from("profiles").select("*").eq("username", slug).maybeSingle();
       if (prof) {
         if (mounted) {
@@ -45,7 +43,6 @@ export default function UserPortfolioPage() {
           setAvatar(prof.avatar_url || undefined);
         }
 
-        // 2) جلب المشاريع لهذا المستخدم
         const { data: projs } = await supabase
           .from("projects")
           .select("*")

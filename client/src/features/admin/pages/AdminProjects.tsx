@@ -1,22 +1,22 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, Suspense, lazy } from "react";
 import { useProjects } from "@/hooks/useProjects";
-import { Project } from "@/types/Project";
+import { Project } from "@/utils/types/Project";
 import { toast } from "sonner";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/navigation/button";
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import { Badge } from "@/components/ui/badge";
+} from "@/components/ui/data-display/card";
+import { Input } from "@/components/ui/form/input";
+import { Label } from "@/components/ui/form/label";
+import { Switch } from "@/components/ui/effects/switch";
+import { Badge } from "@/components/ui/data-display/badge";
 
-import ProjectForm from "@/features/admin/components/projects/ProjectForm";
-import ImportFromGitHub from "@/features/admin/components/projects/ImportFromGitHub";
+const ProjectForm = lazy(() => import( "@/features/admin/components/projects/ProjectForm"));
+const ImportFromGitHub = lazy(() => import( "@/features/admin/components/projects/ImportFromGitHub"));
 
 import {
   getSyncConfig,

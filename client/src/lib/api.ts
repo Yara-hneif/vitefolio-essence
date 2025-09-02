@@ -1,6 +1,6 @@
 import axios, { type InternalAxiosRequestConfig, type AxiosResponse } from "axios";
-import { Contact } from "@/types/Contact";
-import { Project } from "@/types/Project";
+import { Contact } from "@/utils/types/Contact";
+import { Project } from "@/utils/types/Project";
 
 /**
  * Base URL strategy:
@@ -144,7 +144,6 @@ function normalizeProject(p: any): Project {
     slug: p.slug,
     category: p.category,
     tags: p.tags,
-    // ✅ دعم snake_case من السيرفر
     imageUrl: p.imageUrl ?? p.image_url,
     repoUrl: p.repoUrl ?? p.repo_url,
     liveUrl: p.liveUrl ?? p.live_url,

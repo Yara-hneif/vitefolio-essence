@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { useAuth } from "@/features/auth/AuthProvider";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/overlay/dialog";
+import { Button } from "@/components/ui/navigation/button";
+import { useAuth } from "@/legacy/AuthProvider";
 import { Chrome, Github, Linkedin, Facebook } from "lucide-react";
 
 type Props = { open: boolean; onOpenChange: (v: boolean) => void };

@@ -1,6 +1,6 @@
 import React from "react";
 import { ArrowRight, Sparkles } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/navigation/button";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 
 export default function Hero({ onPrimary }: { onPrimary: () => void }) {

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { getAllContacts, deleteContactMessage } from "@/lib/api";
-import { Contact } from "@/types/Contact";
+import { Contact } from "@/utils/types/Contact";
 import MessageCard from "@/features/admin/components/inbox/components/messageCard";
 import { toast } from "sonner";
 

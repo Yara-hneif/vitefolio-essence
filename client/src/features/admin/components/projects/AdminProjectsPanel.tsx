@@ -1,18 +1,18 @@
 import { useEffect, useMemo, useState } from "react";
 import { useAdmin } from "@/features/admin/hooks/useAdminMode";
 import { useProjects } from "@/hooks/useProjects";
-import { Project } from "@/types/Project";
+import { Project } from "@/utils/types/Project";
 import { toast } from "sonner";
 import { X, Github, Plus, RefreshCw, Settings2, Upload, Edit3, Trash2, CheckCircle2 } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { Button } from "@/components/ui/navigation/button";
+import { Input } from "@/components/ui/form/input";
+import { Label } from "@/components/ui/form/label";
+import { Switch } from "@/components/ui/effects/switch";
+import { Badge } from "@/components/ui/data-display/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/data-display/card";
+import { Separator } from "@/components/ui/data-display/separator";
+import { ScrollArea } from "@/components/ui/layout/scroll-area";
 
 import ProjectForm from "@/features/admin/components/projects/ProjectForm";
 import ImportFromGitHub from "@/features/admin/components/projects/ImportFromGitHub";
