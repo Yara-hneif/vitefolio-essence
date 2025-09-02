@@ -159,7 +159,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (!isLoaded) return;
     if (!clerkUser) return;
 
-    // مزامنة مرّة واحدة لكل مستخدم
     if (lastSyncedRef.current === clerkUser.id) return;
 
     syncUserToSupabase(clerkUser)
