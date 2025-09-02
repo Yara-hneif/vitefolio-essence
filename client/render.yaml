@@ -1,6 +1,15 @@
-buildCommand: npm install && npm run build
+buildCommand: |
+  rm -rf node_modules package-lock.json
+  npm install --legacy-peer-deps
+  npm run build
+
 staticPublishPath: dist
+
 routes:
   - type: rewrite
     source: /.*
     destination: /index.html
+
+envVars:
+  - key: NODE_VERSION
+    value: 22.15.1
