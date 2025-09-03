@@ -7,7 +7,9 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "clean": "node scripts/clean-vite-cache.js",
+    "clean:deep": "node scripts/clean-deep.js"
   },
   "dependencies": {
     "@builder.io/react": "^8.2.7",
@@ -76,6 +78,7 @@
     "terser": "^5.44.0",
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.30.1",
-    "vite": "^6.3.5"
+    "vite": "^6.3.5",
+    "vite-plugin-cdn": "^1.0.0-beta.3"
   }
 }
