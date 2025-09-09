@@ -6,7 +6,7 @@ export interface User {
   bio?: string;
   avatar?: string;
   skills?: string[];
-  socialLinks?: {
+  social_links?: {
     github?: string;
     linkedin?: string;
     twitter?: string;
