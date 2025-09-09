@@ -2,16 +2,18 @@ import React from 'react';
 import { Button } from '@/components/ui/navigation/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/data-display/card';
 import { Badge } from '@/components/ui/data-display/badge';
-import { 
-  Globe, 
-  User, 
-  Briefcase, 
-  Mail, 
-  Image, 
+import {
+  Globe,
+  User,
+  Briefcase,
+  Mail,
+  Image,
   Eye,
   Sparkles,
   ArrowRight
 } from 'lucide-react';
+
+const placeholder = '../../../public/placeholder.svg';
 
 interface Template {
   id: string;
@@ -35,7 +37,7 @@ const templates: Template[] = [
     id: 'portfolio-professional',
     name: 'Professional Portfolio',
     description: 'A clean, modern portfolio template perfect for developers and designers',
-    thumbnail: '/api/placeholder/400/300',
+    thumbnail: placeholder,
     category: 'Portfolio',
     isPopular: true,
     demoUrl: '/demo',
@@ -95,13 +97,13 @@ const templates: Template[] = [
                 title: 'Project 1',
                 subtitle: 'Web Application',
                 href: '#',
-                imageUrl: '/api/placeholder/400/300'
+                imageUrl: placeholder
               },
               {
                 title: 'Project 2',
                 subtitle: 'Mobile App',
                 href: '#',
-                imageUrl: '/api/placeholder/400/300'
+                imageUrl: placeholder
               }
             ]
           }
@@ -135,7 +137,7 @@ const templates: Template[] = [
     id: 'portfolio-creative',
     name: 'Creative Portfolio',
     description: 'A bold, artistic template for creative professionals and artists',
-    thumbnail: '/api/placeholder/400/300',
+    thumbnail: placeholder,
     category: 'Portfolio',
     features: ['Artistic Layout', 'Gallery Grid', 'Creative Animations', 'Bold Typography'],
     blocks: [
@@ -146,7 +148,7 @@ const templates: Template[] = [
     id: 'business-landing',
     name: 'Business Landing',
     description: 'Professional landing page template for businesses and startups',
-    thumbnail: '/api/placeholder/400/300',
+    thumbnail: placeholder,
     category: 'Business',
     features: ['Landing Hero', 'Features Section', 'Testimonials', 'CTA Buttons'],
     blocks: [
@@ -157,11 +159,11 @@ const templates: Template[] = [
 
 const TemplateSelector: React.FC<TemplateSelectorProps> = ({ onSelectTemplate, onClose }) => {
   const [selectedCategory, setSelectedCategory] = React.useState<string>('All');
-  
+
   const categories = ['All', 'Portfolio', 'Business', 'Personal'];
-  
-  const filteredTemplates = selectedCategory === 'All' 
-    ? templates 
+
+  const filteredTemplates = selectedCategory === 'All'
+    ? templates
     : templates.filter(t => t.category === selectedCategory);
 
   return (
@@ -191,22 +193,25 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({ onSelectTemplate, o
       {/* Templates Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredTemplates.map((template) => (
-          <Card key={template.id} className="group hover-lift cursor-pointer relative">
-            {template.isPopular && (
-              <Badge className="absolute -top-2 -right-2 z-10 bg-primary text-primary-foreground">
-                <Sparkles className="h-3 w-3 mr-1" />
-                Popular
-              </Badge>
-            )}
-            
-            <div className="aspect-video bg-muted rounded-t-lg overflow-hidden">
-              <img 
-                src={template.thumbnail} 
+          <Card
+            key={template.id}
+            className="group flex flex-col overflow-hidden rounded-xl shadow-sm hover:shadow-md transition-all duration-300"
+          >
+            <div className="relative aspect-video w-full overflow-hidden">
+              {template.isPopular && (
+                <Badge className="absolute top-2 right-2 z-10 bg-primary text-primary-foreground flex items-center gap-1 px-2 py-1 text-xs">
+                  <Sparkles className="h-3 w-3" />
+                  Popular
+                </Badge>
+              )}
+              <img
+                src={template.thumbnail}
                 alt={template.name}
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
               />
             </div>
-            
+
+
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-lg">{template.name}</CardTitle>
@@ -218,7 +223,7 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({ onSelectTemplate, o
                 {template.description}
               </CardDescription>
             </CardHeader>
-            
+
             <CardContent className="space-y-4">
               <div className="flex flex-wrap gap-1">
                 {template.features.slice(0, 3).map((feature, index) => (
@@ -232,13 +237,13 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({ onSelectTemplate, o
                   </Badge>
                 )}
               </div>
-              
-              <div className="flex gap-2">
+
+              <div className="flex flex-wrap gap-2 w-full" >
                 {template.demoUrl && (
                   <Button
                     variant="outline"
                     size="sm"
-                    className="flex-1"
+                    className="flex-1 min-w-[120px]"
                     asChild
                   >
                     <a href={template.demoUrl} target="_blank" rel="noopener noreferrer">
@@ -249,7 +254,7 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({ onSelectTemplate, o
                 )}
                 <Button
                   size="sm"
-                  className="flex-1"
+                  className="flex-1 min-w-[120px] bg-primary text-white"
                   onClick={() => onSelectTemplate(template)}
                 >
                   Use Template
