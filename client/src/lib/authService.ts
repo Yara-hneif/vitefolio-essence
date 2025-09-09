@@ -8,7 +8,7 @@ export async function syncUserToSupabase(
 ) {
   if (!clerkUser) return;
 
-  const socialLinks: Record<string, string | undefined> = {
+  const social_links: Record<string, string | undefined> = {
     github: (clerkUser.publicMetadata as any)?.github,
     linkedin: (clerkUser.publicMetadata as any)?.linkedin,
     twitter: (clerkUser.publicMetadata as any)?.twitter,
@@ -29,7 +29,7 @@ export async function syncUserToSupabase(
         `user_${clerkUser.id}`,
       avatar: clerkUser.imageUrl ?? "",
       bio: (clerkUser.publicMetadata?.bio as string) ?? "",
-      social_links: (clerkUser.publicMetadata?.socialLinks as Record<string, string>) ?? {},
+      social_links: (clerkUser.publicMetadata?.social_links as Record<string, string>) ?? {},
       skills: (clerkUser.publicMetadata?.skills as string[]) ?? [],
     },
     { onConflict: "clerk_id" }

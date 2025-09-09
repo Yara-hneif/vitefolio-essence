@@ -14,7 +14,7 @@ interface UserProfile {
   bio?: string;
   avatar?: string;
   skills?: string[];
-  socialLinks?: {
+  social_links?: {
     github?: string;
     linkedin?: string;
     twitter?: string;
@@ -86,7 +86,7 @@ async function syncUserToSupabase(clerkUser: any): Promise<UserProfile | null> {
     username: safeUsername(baseUsername),
     avatar: imageUrl ?? null,
     bio: (pm.bio as string) ?? null,
-    social_links: (pm.socialLinks as Record<string, string>) ?? null,
+    social_links: (pm.social_links as Record<string, string>) ?? null,
     skills: (pm.skills as string[]) ?? null,
   };
 
@@ -111,7 +111,7 @@ async function syncUserToSupabase(clerkUser: any): Promise<UserProfile | null> {
     bio: data.bio ?? "",
     avatar: data.avatar ?? imageUrl ?? "",
     skills: (data.skills as string[] | null) ?? [],
-    socialLinks:
+    social_links:
       (data.social_links as {
         github?: string;
         linkedin?: string;

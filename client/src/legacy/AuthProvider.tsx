@@ -11,7 +11,7 @@ export interface User {
   bio?: string;
   avatar?: string;
   skills?: string[];
-  socialLinks?: {
+  social_links?: {
     github?: string;
     linkedin?: string;
     twitter?: string;
@@ -50,9 +50,9 @@ function mapSbUser(u: SbUser | null): User | null {
     email: u.email || "",
     name: m.name || m.full_name || u.email?.split("@")[0] || "User",
     bio: m.bio || "",
-    avatar: m.avatar_url || m.picture || undefined,
+    avatar: m.avatar || m.picture || undefined,
     skills: m.skills || [],
-    socialLinks: {
+    social_links: {
       github: m.github,
       linkedin: m.linkedin,
       twitter: m.twitter,
@@ -121,7 +121,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     await supabase.auth.signInWithOAuth({
       provider,
       options: {
-        redirectTo: `avatar_url ${window.location.origin}/dashboard`,
+        redirectTo: `avatar ${window.location.origin}/dashboard`,
       },
     });
   };
