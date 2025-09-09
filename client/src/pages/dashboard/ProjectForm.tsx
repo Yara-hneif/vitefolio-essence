@@ -25,7 +25,7 @@ export default function ProjectForm() {
         if (project) {
           setTitle(project.title);
           setDescription(project.description || "");
-          setStatus(project.status);
+          setStatus(project.status ?? "draft");
           setCollaborators(project.collaborators);
         }
       })();

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useUser } from "@clerk/clerk-react";
+import { useAuth } from "@/context/AuthContext";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/navigation/button";
 import {
@@ -9,13 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/data-display/card";
-import { Badge } from "@/components/ui/data-display/badge";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/navigation/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/navigation/dropdown-menu";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -34,14 +28,12 @@ import {
   Eye,
   MoreVertical,
   Trash2,
-  Copy,
   ExternalLink,
   Calendar,
-  Users,
-  TrendingUp,
 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/lib/supabase";
+
 
 /* ------- Types ------- */
 export type Site = {
@@ -63,8 +55,17 @@ export async function listSites(userId: string): Promise<Site[]> {
     .select("*")
     .eq("user_id", userId)
     .order("created_at", { ascending: false });
-  if (error) throw error;
-  return data as Site[];
+
+  if (error) {
+    console.error("Error fetching sites:", error);
+    throw error;
+  }
+
+  return (data || []).map((site: any) => ({
+    ...site,
+    name: site.name ?? "",
+    status: site.status ?? "draft",
+  })) as Site[];
 }
 
 export async function deleteSite(siteId: string) {
@@ -74,7 +75,7 @@ export async function deleteSite(siteId: string) {
 
 /* ------- Component ------- */
 function Sites() {
-  const { user } = useUser();
+  const { user } = useAuth(); 
   const [sites, setSites] = useState<Site[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -96,12 +97,14 @@ function Sites() {
 
   const handleDelete = async (id: string) => {
     try {
-      await deleteSite(id);
-      setSites(sites.filter((s) => s.id !== id));
-      toast.success("Site deleted successfully");
+      toast.promise(deleteSite(id), {
+        loading: "Deleting site…",
+        success: "Site deleted successfully",
+        error: "Failed to delete site",
+      });
+      setSites((prev) => prev.filter((s) => s.id !== id));
     } catch (err) {
       console.error(err);
-      toast.error("Failed to delete site");
     }
   };
 
