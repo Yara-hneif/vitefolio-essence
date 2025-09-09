@@ -26,6 +26,19 @@ type Profile = {
   social_links?: SocialLinks;
 };
 
+type DbProject = {
+  id: string;
+  user_id: string | null;
+  title: string;
+  description?: string | null;
+  slug: string;
+  cover_image?: string | null;
+  live_url?: string | null;
+  repo_url?: string | null;
+  tags?: string[] | null;
+  created_at?: string | null;
+};
+
 type Project = {
   id: string;
   user_id: string;
@@ -38,6 +51,22 @@ type Project = {
   tags?: string[];
   created_at?: string;
 };
+
+// Map DB row → Project
+function mapDbProject(db: DbProject): Project {
+  return {
+    id: db.id,
+    user_id: db.user_id ?? "",
+    title: db.title,
+    description: db.description ?? undefined,
+    slug: db.slug,
+    cover_image: db.cover_image ?? undefined,
+    live_url: db.live_url ?? undefined,
+    repo_url: db.repo_url ?? undefined,
+    tags: Array.isArray(db.tags) ? db.tags : [],
+    created_at: db.created_at ?? undefined,
+  };
+}
 
 export default function PublicProfile() {
   const { handle, username: usernameFromProfileRoute } = useParams();
@@ -74,12 +103,13 @@ export default function PublicProfile() {
             email: currentUser.email,
             bio: (currentUser as any)?.bio,
             skills: ((currentUser as any)?.skills as string[]) || [],
-            avatar: (currentUser as any)?.avatarUrl,
+            avatar: (currentUser as any)?.avatar,
             social_links: (currentUser as any)?.social_links as SocialLinks,
           }
           : null;
 
-      if (mounted && optimisticProfile) setProfile((prev) => ({ ...(prev || {} as Profile), ...optimisticProfile } as Profile));
+      if (mounted && optimisticProfile)
+        setProfile((prev) => ({ ...(prev || ({} as Profile)), ...optimisticProfile } as Profile));
 
       const { data: prof, error: profErr } = await supabase
         .from("profiles")
@@ -96,6 +126,16 @@ export default function PublicProfile() {
         return;
       }
 
+      function parseSocialLinks(data: any): SocialLinks | undefined {
+        if (!data || typeof data !== "object") return undefined;
+        return {
+          github: typeof data.github === "string" ? data.github : undefined,
+          linkedin: typeof data.linkedin === "string" ? data.linkedin : undefined,
+          twitter: typeof data.twitter === "string" ? data.twitter : undefined,
+          website: typeof data.website === "string" ? data.website : undefined,
+        };
+      }
+
       const mergedProfile: Profile = {
         id: prof.id,
         username: prof.username,
@@ -104,7 +144,8 @@ export default function PublicProfile() {
         bio: prof.bio ?? optimisticProfile?.bio,
         skills: prof.skills ?? optimisticProfile?.skills ?? [],
         avatar: prof.avatar ?? optimisticProfile?.avatar,
-        social_links: prof.social_links ?? optimisticProfile?.social_links,
+        social_links: parseSocialLinks(prof.social_links)
+          ?? optimisticProfile?.social_links,
       };
 
       const { data: projs, error: pjErr } = await supabase
@@ -115,7 +156,7 @@ export default function PublicProfile() {
 
       if (mounted) {
         setProfile(mergedProfile);
-        setProjects(pjErr || !projs ? [] : projs);
+        setProjects(pjErr || !projs ? [] : (projs as DbProject[]).map(mapDbProject));
         setLoading(false);
       }
     })();
@@ -143,7 +184,6 @@ export default function PublicProfile() {
           </p>
 
           <div className="flex gap-3 justify-center">
-            {/* Go Home*/}
             <Button asChild>
               <Link to="/" replace>
                 Go Home
@@ -164,7 +204,6 @@ export default function PublicProfile() {
       </div>
     );
   }
-
 
   return (
     <div className="min-h-screen bg-background">
@@ -198,9 +237,7 @@ export default function PublicProfile() {
               <div className="flex-1 space-y-4">
                 <div>
                   <h1 className="text-3xl font-bold">{profile.name || profile.username}</h1>
-                  {profile.username && (
-                    <p className="text-muted-foreground">@{profile.username}</p>
-                  )}
+                  {profile.username && <p className="text-muted-foreground">@{profile.username}</p>}
                 </div>
 
                 {profile.bio && <p className="text-lg text-muted-foreground">{profile.bio}</p>}

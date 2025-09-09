@@ -1,229 +1,172 @@
-import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent } from '@/components/ui/card';
-import UserAvatar from '@/components/common/UserAvatar';
-import ProjectCard from '@/components/ui/projects/ProjectCard';
-import { supabase } from '@/lib/supabase';
-import {
-  Github,
-  Linkedin,
-  Twitter,
-  Globe,
-  MapPin,
-  Calendar,
-  ArrowLeft,
-  Mail
-} from 'lucide-react';
+import { useParams } from "react-router-dom";
+import { BuilderComponent } from "@builder.io/react";
+import type { BuilderContent } from "@builder.io/sdk";
+import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabase";
+import { useStructuredData } from "@/lib/structuredData";
+import { useBreadcrumbStructuredData } from "@/lib/breadcrumbsStructuredData";
 
-const PublicProfile = () => {
-  const { username } = useParams<{ username: string }>();
-  const [user, setUser] = useState<any>(null);
-  const [projects, setProjects] = useState<any[]>([]);
+type ErrorStateProps = {
+  message: string;
+};
+
+function ErrorState({ message }: ErrorStateProps) {
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-2xl font-semibold text-red-500 mb-4">Error</h1>
+        <p className="text-muted-foreground mb-8">{message}</p>
+        <a
+          href="/"
+          className="inline-block px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+        >
+          Go Home
+        </a>
+      </div>
+    </div>
+  );
+}
+
+export default function PublicSite() {
+  const { username, pageSlug } = useParams();
+  const apiKey = import.meta.env.VITE_BUILDER_PUBLIC_KEY as string;
+  const canonical =
+    typeof window !== "undefined" ? window.location.href : undefined;
+  const slug = pageSlug || "home";
+
+  const [content, setContent] = useState<BuilderContent | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      if (!username) return;
+    async function loadPage() {
+      if (!apiKey) {
+        console.warn("Builder.io public key not found");
+        setError("Site misconfiguration: missing Builder.io key.");
+        setLoading(false);
+        return;
+      }
 
       try {
-        // Fetch user profile
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('username', username)
+        if (!username) {
+          setError("Missing site username");
+          setLoading(false);
+          return;
+        }
+
+        const siteSlug = username ?? "";
+
+        // ✅ Step 1: Check if site is published in Supabase
+        const { data: site, error: siteError } = await supabase
+          .from("sites")
+          .select("published")
+          .eq("slug", siteSlug)
           .single();
 
-        if (profile) {
-          setUser(profile);
-
-          // Fetch user's published projects
-          const { data: userProjects } = await supabase
-            .from('projects')
-            .select('*')
-            .eq('clerk_user_id', profile.clerk_id ?? "")
-            .eq('status', 'published');
-
-          setProjects(userProjects || []);
+        if (siteError) throw siteError;
+        if (!site?.published) {
+          setError("This site is not published.");
+          setLoading(false);
+          return;
         }
-      } catch (error) {
-        console.error('Error fetching user data:', error);
+
+        // ✅ Step 2: Fetch from Builder.io
+        const q = encodeURIComponent(
+          JSON.stringify({ "data.siteSlug": username, "data.slug": slug })
+        );
+
+        const res = await fetch(
+          `https://cdn.builder.io/api/v3/content/page?apiKey=${apiKey}&limit=1&query=${q}`
+        );
+        const json = await res.json();
+
+        setContent(json?.results?.[0] || null);
+      } catch (err: any) {
+        console.error("Error loading page:", err.message);
+        setError("Something went wrong while loading the page.");
       } finally {
         setLoading(false);
       }
-    };
+    }
 
-    fetchUserData();
-  }, [username]);
+    loadPage();
+  }, [username, slug, apiKey]);
 
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <p className="text-muted-foreground">Loading profile...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <p className="mt-4 text-muted-foreground">Loading...</p>
         </div>
       </div>
     );
   }
 
-  if (!user) {
+  if (error) {
+    return <ErrorState message={error} />;
+  }
+
+  if (!content) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold mb-4">User Not Found</h1>
-          <p className="text-muted-foreground mb-6">The user you're looking for doesn't exist.</p>
-          <Button asChild>
-            <Link to="/">Go Home</Link>
-          </Button>
+          <h1 className="text-4xl font-bold text-foreground mb-4">
+            Page Not Found
+          </h1>
+          <p className="text-muted-foreground mb-8">
+            The page you&apos;re looking for doesn&apos;t exist or hasn&apos;t
+            been published yet.
+          </p>
+          <a
+            href="/"
+            className="inline-block px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+          >
+            Go Home
+          </a>
         </div>
       </div>
     );
   }
 
+  // ✅ SEO values
+  const pageTitle =
+    (content.data?.title as string) ||
+    (content.name as string) ||
+    `${username} | Vitefolio`;
+  const pageDescription =
+    (content.data?.description as string) ||
+    "Personal site powered by Vitefolio Essence";
+  const ogImage =
+    (content.data?.ogImage as string) ||
+    (content.data?.image as string) ||
+    undefined;
+
+  // ✅ Inject Structured Data (Article)
+  useStructuredData({
+    type: "Article",
+    name: pageTitle,
+    url: canonical || "",
+    description: pageDescription,
+    image: ogImage,
+    author: username || "Unknown",
+    datePublished: (content as any)?.firstPublishedDate,
+    dateModified: (content as any)?.lastUpdatedDate,
+  });
+
+  // ✅ Inject BreadcrumbList
+  useBreadcrumbStructuredData([
+    { name: "Home", url: "https://vitefolio.com" },
+    { name: username || "User", url: `https://vitefolio.com/${username}` },
+    {
+      name: slug,
+      url: `https://vitefolio.com/${username}/${slug}`,
+    },
+  ]);
+
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="bg-card border-b">
-        <div className="container px-4 py-4">
-          <Button variant="ghost" size="sm" asChild>
-            <Link to="/">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Home
-            </Link>
-          </Button>
-        </div>
-      </header>
-
-      <div className="container px-4 py-8 max-w-6xl mx-auto">
-        {/* Profile Header */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
-          <div className="lg:col-span-2">
-            <div className="flex flex-col sm:flex-row gap-6 items-start">
-              <UserAvatar user={user} size="lg" className="h-24 w-24" />
-
-              <div className="flex-1 space-y-4">
-                <div>
-                  <h1 className="text-3xl font-bold">{user.name}</h1>
-                  <p className="text-muted-foreground">@{user.username}</p>
-                </div>
-
-                {user.bio && (
-                  <p className="text-lg text-muted-foreground">{user.bio}</p>
-                )}
-
-                {/* Social Links */}
-                {user.social_links && Object.keys(user.social_links).length > 0 && (
-                  <div className="flex flex-wrap gap-3">
-                    {user.social_links.github && (
-                      <Button variant="outline" size="sm" asChild>
-                        <a href={user.social_links.github} target="_blank" rel="noopener noreferrer">
-                          <Github className="h-4 w-4 mr-2" />
-                          GitHub
-                        </a>
-                      </Button>
-                    )}
-                    {user.social_links.linkedin && (
-                      <Button variant="outline" size="sm" asChild>
-                        <a href={user.social_links.linkedin} target="_blank" rel="noopener noreferrer">
-                          <Linkedin className="h-4 w-4 mr-2" />
-                          LinkedIn
-                        </a>
-                      </Button>
-                    )}
-                    {user.social_links.twitter && (
-                      <Button variant="outline" size="sm" asChild>
-                        <a href={user.social_links.twitter} target="_blank" rel="noopener noreferrer">
-                          <Twitter className="h-4 w-4 mr-2" />
-                          Twitter
-                        </a>
-                      </Button>
-                    )}
-                    {user.social_links.website && (
-                      <Button variant="outline" size="sm" asChild>
-                        <a href={user.social_links.website} target="_blank" rel="noopener noreferrer">
-                          <Globe className="h-4 w-4 mr-2" />
-                          Website
-                        </a>
-                      </Button>
-                    )}
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Stats Card */}
-          <Card>
-            <CardContent className="p-6">
-              <div className="space-y-4">
-                <div className="text-center">
-                  <p className="text-2xl font-bold">{projects.length}</p>
-                  <p className="text-sm text-muted-foreground">Total Projects</p>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4 text-center">
-                  <div>
-                    <p className="font-semibold">{projects.length}</p>
-                    <p className="text-xs text-muted-foreground">Created</p>
-                  </div>
-                  <div>
-                    <p className="font-semibold">0</p>
-                    <p className="text-xs text-muted-foreground">Collaborated</p>
-                  </div>
-                </div>
-
-                <Button className="w-full" asChild>
-                  <a href={`mailto:${user.email}`}>
-                    <Mail className="h-4 w-4 mr-2" />
-                    Contact
-                  </a>
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Skills */}
-        {user.skills && user.skills.length > 0 && (
-          <div className="mb-12">
-            <h2 className="text-2xl font-bold mb-6">Skills & Technologies</h2>
-            <div className="flex flex-wrap gap-2">
-              {user.skills.map((skill: string) => (
-                <Badge key={skill} variant="secondary" className="text-sm py-1 px-3">
-                  {skill}
-                </Badge>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Projects */}
-        <div>
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold">Projects</h2>
-            <div className="text-sm text-muted-foreground">
-              {projects.length} project{projects.length !== 1 ? 's' : ''}
-            </div>
-          </div>
-
-          {projects.length === 0 ? (
-            <Card>
-              <CardContent className="py-12 text-center">
-                <p className="text-muted-foreground">No projects to display</p>
-              </CardContent>
-            </Card>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {projects.map((project) => (
-                <ProjectCard key={project.id} project={project} />
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
+    <div>
+      <BuilderComponent model="page" content={content} />
     </div>
   );
-};
-
-export default PublicProfile;
+}

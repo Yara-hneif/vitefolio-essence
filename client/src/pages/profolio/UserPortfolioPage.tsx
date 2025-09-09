@@ -1,7 +1,18 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/context/AuthContext";
+
+type DbProject = {
+  id: string;
+  user_id: string | null;
+  title: string;
+  description?: string | null;
+  cover_image?: string | null;
+  live_url?: string | null;
+  repo_url?: string | null;
+  created_at?: string | null;
+};
 
 type Project = {
   id: string;
@@ -11,7 +22,22 @@ type Project = {
   cover_image?: string;
   live_url?: string;
   repo_url?: string;
+  created_at?: string;
 };
+
+// Map DB row → Project
+function mapDbProject(db: DbProject): Project {
+  return {
+    id: db.id,
+    user_id: db.user_id ?? "",
+    title: db.title,
+    description: db.description ?? undefined,
+    cover_image: db.cover_image ?? undefined,
+    live_url: db.live_url ?? undefined,
+    repo_url: db.repo_url ?? undefined,
+    created_at: db.created_at ?? undefined,
+  };
+}
 
 export default function UserPortfolioPage() {
   const { handle, username } = useParams();
@@ -21,7 +47,9 @@ export default function UserPortfolioPage() {
   const isOwner = !!(user?.username && slug && user.username === slug);
 
   const [projects, setProjects] = useState<Project[]>([]);
-  const [displayName, setDisplayName] = useState<string>(slug ? slug[0].toUpperCase() + slug.slice(1) : "User");
+  const [displayName, setDisplayName] = useState<string>(
+    slug ? slug[0].toUpperCase() + slug.slice(1) : "User"
+  );
   const [avatar, setAvatar] = useState<string | undefined>(undefined);
   const [loading, setLoading] = useState(true);
 
@@ -36,7 +64,12 @@ export default function UserPortfolioPage() {
 
       setLoading(true);
 
-      const { data: prof } = await supabase.from("profiles").select("*").eq("username", slug).maybeSingle();
+      const { data: prof } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("username", slug)
+        .maybeSingle();
+
       if (prof) {
         if (mounted) {
           setDisplayName(prof.name || slug);
@@ -49,7 +82,9 @@ export default function UserPortfolioPage() {
           .eq("user_id", prof.id)
           .order("created_at", { ascending: false });
 
-        if (mounted) setProjects(projs || []);
+        if (mounted) {
+          setProjects((projs ?? []).map(mapDbProject));
+        }
       } else {
         if (mounted) {
           setProjects([]);
@@ -69,7 +104,11 @@ export default function UserPortfolioPage() {
       <header className="border-b">
         <div className="max-w-4xl mx-auto p-6 flex items-center gap-4">
           {avatar && (
-            <img src={avatar} alt="avatar" className="w-16 h-16 rounded-full object-cover" />
+            <img
+              src={avatar}
+              alt="avatar"
+              className="w-16 h-16 rounded-full object-cover"
+            />
           )}
           <div>
             <h1 className="text-3xl font-bold">{displayName}</h1>
@@ -87,7 +126,8 @@ export default function UserPortfolioPage() {
         <section>
           <h2 className="text-xl font-semibold mb-2">About</h2>
           <p className="text-muted-foreground">
-            This is your personal portfolio page. In future releases, you will customize sections, colors, and layout.
+            This is your personal portfolio page. In future releases, you will
+            customize sections, colors, and layout.
           </p>
         </section>
 
@@ -110,16 +150,28 @@ export default function UserPortfolioPage() {
                   )}
                   <h3 className="font-semibold">{p.title}</h3>
                   {p.description && (
-                    <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{p.description}</p>
+                    <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
+                      {p.description}
+                    </p>
                   )}
                   <div className="mt-2 flex gap-3 text-sm">
                     {p.live_url && (
-                      <a className="underline" href={p.live_url} target="_blank" rel="noreferrer">
+                      <a
+                        className="underline"
+                        href={p.live_url}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
                         Live
                       </a>
                     )}
                     {p.repo_url && (
-                      <a className="underline text-muted-foreground" href={p.repo_url} target="_blank" rel="noreferrer">
+                      <a
+                        className="underline text-muted-foreground"
+                        href={p.repo_url}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
                         Repo
                       </a>
                     )}
