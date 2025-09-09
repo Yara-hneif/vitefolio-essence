@@ -40,7 +40,7 @@ export default function UserPortfolioPage() {
       if (prof) {
         if (mounted) {
           setDisplayName(prof.name || slug);
-          setAvatar(prof.avatar_url || undefined);
+          setAvatar(prof.avatar || undefined);
         }
 
         const { data: projs } = await supabase

@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import UserAvatar from '@/components/common/UserAvatar';
 import ProjectCard from '@/components/ui/projects/ProjectCard';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/lib/supabase';
 import {
   Github,
   Linkedin,
