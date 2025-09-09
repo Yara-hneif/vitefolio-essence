@@ -19,7 +19,7 @@ export default function DemoContact() {
     }
 
     setLoading(true);
-    const { error } = await supabase.from("site_messages").insert({
+    const { error } = await supabase.from("contact").insert({
       user_id: user.id,
       name: form.name,
       email: form.email,

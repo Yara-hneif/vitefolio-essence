@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/form/input";
 import { Textarea } from "@/components/ui/form/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/overlay/dialog";
 
-export default function LandingContactDialog({
+export default function ContactDialog({
   open,
   onOpenChange,
 }: {
@@ -24,15 +24,15 @@ export default function LandingContactDialog({
       email: form.email,
       subject: form.subject,
       message: form.message,
-      
     });
 
     setLoading(false);
-    if (error) alert("❌ Failed: " + error.message);
-    else {
-      alert("✅ Message sent successfully to admin!");
+    if (error) {
+      alert("❌ Failed: " + error.message);
+    } else {
+      alert("✅ Message sent successfully!");
       setForm({ name: "", email: "", subject: "", message: "" });
-      onOpenChange(false); 
+      onOpenChange(false);
     }
   };
 
