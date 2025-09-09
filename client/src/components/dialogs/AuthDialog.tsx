@@ -43,7 +43,7 @@ export default function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
         email,
         password,
         username: email.split("@")[0],
-        name: email.split("@")[0],     
+        name: email.split("@")[0],
       });
       toast.success("Account created successfully");
       onOpenChange(false);
