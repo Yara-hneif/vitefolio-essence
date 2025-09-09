@@ -20,7 +20,7 @@ interface AuthDialogProps {
 }
 
 export default function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
-  const { login, register, loginWithProvider, loading } = useAuth();
+  const { login, register, authWithProvider, loading } = useAuth();
 
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
@@ -146,21 +146,21 @@ export default function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
           <Button
             variant="outline"
             className="w-full"
-            onClick={() => loginWithProvider("oauth_google")}
+            onClick={() => authWithProvider("oauth_google")}
           >
             <Mail className="mr-2 h-4 w-4 text-red-500" /> Continue with Google
           </Button>
           <Button
             variant="outline"
             className="w-full"
-            onClick={() => loginWithProvider("oauth_github")}
+            onClick={() => authWithProvider("oauth_github")}
           >
             <Github className="mr-2 h-4 w-4" /> Continue with GitHub
           </Button>
           <Button
             variant="outline"
             className="w-full"
-            onClick={() => loginWithProvider("oauth_linkedin_oidc")}
+            onClick={() => authWithProvider("oauth_linkedin_oidc")}
           >
             <Linkedin className="mr-2 h-4 w-4 text-blue-600" /> Continue with LinkedIn
           </Button>
