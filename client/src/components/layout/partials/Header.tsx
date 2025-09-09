@@ -1,6 +1,7 @@
 
 import { useState, Suspense, lazy } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation} from "react-router-dom";
+//import { useNavigate } from "react-router-dom";
 import { Menu, X, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/navigation/button";
 import { useAuth } from "@/context/AuthContext";
@@ -16,11 +17,12 @@ export default function Header({
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { user, isAuthenticated, logout } = useAuth();
   const location = useLocation();
-  const navigate = useNavigate();
+  //const navigate = useNavigate();
 
   const handleLogout = async () => {
-    await logout();
-    navigate("/", { replace: true });
+    //await logout();
+    //navigate("/", { replace: true });
+    await logout(); 
   };
 
   const isLanding = location.pathname === "/";
