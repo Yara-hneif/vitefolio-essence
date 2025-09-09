@@ -19,11 +19,12 @@ export default function LandingContactDialog({
     e.preventDefault();
     setLoading(true);
 
-    const { error } = await supabase.from("admin_messages").insert({
+    const { error } = await supabase.from("contact").insert({
       name: form.name,
       email: form.email,
       subject: form.subject,
       message: form.message,
+      
     });
 
     setLoading(false);
