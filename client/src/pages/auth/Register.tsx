@@ -8,6 +8,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Separator } from "@/components/ui/data-display/separator";
 import { Loader2, Mail, Lock, User, AtSign, ArrowLeft, Github, Linkedin } from "lucide-react";
 import { toast } from "sonner";
+import { syncUserToSupabase } from "@/lib/authService";
+import { useUser } from "@clerk/clerk-react";
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -17,8 +19,9 @@ const Register = () => {
     password: "",
     confirmPassword: "",
   });
-  const { register, loading, loginWithProvider } = useAuth();
+  const { register, loading, authWithProvider } = useAuth();
   const navigate = useNavigate();
+  const { user: clerkUser } = useUser();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prev) => ({
@@ -29,34 +32,47 @@ const Register = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (formData.password !== formData.confirmPassword) {
       toast.error("Passwords do not match");
       return;
     }
-
     if (formData.password.length < 6) {
-      toast.error("Password must be at least 6 characters");
+      toast.error('Password must be at least 6 characters long.');
       return;
     }
-
     try {
-      await register({
+      const res = await register({
         username: formData.username,
         name: formData.name,
         email: formData.email,
         password: formData.password,
       });
-      toast.success("Account created successfully!");
-      navigate("/dashboard");
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to create account");
+
+      if (res?.status === "complete") {
+        toast.success("Account created successfully!");
+        if (clerkUser) {
+          try {
+            await syncUserToSupabase(clerkUser);
+            console.log("✅ User synced to Supabase after register");
+          } catch (e) {
+            console.error("❌ Failed to sync user to Supabase:", e);
+          }
+        }
+        navigate("/dashboard");
+      } else {
+        toast.info("Please check your email to verify your account.");
+      }
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Registration failed !!");
     }
   };
 
-  // Register support coming soon - toast
-  const handleSocialRegister = (provider: string) => {
-    toast.info(`${provider} register support coming soon`);
+  const handleSocialLogin = async (provider: 'oauth_google' | 'oauth_github' | 'oauth_facebook' | 'oauth_linkedin_oidc') => {
+    try {
+      await authWithProvider(provider);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Registration failed !!");
+    }
   };
 
   return (
@@ -100,7 +116,7 @@ const Register = () => {
                 type="button"
                 variant="outline"
                 className="w-full h-12 hover-lift transition-all duration-300"
-                onClick={() => loginWithProvider("google")}
+                onClick={() => authWithProvider('oauth_google')}
               >
                 <Mail className="h-5 w-5 mr-3 text-red-500" />
                 <span className="font-medium">Continue with Google</span>
@@ -111,18 +127,18 @@ const Register = () => {
                 type="button"
                 variant="outline"
                 className="w-full h-12 hover-lift transition-all duration-300"
-                onClick={() => loginWithProvider("github")}
+                onClick={() => authWithProvider('oauth_github')}
               >
                 <Github className="h-5 w-5 mr-3" />
                 <span className="font-medium">Continue with GitHub</span>
               </Button>
-              
+
               {/* ----------- LinkedIn - Register ----------- */}
               <Button
                 type="button"
                 variant="outline"
                 className="w-full h-12 hover-lift transition-all duration-300"
-                onClick={() => handleSocialRegister("linkedin")}
+                onClick={() => authWithProvider('oauth_linkedin_oidc')}
               >
                 <Linkedin className="h-5 w-5 mr-3 text-blue-600" />
                 <span className="font-medium">Continue with LinkedIn</span>
@@ -133,7 +149,7 @@ const Register = () => {
                 type="button"
                 variant="outline"
                 className="w-full h-12 hover-lift transition-all duration-300"
-                onClick={() => handleSocialRegister("facebook")}
+                onClick={() => authWithProvider('oauth_facebook')}
               >
                 <div className="w-5 h-5 mr-3 bg-blue-600 rounded text-white flex items-center justify-center text-sm font-bold">
                   f

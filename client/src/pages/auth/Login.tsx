@@ -12,7 +12,9 @@ import { toast } from 'sonner';
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { login, loading, loginWithProvider } = useAuth();
+  const [formData, setFormData] = useState({ email: "", password: "" });
+
+  const { login, loading, authWithProvider } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -20,25 +22,31 @@ const Login = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    try {
-      await login(email, password);
-      toast.success('Welcome back!');
+    const result = await login(email, password);
+    if (result.status === 'complete') {
+      toast.success("Welcome back!");
       navigate(from, { replace: true });
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Login failed');
+    } else if (result.status === 'needs_verification') {
+      toast.info("Please verify your email to complete login.");
+    } else {
+      toast.error(result.error || "Login failed");
     }
   };
 
-  const handleSocialLogin = (provider: string) => {
-    toast.info(`${provider} login support coming soon`);
+  const handleSocialLogin = async (provider: 'oauth_google' | 'oauth_github' | 'oauth_facebook' | 'oauth_linkedin_oidc') => {
+    try {
+      await authWithProvider(provider);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Login failed");
+    }
   };
+
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-gradient-to-br from-background via-background to-secondary/20">
       <div className="w-full max-w-md space-y-6">
         <div className="text-center">
-          
+
           <Button
             variant="ghost"
             size="sm"
@@ -48,13 +56,13 @@ const Login = () => {
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Home
           </Button>
-          
+
           <div className="flex items-center justify-center mb-4">
             <div className="w-16 h-16 rounded-full bg-gradient-to-r from-primary to-accent flex items-center justify-center text-white text-2xl font-bold">
               VP
             </div>
           </div>
-          
+
           <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
             Welcome Back
           </h1>
@@ -73,51 +81,51 @@ const Login = () => {
           <CardContent className="space-y-6">
             {/* Social Login Buttons */}
             <div className="space-y-3">
-              <Button 
-                type="button" 
-                variant="outline" 
-                className="w-full h-12 hover-lift transition-all duration-300" 
-                onClick={() => loginWithProvider("google")}
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full h-12 hover-lift transition-all duration-300"
+                onClick={() => handleSocialLogin('oauth_google')}
 
               >
                 <Mail className="h-5 w-5 mr-3 text-red-500" />
                 <span className="font-medium">Continue with Gmail</span>
               </Button>
-              
-              <Button 
-                type="button" 
-                variant="outline" 
-                className="w-full h-12 hover-lift transition-all duration-300" 
-                onClick={() => loginWithProvider("github")}
+
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full h-12 hover-lift transition-all duration-300"
+                onClick={() => handleSocialLogin('oauth_github')}
               >
                 <Github className="h-5 w-5 mr-3" />
                 <span className="font-medium">Continue with GitHub</span>
               </Button>
-              
+
               {/* ----------- LinkedIn - login ----------- */}
-              <Button 
-                type="button" 
-                variant="outline" 
-                className="w-full h-12 hover-lift transition-all duration-300" 
-                onClick={() => handleSocialLogin('linkedin')}
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full h-12 hover-lift transition-all duration-300"
+                onClick={() => handleSocialLogin('oauth_linkedin_oidc')}
               >
                 <Linkedin className="h-5 w-5 mr-3 text-blue-600" />
                 <span className="font-medium">Continue with LinkedIn</span>
               </Button>
-              
-              {/* ----------- Facebook - login ----------- */} 
-              <Button 
-                type="button" 
-                variant="outline" 
-                className="w-full h-12 hover-lift transition-all duration-300" 
-                onClick={() => handleSocialLogin("facebook")}
+
+              {/* ----------- Facebook - login ----------- */}
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full h-12 hover-lift transition-all duration-300"
+                onClick={() => handleSocialLogin('oauth_facebook')}
               >
                 <div className="w-5 h-5 mr-3 bg-blue-600 rounded text-white flex items-center justify-center text-sm font-bold">
                   f
                 </div>
                 <span className="font-medium">Continue with Facebook</span>
               </Button>
-            
+
             </div>
 
             <div className="relative">
@@ -129,7 +137,7 @@ const Login = () => {
               </div>
             </div>
 
-            {/* ----------- Email - login form----------- */} 
+            {/* ----------- Email - login form----------- */}
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
@@ -163,9 +171,9 @@ const Login = () => {
                 </div>
               </div>
 
-              <Button 
-                type="submit" 
-                className="w-full h-12 hover-lift transition-all duration-300" 
+              <Button
+                type="submit"
+                className="w-full h-12 hover-lift transition-all duration-300"
                 disabled={loading}
               >
                 {loading ? (
@@ -181,8 +189,8 @@ const Login = () => {
 
             <div className="text-center text-sm">
               <span className="text-muted-foreground">Don't have an account? </span>
-              <Link 
-                to="/register" 
+              <Link
+                to="/register"
                 className="text-primary hover:underline font-medium"
               >
                 Create New Account

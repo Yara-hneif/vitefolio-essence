@@ -39,7 +39,12 @@ export default function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await register({ email, password });
+      await register({
+        email,
+        password,
+        username: email.split("@")[0],
+        name: email.split("@")[0],     
+      });
       toast.success("Account created successfully");
       onOpenChange(false);
     } catch (err: any) {
@@ -141,21 +146,21 @@ export default function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
           <Button
             variant="outline"
             className="w-full"
-            onClick={() => loginWithProvider("google")}
+            onClick={() => loginWithProvider("oauth_google")}
           >
             <Mail className="mr-2 h-4 w-4 text-red-500" /> Continue with Google
           </Button>
           <Button
             variant="outline"
             className="w-full"
-            onClick={() => loginWithProvider("github")}
+            onClick={() => loginWithProvider("oauth_github")}
           >
             <Github className="mr-2 h-4 w-4" /> Continue with GitHub
           </Button>
           <Button
             variant="outline"
             className="w-full"
-            onClick={() => loginWithProvider("linkedin")}
+            onClick={() => loginWithProvider("oauth_linkedin_oidc")}
           >
             <Linkedin className="mr-2 h-4 w-4 text-blue-600" /> Continue with LinkedIn
           </Button>
