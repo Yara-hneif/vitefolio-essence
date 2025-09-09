@@ -29,11 +29,11 @@ export default function Profile() {
     name: user?.name ?? "",
     bio: user?.bio ?? "",
     skills: (user?.skills as string[] | undefined) ?? [],
-    socialLinks: {
-      github: user?.socialLinks?.github ?? "",
-      linkedin: user?.socialLinks?.linkedin ?? "",
-      twitter: user?.socialLinks?.twitter ?? "",
-      website: user?.socialLinks?.website ?? "",
+    social_links: {
+      github: user?.social_links?.github ?? "",
+      linkedin: user?.social_links?.linkedin ?? "",
+      twitter: user?.social_links?.twitter ?? "",
+      website: user?.social_links?.website ?? "",
     } as SocialLinks,
   });
 
@@ -49,7 +49,7 @@ export default function Profile() {
   ) => {
     setProfileData((prev) => ({
       ...prev,
-      socialLinks: { ...prev.socialLinks, [platform]: value },
+      social_links: { ...prev.social_links, [platform]: value },
     }));
   };
 
@@ -77,7 +77,7 @@ export default function Profile() {
           name: profileData.name,
           bio: profileData.bio,
           skills: profileData.skills,
-          socialLinks: profileData.socialLinks,
+          social_links: profileData.social_links,
           avatarUrl: user?.avatar,
         },
       });
@@ -228,7 +228,7 @@ export default function Profile() {
             <Input
               id="github"
               placeholder="https://github.com/username"
-              value={profileData.socialLinks.github ?? ""}
+              value={profileData.social_links.github ?? ""}
               onChange={(e) => handleSocialLinkChange("github", e.target.value)}
             />
           </div>
@@ -238,7 +238,7 @@ export default function Profile() {
             <Input
               id="linkedin"
               placeholder="https://linkedin.com/in/username"
-              value={profileData.socialLinks.linkedin ?? ""}
+              value={profileData.social_links.linkedin ?? ""}
               onChange={(e) => handleSocialLinkChange("linkedin", e.target.value)}
             />
           </div>
@@ -248,7 +248,7 @@ export default function Profile() {
             <Input
               id="twitter"
               placeholder="https://twitter.com/username"
-              value={profileData.socialLinks.twitter ?? ""}
+              value={profileData.social_links.twitter ?? ""}
               onChange={(e) => handleSocialLinkChange("twitter", e.target.value)}
             />
           </div>
@@ -258,7 +258,7 @@ export default function Profile() {
             <Input
               id="website"
               placeholder="https://yourwebsite.com"
-              value={profileData.socialLinks.website ?? ""}
+              value={profileData.social_links.website ?? ""}
               onChange={(e) => handleSocialLinkChange("website", e.target.value)}
             />
           </div>

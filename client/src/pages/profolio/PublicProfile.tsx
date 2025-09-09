@@ -22,8 +22,8 @@ type Profile = {
   email?: string;
   bio?: string;
   skills?: string[];
-  avatar_url?: string;
-  socialLinks?: SocialLinks;
+  avatar?: string;
+  social_links?: SocialLinks;
 };
 
 type Project = {
@@ -74,8 +74,8 @@ export default function PublicProfile() {
             email: currentUser.email,
             bio: (currentUser as any)?.bio,
             skills: ((currentUser as any)?.skills as string[]) || [],
-            avatar_url: (currentUser as any)?.avatarUrl,
-            socialLinks: (currentUser as any)?.socialLinks as SocialLinks,
+            avatar: (currentUser as any)?.avatarUrl,
+            social_links: (currentUser as any)?.social_links as SocialLinks,
           }
           : null;
 
@@ -103,8 +103,8 @@ export default function PublicProfile() {
         email: prof.email ?? optimisticProfile?.email,
         bio: prof.bio ?? optimisticProfile?.bio,
         skills: prof.skills ?? optimisticProfile?.skills ?? [],
-        avatar_url: prof.avatar_url ?? optimisticProfile?.avatar_url,
-        socialLinks: prof.socialLinks ?? optimisticProfile?.socialLinks,
+        avatar: prof.avatar ?? optimisticProfile?.avatar,
+        social_links: prof.social_links ?? optimisticProfile?.social_links,
       };
 
       const { data: projs, error: pjErr } = await supabase
@@ -189,7 +189,7 @@ export default function PublicProfile() {
                 user={{
                   name: profile.name || profile.username || "User",
                   username: profile.username,
-                  avatar: profile.avatar_url,
+                  avatar: profile.avatar,
                 }}
                 size="lg"
                 className="h-24 w-24"
@@ -206,35 +206,35 @@ export default function PublicProfile() {
                 {profile.bio && <p className="text-lg text-muted-foreground">{profile.bio}</p>}
 
                 {/* Social Links */}
-                {profile.socialLinks && Object.keys(profile.socialLinks).length > 0 && (
+                {profile.social_links && Object.keys(profile.social_links).length > 0 && (
                   <div className="flex flex-wrap gap-3">
-                    {profile.socialLinks.github && (
+                    {profile.social_links.github && (
                       <Button variant="outline" size="sm" asChild>
-                        <a href={profile.socialLinks.github} target="_blank" rel="noopener noreferrer">
+                        <a href={profile.social_links.github} target="_blank" rel="noopener noreferrer">
                           <Github className="h-4 w-4 mr-2" />
                           GitHub
                         </a>
                       </Button>
                     )}
-                    {profile.socialLinks.linkedin && (
+                    {profile.social_links.linkedin && (
                       <Button variant="outline" size="sm" asChild>
-                        <a href={profile.socialLinks.linkedin} target="_blank" rel="noopener noreferrer">
+                        <a href={profile.social_links.linkedin} target="_blank" rel="noopener noreferrer">
                           <Linkedin className="h-4 w-4 mr-2" />
                           LinkedIn
                         </a>
                       </Button>
                     )}
-                    {profile.socialLinks.twitter && (
+                    {profile.social_links.twitter && (
                       <Button variant="outline" size="sm" asChild>
-                        <a href={profile.socialLinks.twitter} target="_blank" rel="noopener noreferrer">
+                        <a href={profile.social_links.twitter} target="_blank" rel="noopener noreferrer">
                           <Twitter className="h-4 w-4 mr-2" />
                           Twitter
                         </a>
                       </Button>
                     )}
-                    {profile.socialLinks.website && (
+                    {profile.social_links.website && (
                       <Button variant="outline" size="sm" asChild>
-                        <a href={profile.socialLinks.website} target="_blank" rel="noopener noreferrer">
+                        <a href={profile.social_links.website} target="_blank" rel="noopener noreferrer">
                           <Globe className="h-4 w-4 mr-2" />
                           Website
                         </a>
