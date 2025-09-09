@@ -1,9 +1,8 @@
-// client/src/features/admin/guards/ProtectedAdmin.tsx
 import { useEffect, useMemo } from "react";
 import { useLocation, Navigate } from "react-router-dom";
 import { setAdminSecret as applyAdminHeader } from "@/lib/api";
 
-const ENV_SECRET = import.meta.env.VITE_ADMIN_SECRET || "CHANGE_ME";
+const ENV_SECRET = import.meta.env.VITE_ADMIN_SECRET; 
 const STORAGE_KEYS = ["ADMIN_SECRET", "admin_secret"];
 
 function getStoredSecret(): string | null {
@@ -28,7 +27,10 @@ export default function ProtectedAdmin({ children }: { children: React.ReactNode
     if (fromQuery) storeSecret(fromQuery);
   }, [location.search]);
 
-  const authorized = useMemo(() => getStoredSecret() === ENV_SECRET, []);
+  const authorized = useMemo(() => {
+    if (!ENV_SECRET) return false;
+    return getStoredSecret() === ENV_SECRET;
+  }, []);
 
   if (!authorized) return <Navigate to="/" replace />;
   return <>{children}</>;
