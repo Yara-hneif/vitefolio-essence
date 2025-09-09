@@ -56,8 +56,8 @@ export default function AppRoutes() {
     
           {/* Public profiles and sites */}
           <Route path="/profile/:username" element={<PublicProfile />} />
-          <Route path="/u/:username" element={<UserPortfolioPage />} />
-          <Route path="/u/:username/:pageSlug" element={<PublicSite />} />
+          <Route path="/:username" element={<UserPortfolioPage />} />
+          <Route path="/:username/:pageSlug" element={<PublicSite />} />
 
 
         {/* Auth */}

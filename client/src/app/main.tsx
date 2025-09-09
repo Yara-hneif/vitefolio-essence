@@ -14,7 +14,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <ClerkProvider publishableKey={clerkPubKey}>
       <BrowserRouter>
-        <App />
+          <App />
       </BrowserRouter>
     </ClerkProvider>
   </React.StrictMode>

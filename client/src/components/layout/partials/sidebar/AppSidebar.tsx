@@ -1,6 +1,6 @@
-import React from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
-import { useUser, useClerk } from '@clerk/clerk-react';
+import React from "react";
+import { NavLink } from "react-router-dom";
+import { useAuth } from "@/context/AuthContext";
 import {
   Sidebar,
   SidebarContent,
@@ -12,8 +12,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarFooter,
-  useSidebar,
-} from '@/components/ui/navigation/sidebar';
+} from "@/components/ui/navigation/sidebar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,9 +20,9 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/navigation/dropdown-menu';
-import { Button } from '@/components/ui/navigation/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/data-display/avatar';
+} from "@/components/ui/navigation/dropdown-menu";
+import { Button } from "@/components/ui/navigation/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/data-display/avatar";
 import {
   LayoutDashboard,
   FolderOpen,
@@ -36,67 +35,60 @@ import {
   BarChart3,
   ChevronUp,
   User,
-} from 'lucide-react';
+} from "lucide-react";
+
+// util function لعرض اسم المستخدم
+const getUserDisplayName = (user: any) =>
+  user?.name ||
+  user?.username ||
+  user?.email ||
+  "User";
+
+const SidebarNavList = ({
+  items,
+}: {
+  items: { name: string; href: string; icon: any }[];
+}) => (
+  <SidebarMenu>
+    {items.map((item) => (
+      <SidebarMenuItem key={item.name}>
+        <SidebarMenuButton asChild>
+          <NavLink
+            to={item.href}
+            className={({ isActive }) =>
+              isActive ? "text-primary font-semibold" : ""
+            }
+          >
+            <item.icon className="size-4" />
+            <span>{item.name}</span>
+          </NavLink>
+        </SidebarMenuButton>
+      </SidebarMenuItem>
+    ))}
+  </SidebarMenu>
+);
 
 const AppSidebar = () => {
-  const { user } = useUser();
-  const { signOut } = useClerk();
-  const location = useLocation();
+  const { user, logout } = useAuth();
+  const username = user?.username || user?.id;
 
   const navigation = [
-    {
-      name: 'Overview',
-      href: '/dashboard',
-      icon: LayoutDashboard,
-      current: location.pathname === '/dashboard'
-    },
-    {
-      name: 'My Sites',
-      href: '/dashboard/sites',
-      icon: Globe,
-      current: location.pathname.startsWith('/dashboard/sites')
-    },
-    {
-      name: 'Projects',
-      href: '/dashboard/projects',
-      icon: FolderOpen,
-      current: location.pathname.startsWith('/dashboard/projects')
-    },
-    {
-      name: 'Templates',
-      href: '/dashboard/templates',
-      icon: Palette,
-      current: location.pathname.startsWith('/dashboard/templates')
-    },
-    {
-      name: 'Analytics',
-      href: '/dashboard/analytics',
-      icon: BarChart3,
-      current: location.pathname.startsWith('/dashboard/analytics')
-    },
-    {
-      name: 'Settings',
-      href: '/dashboard/settings',
-      icon: Settings,
-      current: location.pathname.startsWith('/dashboard/settings')
-    }
+    { name: "Overview", href: "/dashboard", icon: LayoutDashboard },
+    { name: "My Sites", href: "/dashboard/sites", icon: Globe },
+    { name: "Projects", href: "/dashboard/projects", icon: FolderOpen },
+    { name: "Templates", href: "/dashboard/templates", icon: Palette },
+    { name: "Analytics", href: "/dashboard/analytics", icon: BarChart3 },
+    { name: "Settings", href: "/dashboard/settings", icon: Settings },
   ];
 
   const quickActions = [
-    {
-      name: 'New Site',
-      href: '/dashboard/sites/new',
-      icon: Plus,
-    },
-    {
-      name: 'New Project',
-      href: '/dashboard/projects/new',
-      icon: FolderOpen,
-    }
+    { name: "New Site", href: "/dashboard/sites/new", icon: Plus },
+    { name: "New Project", href: "/dashboard/projects/new", icon: FolderOpen },
   ];
 
   return (
     <Sidebar collapsible="icon">
+      {/* Logo + Title */}
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
@@ -115,44 +107,24 @@ const AppSidebar = () => {
         </SidebarMenu>
       </SidebarHeader>
 
+      {/* Main Content */}
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>Main Navigation</SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu>
-              {navigation.map((item) => (
-                <SidebarMenuItem key={item.name}>
-                  <SidebarMenuButton asChild isActive={item.current}>
-                    <NavLink to={item.href}>
-                      <item.icon className="size-4" />
-                      <span>{item.name}</span>
-                    </NavLink>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
+            <SidebarNavList items={navigation} />
           </SidebarGroupContent>
         </SidebarGroup>
 
         <SidebarGroup>
           <SidebarGroupLabel>Quick Actions</SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu>
-              {quickActions.map((action) => (
-                <SidebarMenuItem key={action.name}>
-                  <SidebarMenuButton asChild>
-                    <NavLink to={action.href}>
-                      <action.icon className="size-4" />
-                      <span>{action.name}</span>
-                    </NavLink>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
+            <SidebarNavList items={quickActions} />
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
 
+      {/* User Menu */}
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
@@ -163,18 +135,16 @@ const AppSidebar = () => {
                   className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
                 >
                   <Avatar className="h-8 w-8 rounded-lg">
-                    <AvatarImage src={user?.imageUrl} alt={user?.firstName || ''} />
+                    <AvatarImage src={user?.avatar} alt={user?.name || ""} />
                     <AvatarFallback className="rounded-lg">
-                      {user?.firstName?.charAt(0) || user?.emailAddresses[0]?.emailAddress?.charAt(0) || 'U'}
+                      {getUserDisplayName(user)?.charAt(0)}
                     </AvatarFallback>
                   </Avatar>
                   <div className="grid flex-1 text-left text-sm leading-tight">
                     <span className="truncate font-semibold">
-                      {user?.firstName || user?.username || 'User'}
+                      {getUserDisplayName(user)}
                     </span>
-                    <span className="truncate text-xs">
-                      {user?.emailAddresses[0]?.emailAddress}
-                    </span>
+                    <span className="truncate text-xs">{user?.email}</span>
                   </div>
                   <ChevronUp className="ml-auto size-4" />
                 </SidebarMenuButton>
@@ -188,24 +158,22 @@ const AppSidebar = () => {
                 <DropdownMenuLabel className="p-0 font-normal">
                   <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                     <Avatar className="h-8 w-8 rounded-lg">
-                      <AvatarImage src={user?.imageUrl} alt={user?.firstName || ''} />
+                      <AvatarImage src={user?.avatar} alt={user?.name || ""} />
                       <AvatarFallback className="rounded-lg">
-                        {user?.firstName?.charAt(0) || 'U'}
+                        {getUserDisplayName(user)?.charAt(0)}
                       </AvatarFallback>
                     </Avatar>
                     <div className="grid flex-1 text-left text-sm leading-tight">
                       <span className="truncate font-semibold">
-                        {user?.firstName || user?.username || 'User'}
+                        {getUserDisplayName(user)}
                       </span>
-                      <span className="truncate text-xs">
-                        {user?.emailAddresses[0]?.emailAddress}
-                      </span>
+                      <span className="truncate text-xs">{user?.email}</span>
                     </div>
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
-                  <NavLink to="/dashboard/profile">
+                  <NavLink to={`/u/${username}`}>
                     <User className="mr-2 h-4 w-4" />
                     Profile
                   </NavLink>
@@ -217,7 +185,7 @@ const AppSidebar = () => {
                   </NavLink>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => signOut()}>
+                <DropdownMenuItem onClick={logout}>
                   <LogOut className="mr-2 h-4 w-4" />
                   Sign Out
                 </DropdownMenuItem>
