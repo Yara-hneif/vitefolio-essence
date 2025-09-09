@@ -1,189 +1,265 @@
-import React, { createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
-import { useSignIn, useSignUp, useUser, useClerk } from "@clerk/clerk-react";
-import { syncUserToSupabase, deleteUserFromSupabase } from "@/lib/authService";
+import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
+import { useUser, useAuth as useClerkAuth, useSignIn, useSignUp } from "@clerk/clerk-react";
+import { supabase } from "@/lib/supabase";
+import { useNavigate } from "react-router-dom";
+import type { Database, TablesInsert } from "@/utils/types/database.types";
 
-type OAuthProvider =
-  | "google"
-  | "github"
-  | "facebook"
-  | "discord"
-  | "microsoft"
-  | "apple"
-  | "linkedin";
-
-export type SocialLinks = {
-  github?: string;
-  linkedin?: string;
-  twitter?: string;
-  website?: string;
-};
-
-export type AuthUser = {
+// ---------- Types ----------
+interface UserProfile {
   id: string;
-  email?: string;
-  name?: string;
-  username?: string;
-  avatar?: string;
+  clerkId: string;
+  username: string;
+  email: string;
+  name: string;
   bio?: string;
+  avatar?: string;
   skills?: string[];
-  socialLinks?: SocialLinks;
-};
+  socialLinks?: {
+    github?: string;
+    linkedin?: string;
+    twitter?: string;
+    website?: string;
+  };
+}
 
-type RegisterPayload = { username?: string; name?: string; email: string; password: string };
+interface RegisterData {
+  username: string;
+  email: string;
+  password: string;
+  name: string;
+}
 
-type AuthCtx = {
-  user: AuthUser | null;
+type OAuthProvider = "oauth_google" | "oauth_github" | "oauth_facebook" | "oauth_linkedin_oidc";
+
+interface AuthContextType {
+  user: UserProfile | null;
   isAuthenticated: boolean;
   loading: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  register: (p: RegisterPayload) => Promise<void>;
-  logout: () => Promise<void>;
-  loginWithProvider: (provider: OAuthProvider) => Promise<void>;
-  deleteAccount: () => Promise<void>;
+  login: (
+    email: string,
+    password: string
+  ) => Promise<{ status: string; error?: string }>;
+  register: (userData: RegisterData) => Promise<{ status: string; error?: string }>;
+  authWithProvider: (provider: OAuthProvider) => Promise<void>;
   getHandle: () => string | null;
-};
+  logout: () => Promise<void>;
+  deleteAccount: () => Promise<void>;
+}
 
-const Ctx = createContext<AuthCtx | undefined>(undefined);
+// ---------- Context ----------
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const useAuth = () => {
-  const ctx = useContext(Ctx);
-  if (!ctx) throw new Error("useAuth must be used within an AuthProvider");
-  return ctx;
-};
+// ---------- Helpers ----------
+const safeUsername = (raw?: string) =>
+  (raw || "")
+    .toString()
+    .toLowerCase()
+    .replace(/[^a-z0-9-_.]/g, "-")
+    .slice(0, 50);
 
+// Sync Clerk user -> Supabase profiles
+async function syncUserToSupabase(clerkUser: any): Promise<UserProfile | null> {
+  if (!clerkUser) return null;
+
+  const email = clerkUser?.emailAddresses?.[0]?.emailAddress ?? "";
+  const imageUrl: string | undefined = clerkUser?.imageUrl ?? undefined;
+  const pm = (clerkUser?.publicMetadata ?? {}) as Record<string, any>;
+  const um = (clerkUser?.unsafeMetadata ?? {}) as Record<string, any>;
+  const meta = { ...pm, ...um };
+
+  const baseUsername =
+    clerkUser?.username ||
+    meta.user_name ||
+    meta.nickname ||
+    meta.preferred_username ||
+    (email ? email.split("@")[0] : `user_${clerkUser?.id?.slice?.(0, 8)}`);
+
+  const userData: TablesInsert<"profiles"> = {
+    id: clerkUser.id,
+    clerk_id: clerkUser.id,
+    email,
+    name:
+      pm.name ||
+      pm.full_name ||
+      `${clerkUser?.firstName ?? ""} ${clerkUser?.lastName ?? ""}`.trim() ||
+      (email ? email.split("@")[0] : "User"),
+    username: safeUsername(baseUsername),
+    avatar: imageUrl ?? null,
+    bio: (pm.bio as string) ?? null,
+    social_links: (pm.socialLinks as Record<string, string>) ?? null,
+    skills: (pm.skills as string[]) ?? null,
+  };
+
+  const { data, error } = await supabase
+    .from("profiles")
+    .upsert(userData, { onConflict: "clerk_id" })
+    .select("*")
+    .single();
+
+  if (error) {
+    console.error("Error syncing user to Supabase:", error);
+    return null;
+  }
+  if (!data) return null;
+
+  return {
+    id: data.id,
+    clerkId: data.clerk_id!,
+    username: data.username,
+    email: data.email ?? "",
+    name: data.name ?? "",
+    bio: data.bio ?? "",
+    avatar: data.avatar ?? imageUrl ?? "",
+    skills: (data.skills as string[] | null) ?? [],
+    socialLinks:
+      (data.social_links as {
+        github?: string;
+        linkedin?: string;
+        twitter?: string;
+        website?: string;
+      }) ?? {},
+  };
+}
+
+// ---------- Provider ----------
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user: clerkUser, isLoaded } = useUser();
-  const { signIn, setActive } = useSignIn();
+  const { signOut } = useClerkAuth();
+  const { signIn } = useSignIn();
   const { signUp } = useSignUp();
-  const { signOut } = useClerk();
+  const navigate = useNavigate();
 
-  const [loading, setLoading] = useState(false);
+  const [user, setUser] = useState<UserProfile | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const lastSyncedRef = useRef<string | null>(null);
-
-  const mappedUser: AuthUser | null = clerkUser
-    ? {
-        id: clerkUser.id,
-        email: clerkUser.primaryEmailAddress?.emailAddress ?? undefined,
-        name: clerkUser.fullName ?? undefined,
-        username:
-          clerkUser.username ??
-          clerkUser.primaryEmailAddress?.emailAddress?.split("@")[0] ??
-          undefined,
-        avatar: clerkUser.imageUrl ?? undefined,
-        bio: (clerkUser.publicMetadata as any)?.bio ?? undefined,
-        skills: (clerkUser.publicMetadata as any)?.skills ?? [],
-        socialLinks: {
-          github: (clerkUser.publicMetadata as any)?.github,
-          linkedin: (clerkUser.publicMetadata as any)?.linkedin,
-          twitter: (clerkUser.publicMetadata as any)?.twitter,
-          website: (clerkUser.publicMetadata as any)?.website,
-        },
+  useEffect(() => {
+    let cancelled = false;
+    async function bootstrap() {
+      try {
+        if (!isLoaded) return;
+        if (!clerkUser) {
+          if (!cancelled) setUser(null);
+          if (!cancelled) setLoading(false);
+          return;
+        }
+        const profile = await syncUserToSupabase(clerkUser);
+        if (!cancelled) setUser(profile);
+      } catch (e) {
+        console.error("Error setting up Supabase auth:", e);
+      } finally {
+        if (!cancelled) setLoading(false);
       }
-    : null;
+    }
+    bootstrap();
+    return () => {
+      cancelled = true;
+    };
+  }, [clerkUser, isLoaded]);
 
+  // ---- API ----
   const login = async (email: string, password: string) => {
-    if (!signIn || !setActive) return;
-    setLoading(true);
+    if (!signIn) return { status: "error", error: "Sign in not available" };
     try {
-      const res = await signIn.create({
-        strategy: "password",
-        identifier: email,
-        password,
-      });
-      if (res.status === "complete") {
-        await setActive({ session: res.createdSessionId });
-      } else {
-        throw new Error("Login not completed");
-      }
+      setLoading(true);
+      const result = await signIn.create({ identifier: email, password });
+      if (result.status === "complete") return { status: "complete" };
+      if (result.status === "needs_first_factor") return { status: "needs_verification" };
+      return { status: "error", error: "Login failed" };
+    } catch (err: any) {
+      return { status: "error", error: err?.errors?.[0]?.message || "Login failed" };
     } finally {
       setLoading(false);
     }
   };
 
-  const register = async ({ email, password }: RegisterPayload) => {
-    if (!signUp || !setActive) return;
-    setLoading(true);
+  const register = async (data: RegisterData) => {
+    if (!signUp) return { status: "error", error: "Sign up not available" };
     try {
+      setLoading(true);
       const res = await signUp.create({
-        emailAddress: email,
-        password,
+        emailAddress: data.email,
+        password: data.password,
+        firstName: data.name.split(" ")[0],
+        lastName: data.name.split(" ").slice(1).join(" "),
+        username: data.username,
       });
-      if (res.status === "complete") {
-        await setActive({ session: res.createdSessionId });
-      } else {
-        throw new Error("Registration not completed (verification may be required)");
+      if (res.status === "complete") return { status: "complete" };
+      else if (res.status === "missing_requirements") {
+        // Send verification email
+        await signUp.prepareEmailAddressVerification();
+        return { status: "needs_verification" };
+      }else{
+      return { status: "error", error: "Registration failed" };
       }
+    } catch (err: any) {
+      return { status: "error", error: err?.errors?.[0]?.message || "Registration failed" };
     } finally {
       setLoading(false);
     }
+  };
+
+  const authWithProvider = async (provider: OAuthProvider) => {
+    if (!signIn) throw new Error("Sign in not available");
+
+     try {
+      await signIn.authenticateWithRedirect({
+        strategy: provider,
+        redirectUrl: '/dashboard',
+        redirectUrlComplete: '/dashboard'
+      });
+    } catch (error: any) {
+      throw new Error(error.errors?.[0]?.message || 'Social login failed');
+    }
+
   };
 
   const logout = async () => {
-    await signOut();
-    lastSyncedRef.current = null;
-  };
-
-  const loginWithProvider = async (provider: OAuthProvider) => {
-    if (!signIn) return;
-    setLoading(true);
     try {
-      await signIn.authenticateWithRedirect({
-        strategy: `oauth_${provider}`,
-        redirectUrl: window.location.origin,
-        redirectUrlComplete: window.location.origin,
-      });
-    } catch (err) {
-      console.error("❌ Social login error:", err);
-      throw err;
-    } finally {
-      setLoading(false);
+      await signOut(); // Clerk only
+      setUser(null);
+      navigate("/");
+    } catch (e) {
+      console.error("Error during logout:", e);
     }
   };
 
   const deleteAccount = async () => {
-    if (!clerkUser) throw new Error("No user logged in");
-    setLoading(true);
     try {
-      await deleteUserFromSupabase(clerkUser.id);
-      await clerkUser.delete();
-    } catch (err) {
-      console.error("❌ Failed to delete account:", err);
-      throw err;
-    } finally {
-      setLoading(false);
+      if (user?.clerkId) {
+        await supabase.from("profiles").delete().eq("clerk_id", user.clerkId);
+      }
+      await (clerkUser as any)?.delete?.();
+      setUser(null);
+      await signOut();
+      navigate("/");
+    } catch (e) {
+      console.error("Error deleting account:", e);
+      throw e;
     }
   };
 
-  useEffect(() => {
-    if (!isLoaded) return;
-    if (!clerkUser) return;
+  const getHandle = () => user?.username ?? null;
 
-    if (lastSyncedRef.current === clerkUser.id) return;
-
-    syncUserToSupabase(clerkUser)
-      .catch((err) => console.error("❌ syncUserToSupabase failed:", err))
-      .finally(() => {
-        lastSyncedRef.current = clerkUser.id;
-      });
-  }, [isLoaded, clerkUser]);
-
-  const getHandle = () => mappedUser?.username || null;
-
-  const value: AuthCtx = useMemo(
+  const value = useMemo<AuthContextType>(
     () => ({
-      user: mappedUser,
-      isAuthenticated: !!mappedUser,
+      user,
+      isAuthenticated: !!clerkUser,
       loading: loading || !isLoaded,
       login,
       register,
+      authWithProvider,
       logout,
-      loginWithProvider,
       deleteAccount,
       getHandle,
     }),
-    [mappedUser, loading, isLoaded]
+    [user, clerkUser, loading, isLoaded]
   );
 
-  return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+};
+
+export const useAuth = () => {
+  const ctx = useContext(AuthContext);
+  if (!ctx) throw new Error("useAuth must be used within an AuthProvider");
+  return ctx;
 };
