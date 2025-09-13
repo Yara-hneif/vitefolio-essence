@@ -1,25 +1,30 @@
-import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
-import { useUser, useAuth as useClerkAuth, useSignIn, useSignUp } from "@clerk/clerk-react";
+import React, { createContext, useContext, useState, useEffect, useMemo } from "react";
 import { supabase } from "@/lib/supabase";
 import { useNavigate } from "react-router-dom";
-import type { Database, TablesInsert } from "@/utils/types/database.types";
+import type { Session, User as SbUser, AuthChangeEvent } from "@supabase/supabase-js";
 
-// ---------- Types ----------
-interface UserProfile {
+/* ---------------------------
+   Types
+--------------------------- */
+interface SocialLinks {
+  github?: string;
+  linkedin?: string;
+  facebook?: string;
+  youtube?: string;
+  google?: string;
+  website?: string;
+}
+
+export interface UserProfile {
   id: string;
-  clerkId: string;
-  username: string;
   email: string;
-  name: string;
-  bio?: string;
+  name?: string;
+  username?: string;
   avatar?: string;
+  bio?: string;
+  role?: string;
   skills?: string[];
-  social_links?: {
-    github?: string;
-    linkedin?: string;
-    twitter?: string;
-    website?: string;
-  };
+  social_links?: SocialLinks;
 }
 
 interface RegisterData {
@@ -29,222 +34,200 @@ interface RegisterData {
   name: string;
 }
 
-type OAuthProvider = "oauth_google" | "oauth_github" | "oauth_facebook" | "oauth_linkedin_oidc";
+type OAuthProvider = "google" | "github" | "facebook";
 
 interface AuthContextType {
   user: UserProfile | null;
   isAuthenticated: boolean;
   loading: boolean;
-  login: (
-    email: string,
-    password: string
-  ) => Promise<{ status: string; error?: string }>;
+  login: (email: string, password: string) => Promise<{ status: string; error?: string }>;
   register: (userData: RegisterData) => Promise<{ status: string; error?: string }>;
   authWithProvider: (provider: OAuthProvider) => Promise<void>;
-  getHandle: () => string | null;
   logout: () => Promise<void>;
-  deleteAccount: () => Promise<void>;
+  deleteAccount: () => Promise<{ status: string; error?: string }>;
+  getHandle: () => string | null;
 }
 
-// ---------- Context ----------
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// ---------- Helpers ----------
-const safeUsername = (raw?: string) =>
-  (raw || "")
-    .toString()
-    .toLowerCase()
-    .replace(/[^a-z0-9-_.]/g, "-")
-    .slice(0, 50);
+/* ---------------------------
+   Fallback mapper from user_metadata
+--------------------------- */
+function mapSbUser(u: SbUser | null): Partial<UserProfile> | null {
+  if (!u) return null;
+  const m = (u as any).user_metadata || {};
 
-// Sync Clerk user -> Supabase profiles
-async function syncUserToSupabase(clerkUser: any): Promise<UserProfile | null> {
-  if (!clerkUser) return null;
-
-  const email = clerkUser?.emailAddresses?.[0]?.emailAddress ?? "";
-  const imageUrl: string | undefined = clerkUser?.imageUrl ?? undefined;
-  const pm = (clerkUser?.publicMetadata ?? {}) as Record<string, any>;
-  const um = (clerkUser?.unsafeMetadata ?? {}) as Record<string, any>;
-  const meta = { ...pm, ...um };
-
-  const baseUsername =
-    clerkUser?.username ||
-    meta.user_name ||
-    meta.nickname ||
-    meta.preferred_username ||
-    (email ? email.split("@")[0] : `user_${clerkUser?.id?.slice?.(0, 8)}`);
-
-  const userData: TablesInsert<"profiles"> = {
-    id: clerkUser.id,
-    clerk_id: clerkUser.id,
-    email,
-    name:
-      pm.name ||
-      pm.full_name ||
-      `${clerkUser?.firstName ?? ""} ${clerkUser?.lastName ?? ""}`.trim() ||
-      (email ? email.split("@")[0] : "User"),
-    username: safeUsername(baseUsername),
-    avatar: imageUrl ?? null,
-    bio: (pm.bio as string) ?? null,
-    social_links: (pm.social_links as Record<string, string>) ?? null,
-    skills: (pm.skills as string[]) ?? null,
-  };
-
-  const { data, error } = await supabase
-    .from("profiles")
-    .upsert(userData, { onConflict: "clerk_id" })
-    .select("*")
-    .single();
-
-  if (error) {
-    console.error("Error syncing user to Supabase:", error);
-    return null;
-  }
-  if (!data) return null;
+  const username =
+    m.user_name ||
+    m.nickname ||
+    m.preferred_username ||
+    m.login ||
+    (u.email ? u.email.split("@")[0] : "");
 
   return {
-    id: data.id,
-    clerkId: data.clerk_id!,
-    username: data.username,
-    email: data.email ?? "",
-    name: data.name ?? "",
-    bio: data.bio ?? "",
-    avatar: data.avatar ?? imageUrl ?? "",
-    skills: (data.skills as string[] | null) ?? [],
-    social_links:
-      (data.social_links as {
-        github?: string;
-        linkedin?: string;
-        twitter?: string;
-        website?: string;
-      }) ?? {},
+    id: u.id,
+    email: u.email || "",
+    username: (username || "")
+      .toString()
+      .toLowerCase()
+      .replace(/[^a-z0-9-_.]/g, "-"),
+    name: m.name || m.full_name || u.email?.split("@")[0] || "User",
+    bio: m.bio || "",
+    avatar: m.avatar || m.picture || m.avatar_url || "/placeholder.svg",
+    skills: (m.skills as string[]) || [],
+    social_links: {
+      github: m.github,
+      linkedin: m.linkedin,
+      facebook: m.facebook,
+      youtube: m.youtube,
+      google: m.google,
+      website: m.website,
+    },
   };
 }
 
-// ---------- Provider ----------
+/* ---------------------------
+   Provider
+--------------------------- */
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { user: clerkUser, isLoaded } = useUser();
-  const { signOut } = useClerkAuth();
-  const { signIn } = useSignIn();
-  const { signUp } = useSignUp();
-  const navigate = useNavigate();
-
   const [user, setUser] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    let cancelled = false;
-    async function bootstrap() {
-      try {
-        if (!isLoaded) return;
-        if (!clerkUser) {
-          if (!cancelled) setUser(null);
-          if (!cancelled) setLoading(false);
-          return;
-        }
-        const profile = await syncUserToSupabase(clerkUser);
-        if (!cancelled) setUser(profile);
-      } catch (e) {
-        console.error("Error setting up Supabase auth:", e);
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    }
-    bootstrap();
-    return () => {
-      cancelled = true;
-    };
-  }, [clerkUser, isLoaded]);
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(
+      async (_event: AuthChangeEvent, session: Session | null) => {
+        if (session?.user) {
+          const u = session.user;
 
-  // ---- API ----
+          // Fetch profile from DB
+          const { data: profile } = await supabase
+            .from("profiles")
+            .select("id, email, name, username, avatar, bio, role, skills, social_links")
+            .eq("id", u.id)
+            .maybeSingle();
+
+          // Fallback to user_metadata
+          const fallback = mapSbUser(u);
+
+          setUser({
+            id: u.id,
+            email: u.email ?? "",
+            name: profile?.name ?? fallback?.name,
+            username: profile?.username ?? fallback?.username,
+            avatar: profile?.avatar ?? fallback?.avatar ?? "/placeholder.svg",
+            bio: profile?.bio ?? fallback?.bio,
+            role: profile?.role ?? "user",
+            skills: (profile?.skills as string[]) ?? fallback?.skills ?? [],
+            social_links: (profile?.social_links as SocialLinks) ?? fallback?.social_links ?? {},
+          });
+        } else {
+          setUser(null);
+        }
+        setLoading(false);
+      }
+    );
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  /* ---------------------------
+     Auth Actions
+  --------------------------- */
   const login = async (email: string, password: string) => {
-    if (!signIn) return { status: "error", error: "Sign in not available" };
     try {
       setLoading(true);
-      const result = await signIn.create({ identifier: email, password });
-      if (result.status === "complete") return { status: "complete" };
-      if (result.status === "needs_first_factor") return { status: "needs_verification" };
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) return { status: "error", error: error.message };
+      if (data.session) return { status: "complete" };
       return { status: "error", error: "Login failed" };
-    } catch (err: any) {
-      return { status: "error", error: err?.errors?.[0]?.message || "Login failed" };
     } finally {
       setLoading(false);
     }
   };
 
   const register = async (data: RegisterData) => {
-    if (!signUp) return { status: "error", error: "Sign up not available" };
     try {
       setLoading(true);
-      const res = await signUp.create({
-        emailAddress: data.email,
+      const { data: res, error } = await supabase.auth.signUp({
+        email: data.email,
         password: data.password,
-        firstName: data.name.split(" ")[0],
-        lastName: data.name.split(" ").slice(1).join(" "),
-        username: data.username,
+        options: {
+          emailRedirectTo: window.location.origin + "/dashboard",
+          data: { name: data.name, username: data.username },
+        },
       });
-      if (res.status === "complete") return { status: "complete" };
-      else if (res.status === "missing_requirements") {
-        // Send verification email
-        await signUp.prepareEmailAddressVerification();
-        return { status: "needs_verification" };
-      }else{
-      return { status: "error", error: "Registration failed" };
+      if (error) return { status: "error", error: error.message };
+
+      if (res.user) {
+        await supabase.from("profiles").upsert({
+          id: res.user.id,
+          email: data.email,
+          name: data.name,
+          username: data.username,
+          role: "user",
+        });
       }
-    } catch (err: any) {
-      return { status: "error", error: err?.errors?.[0]?.message || "Registration failed" };
+
+      return { status: "complete" };
     } finally {
       setLoading(false);
     }
   };
 
   const authWithProvider = async (provider: OAuthProvider) => {
-    if (!signIn) throw new Error("Sign in not available");
-
-     try {
-      await signIn.authenticateWithRedirect({
-        strategy: provider,
-        redirectUrl: '/dashboard',
-        redirectUrlComplete: '/dashboard'
-      });
-    } catch (error: any) {
-      throw new Error(error.errors?.[0]?.message || 'Social login failed');
-    }
-
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider,
+      options: { redirectTo: window.location.origin + "/dashboard" },
+    });
+    if (error) throw new Error(error.message);
   };
 
   const logout = async () => {
-    try {
-      await signOut(); // Clerk only
-      setUser(null);
-      navigate("/");
-    } catch (e) {
-      console.error("Error during logout:", e);
-    }
+    await supabase.auth.signOut();
+    setUser(null);
+    navigate("/"); // Redirect to landing
   };
 
   const deleteAccount = async () => {
+    if (!user) return { status: "error", error: "No user logged in" };
+
+    const confirmDelete = window.confirm(
+      "⚠️ This will permanently delete your account and all related data. Are you sure?"
+    );
+    if (!confirmDelete) return { status: "error", error: "Cancelled" };
+
     try {
-      if (user?.clerkId) {
-        await supabase.from("profiles").delete().eq("clerk_id", user.clerkId);
+      const res = await fetch("/api/delete-account", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: user.id }),
+      });
+
+      if (!res.ok) {
+        const msg = await res.text();
+        return { status: "error", error: msg };
       }
-      await (clerkUser as any)?.delete?.();
+
+      // After deletion → logout + redirect
+      await supabase.auth.signOut();
       setUser(null);
-      await signOut();
       navigate("/");
-    } catch (e) {
-      console.error("Error deleting account:", e);
-      throw e;
+      return { status: "complete" };
+    } catch (err) {
+      return { status: "error", error: (err as Error).message };
     }
   };
 
-  const getHandle = () => user?.username ?? null;
+  const getHandle = () => user?.username || null;
 
   const value = useMemo<AuthContextType>(
     () => ({
       user,
-      isAuthenticated: !!clerkUser,
-      loading: loading || !isLoaded,
+      isAuthenticated: !!user,
+      loading,
       login,
       register,
       authWithProvider,
@@ -252,14 +235,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       deleteAccount,
       getHandle,
     }),
-    [user, clerkUser, loading, isLoaded]
+    [user, loading]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
+/* ---------------------------
+   Hook
+--------------------------- */
 export const useAuth = () => {
   const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error("useAuth must be used within an AuthProvider");
+  if (!ctx) throw new Error("useAuth must be used within AuthProvider");
   return ctx;
 };
