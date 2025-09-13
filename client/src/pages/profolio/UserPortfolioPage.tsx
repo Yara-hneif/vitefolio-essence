@@ -3,41 +3,8 @@ import { useParams } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/context/AuthContext";
 
-type DbProject = {
-  id: string;
-  user_id: string | null;
-  title: string;
-  description?: string | null;
-  cover_image?: string | null;
-  live_url?: string | null;
-  repo_url?: string | null;
-  created_at?: string | null;
-};
-
-type Project = {
-  id: string;
-  user_id: string;
-  title: string;
-  description?: string;
-  cover_image?: string;
-  live_url?: string;
-  repo_url?: string;
-  created_at?: string;
-};
-
-// Map DB row → Project
-function mapDbProject(db: DbProject): Project {
-  return {
-    id: db.id,
-    user_id: db.user_id ?? "",
-    title: db.title,
-    description: db.description ?? undefined,
-    cover_image: db.cover_image ?? undefined,
-    live_url: db.live_url ?? undefined,
-    repo_url: db.repo_url ?? undefined,
-    created_at: db.created_at ?? undefined,
-  };
-}
+import type { Project } from "@/types/models/Project";
+import { listProjects } from "@/api/project.api";
 
 export default function UserPortfolioPage() {
   const { handle, username } = useParams();
@@ -76,14 +43,12 @@ export default function UserPortfolioPage() {
           setAvatar(prof.avatar || undefined);
         }
 
-        const { data: projs } = await supabase
-          .from("projects")
-          .select("*")
-          .eq("user_id", prof.id)
-          .order("created_at", { ascending: false });
-
-        if (mounted) {
-          setProjects((projs ?? []).map(mapDbProject));
+        try {
+          const projs = await listProjects(prof.id);
+          if (mounted) setProjects(projs);
+        } catch (error) {
+          console.error("Failed to load projects", error);
+          if (mounted) setProjects([]);
         }
       } else {
         if (mounted) {

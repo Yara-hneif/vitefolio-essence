@@ -56,7 +56,7 @@ export default function PublicSite() {
 
         const siteSlug = username ?? "";
 
-        // ✅ Step 1: Check if site is published in Supabase
+        // Step 1: Check if site is published in Supabase
         const { data: site, error: siteError } = await supabase
           .from("sites")
           .select("published")
@@ -70,7 +70,7 @@ export default function PublicSite() {
           return;
         }
 
-        // ✅ Step 2: Fetch from Builder.io
+        // Step 2: Fetch from Builder.io
         const q = encodeURIComponent(
           JSON.stringify({ "data.siteSlug": username, "data.slug": slug })
         );
@@ -129,7 +129,7 @@ export default function PublicSite() {
     );
   }
 
-  // ✅ SEO values
+  //  SEO values
   const pageTitle =
     (content.data?.title as string) ||
     (content.name as string) ||
@@ -142,7 +142,7 @@ export default function PublicSite() {
     (content.data?.image as string) ||
     undefined;
 
-  // ✅ Inject Structured Data (Article)
+  //  Inject Structured Data (Article)
   useStructuredData({
     type: "Article",
     name: pageTitle,
@@ -154,7 +154,7 @@ export default function PublicSite() {
     dateModified: (content as any)?.lastUpdatedDate,
   });
 
-  // ✅ Inject BreadcrumbList
+  //  Inject BreadcrumbList
   useBreadcrumbStructuredData([
     { name: "Home", url: "https://vitefolio.com" },
     { name: username || "User", url: `https://vitefolio.com/${username}` },
