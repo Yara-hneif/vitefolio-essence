@@ -4,7 +4,7 @@ type ProjectItem = {
   title: string;
   subtitle: string;
   href: string;
-  imageUrl: string;
+  cover_image: string;
 };
 
 type Props = {
@@ -17,19 +17,19 @@ export default function ProjectsGrid({ items = [] }: Props) {
       title: "E-commerce Platform",
       subtitle: "Modern shopping experience with React and Node.js",
       href: "#project1",
-      imageUrl: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=400&h=300&fit=crop"
+      cover_image: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=400&h=300&fit=crop"
     },
     {
       title: "Portfolio Website",
       subtitle: "Clean and responsive design with smooth animations",
       href: "#project2", 
-      imageUrl: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=300&fit=crop"
+      cover_image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=300&fit=crop"
     },
     {
       title: "Task Management App",
       subtitle: "Collaborative workspace with real-time updates",
       href: "#project3",
-      imageUrl: "https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=400&h=300&fit=crop"
+      cover_image: "https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=400&h=300&fit=crop"
     }
   ];
 
@@ -50,7 +50,7 @@ export default function ProjectsGrid({ items = [] }: Props) {
             >
               <div className="aspect-video overflow-hidden">
                 <img 
-                  src={item.imageUrl} 
+                  src={item.cover_image} 
                   alt={item.title}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />

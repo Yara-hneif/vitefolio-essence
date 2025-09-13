@@ -13,7 +13,7 @@ import {
   ArrowRight
 } from 'lucide-react';
 
-const placeholder = '../../../public/placeholder.svg';
+const placeholder = '/placeholder.svg';
 
 interface Template {
   id: string;
@@ -97,13 +97,13 @@ const templates: Template[] = [
                 title: 'Project 1',
                 subtitle: 'Web Application',
                 href: '#',
-                imageUrl: placeholder
+                cover_image: placeholder
               },
               {
                 title: 'Project 2',
                 subtitle: 'Mobile App',
                 href: '#',
-                imageUrl: placeholder
+                cover_image: placeholder
               }
             ]
           }

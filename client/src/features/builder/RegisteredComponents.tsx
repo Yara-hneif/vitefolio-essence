@@ -35,7 +35,7 @@ export const registerBuilderComponents = () => {
           { name: "title", type: "string" },
           { name: "subtitle", type: "string" },
           { name: "href", type: "string" },
-          { name: "imageUrl", type: "string" },
+          { name: "cover_image", type: "string" },
         ],
         defaultValue: [],
       },
