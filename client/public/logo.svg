@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <!-- نفس ألوان Tailwind: from-primary to-accent -->
+      <stop offset="0%" stop-color="#6366F1"/> <!-- Indigo-500 -->
+      <stop offset="100%" stop-color="#F43F5E"/> <!-- Rose-500 -->
+    </linearGradient>
+  </defs>
+  <circle cx="32" cy="32" r="32" fill="url(#g)"/>
+  <!--VP -->
+  <text x="50%" y="50%" text-anchor="middle" dominant-baseline="central"
+        font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="bold"
+        fill="white">
+    VP
+  </text>
+</svg>
