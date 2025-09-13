@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/form/input";
 import { Label } from "@/components/ui/form/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/data-display/card";
 import { Separator } from "@/components/ui/data-display/separator";
+import ResendConfirmation from "@/components/auth/ResendConfirmation";
 import { Loader2, Mail, Lock, User, AtSign, ArrowLeft, Github, Linkedin } from "lucide-react";
 import { toast } from "sonner";
 
@@ -34,7 +35,7 @@ const Register = () => {
       return;
     }
     if (formData.password.length < 6) {
-      toast.error('Password must be at least 6 characters long.');
+      toast.error("Password must be at least 6 characters long.");
       return;
     }
     try {
@@ -48,6 +49,13 @@ const Register = () => {
       if (res?.status === "complete") {
         toast.success("Account created successfully! Please check your email to verify your account.");
         navigate("/login");
+      } else if (res?.error?.includes("already registered")) {
+        toast.info(
+          <div>
+            This email is already registered but not verified.
+            <ResendConfirmation email={formData.email} />
+          </div>
+        );
       } else {
         toast.info("Please check your email to verify your account.");
       }

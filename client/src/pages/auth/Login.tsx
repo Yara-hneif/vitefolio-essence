@@ -7,7 +7,9 @@ import { Label } from '@/components/ui/form/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/data-display/card';
 import { Separator } from '@/components/ui/data-display/separator';
 import { Loader2, Mail, Lock, ArrowLeft, Github, Linkedin } from 'lucide-react';
+import ResendConfirmation from "@/components/auth/ResendConfirmation";
 import { toast } from 'sonner';
+
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -26,7 +28,12 @@ const Login = () => {
       toast.success("Welcome back!");
       navigate(from, { replace: true });
     } else if (result.status === "needs_verification") {
-      toast.info("Please verify your email to complete login.");
+      toast.info(
+        <div>
+          Please verify your email to complete login.
+          <ResendConfirmation email={email} />
+        </div>
+      );
     } else {
       toast.error(result.error || "Login failed");
     }
