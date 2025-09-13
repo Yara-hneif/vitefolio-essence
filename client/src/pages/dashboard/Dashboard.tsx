@@ -1,4 +1,4 @@
-import { useUser } from "@clerk/clerk-react";
+import { useAuth } from "@/context/AuthContext";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/navigation/button";
@@ -10,22 +10,28 @@ import {
   CardTitle,
 } from "@/components/ui/data-display/card";
 import { Badge } from "@/components/ui/data-display/badge";
-import { FolderOpen, Plus, Users, Eye, BarChart3, TrendingUp } from "lucide-react";
+import {
+  FolderOpen,
+  Plus,
+  Users,
+  Eye,
+  BarChart3,
+  TrendingUp,
+} from "lucide-react";
 
-import { listSites, listPages, Site, SitePage } from "@/api/sites";
-import { listProjects, Project } from "@/api/projects";
+import { listSites, listPages } from "@/api/site.api";
+import { listProjects } from "@/api/project.api";
+import type { Site, SitePage } from "@/types/models/Site";
+import type { Project } from "@/types/models/Project";
 
 export default function Dashboard() {
-  const { user } = useUser();
+  const { user } = useAuth();
   const [sites, setSites] = useState<Site[]>([]);
   const [pages, setPages] = useState<SitePage[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const username =
-    user?.username ||
-    user?.primaryEmailAddress?.emailAddress?.split("@")[0] ||
-    "user";
+  const username = user?.username || user?.email?.split("@")[0] || "user";
   const siteSlug = username;
 
   useEffect(() => {
@@ -57,10 +63,10 @@ export default function Dashboard() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">
-            Welcome back, {user?.firstName || user?.username}!
+            Welcome back, {user?.name || user?.username || "User"}!
           </h1>
           <p className="text-muted-foreground mt-2">
-            Manage your portfolio and sites: /u/{siteSlug}
+            Manage your portfolio and sites: /profile/{siteSlug}
           </p>
         </div>
         <Link to="/dashboard/sites/new">
@@ -100,7 +106,7 @@ export default function Dashboard() {
                 <div>
                   <div className="font-medium">{p.name}</div>
                   <div className="text-sm text-muted-foreground">
-                    /u/{siteSlug}/{p.is_home ? "" : p.slug}
+                    /profile/{siteSlug}/{p.is_home ? "" : p.slug}
                     {p.is_home ? " (home)" : ""}
                   </div>
                 </div>
@@ -111,7 +117,7 @@ export default function Dashboard() {
                     </Button>
                   </Link>
                   <a
-                    href={`/site/${siteSlug}/${p.is_home ? "" : p.slug}`}
+                    href={`/${siteSlug}/${p.is_home ? "" : p.slug}`}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -217,7 +223,10 @@ export default function Dashboard() {
                       {project.collaborators !== 1 ? "s" : ""}
                     </span>
                     <span className="text-xs text-muted-foreground">
-                      Updated {new Date(project.updated_at).toLocaleDateString()}
+                      Updated{" "}
+                      {project.updated_at
+                        ? new Date(project.updated_at).toLocaleDateString()
+                        : "N/A"}
                     </span>
                   </div>
                 </div>
@@ -251,7 +260,7 @@ export default function Dashboard() {
               Update Profile
             </Button>
           </Link>
-          <Link to={`/u/${username}`} className="block">
+          <Link to={`/profile/${username}`} className="block">
             <Button className="w-full justify-start" variant="outline">
               <Eye className="h-4 w-4 mr-2" />
               View Public Profile

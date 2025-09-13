@@ -38,7 +38,7 @@ import { supabase } from "@/lib/supabase";
 /* ------- Types ------- */
 export type Site = {
   id: string;
-  user_id: string;
+  profile_id: string;
   name: string;
   slug: string;
   description?: string;
@@ -53,7 +53,7 @@ export async function listSites(userId: string): Promise<Site[]> {
   const { data, error } = await supabase
     .from("sites")
     .select("*")
-    .eq("user_id", userId)
+    .eq("profile_id", userId)
     .order("created_at", { ascending: false });
 
   if (error) {

@@ -11,7 +11,7 @@ import { Link } from "react-router-dom";
 import { ArrowRight, Code, Filter } from "lucide-react";
 import { useState } from "react";
 import { useProjects } from "@/hooks/useProjects";
-import { Project } from "@/utils/types/Project";
+import { Project } from "@/types/models/Project";
 import { resolveImageUrl } from "@/lib/urls";
 import placeholderImg from "@/assets/images/placeholder.svg";
 
@@ -91,7 +91,7 @@ const Projects = () => {
                   <div className="aspect-video bg-muted relative overflow-hidden group hover:scale-[1.01] transition-transform duration-500 ease-in-out">
                     <img
                       src={
-                        resolveImageUrl(project.imageUrl ?? "") || placeholderImg
+                        resolveImageUrl(project.cover_image ?? "") || placeholderImg
                       }
                       onError={(e) => {
                         e.currentTarget.onerror = null;
@@ -121,12 +121,13 @@ const Projects = () => {
                   <CardContent>
                     <div className="flex flex-wrap gap-2">
                       {project.tags && project.tags.length > 0 ? (
-                        project.tags.map((tag, index) => (
+                        project.tags.map((tag) => (
                           <span
-                            key={`${tag}-${index}`}
+                            key={tag.id}
                             className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-secondary text-secondary-foreground"
                           >
-                            {tag}
+                            #{tag.name}
+
                           </span>
                         ))
                       ) : (
@@ -152,9 +153,9 @@ const Projects = () => {
                     </Button>
 
                     <div className="flex justify-between w-full text-xs text-muted-foreground">
-                      {project.liveUrl ? (
+                      {project.live_url ? (
                         <a
-                          href={project.liveUrl}
+                          href={project.live_url}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="hover:underline cursor-pointer"
@@ -164,9 +165,9 @@ const Projects = () => {
                       ) : (
                         <span>No demo</span>
                       )}
-                      {project.repoUrl ? (
+                      {project.repo_url ? (
                         <a
-                          href={project.repoUrl}
+                          href={project.repo_url}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="hover:underline cursor-pointer"

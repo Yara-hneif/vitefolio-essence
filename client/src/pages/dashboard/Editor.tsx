@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { BuilderComponent } from "@builder.io/react";
-import { loadPage, savePage, setSitePublished } from "@/api/sites";
+import { loadPage, savePage, setSitePublished } from "@/api/site.api";
 import { Button } from "@/components/ui/navigation/button";
 import { Card, CardContent } from "@/components/ui/data-display/card";
 

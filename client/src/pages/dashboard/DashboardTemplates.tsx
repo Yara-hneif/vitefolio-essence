@@ -1,10 +1,11 @@
-import { useUser } from "@clerk/clerk-react";
+import { useAuth } from "@/context/AuthContext";
+
 import { useNavigate } from "react-router-dom";
 import TemplateSelector from "@/features/templates/TemplateSelector";
 import { createSiteFromTemplate } from "@/lib/templates";
 
 export default function DashboardTemplates() {
-  const { user } = useUser();
+  const { user } = useAuth();
   const nav = useNavigate();
 
   async function handleSelect(template: any) {

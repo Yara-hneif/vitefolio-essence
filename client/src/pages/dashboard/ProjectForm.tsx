@@ -1,7 +1,7 @@
-import { useUser } from "@clerk/clerk-react";
+import { useAuth } from "@/context/AuthContext";
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { createProject, updateProject, getProject } from "@/api/projects";
+import { createProject, updateProject, getProject } from "@/api/project.api";
 import { Button } from "@/components/ui/navigation/button";
 import { Input } from "@/components/ui/form/input";
 import { Label } from "@/components/ui/form/label";
@@ -9,7 +9,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/data-d
 import { Textarea } from "@/components/ui/form/textarea";
 
 export default function ProjectForm() {
-  const { user } = useUser();
+  const { user } = useAuth();
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -17,6 +17,8 @@ export default function ProjectForm() {
   const [description, setDescription] = useState("");
   const [status, setStatus] = useState("planning");
   const [collaborators, setCollaborators] = useState(0);
+  const [coverImage, setCoverImage] = useState("");
+  const [gallery, setGallery] = useState<string>("");
 
   useEffect(() => {
     if (id) {
@@ -27,6 +29,8 @@ export default function ProjectForm() {
           setDescription(project.description || "");
           setStatus(project.status ?? "draft");
           setCollaborators(project.collaborators);
+          setCoverImage(project.cover_image || "");
+          setGallery(project.gallery?.join(", ") || "");
         }
       })();
     }
@@ -37,11 +41,16 @@ export default function ProjectForm() {
     if (!user?.id) return;
 
     const values = {
-      user_id: user.id,
+      profile_id: user.id,
       title,
       description,
       status,
       collaborators,
+      cover_image: coverImage || null,
+      gallery: gallery
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean),
     };
 
     if (id) {
@@ -86,6 +95,23 @@ export default function ProjectForm() {
                 type="number"
                 value={collaborators}
                 onChange={(e) => setCollaborators(Number(e.target.value))}
+              />
+            </div>
+            <div>
+              <Label>Cover Image (URL)</Label>
+              <Input
+                type="text"
+                value={coverImage}
+                onChange={(e) => setCoverImage(e.target.value)}
+                placeholder="https://example.com/cover.jpg"
+              />
+            </div>
+            <div>
+              <Label>Gallery (comma-separated URLs)</Label>
+              <Textarea
+                value={gallery}
+                onChange={(e) => setGallery(e.target.value)}
+                placeholder="https://img1.jpg, https://img2.png, ..."
               />
             </div>
             <Button type="submit">{id ? "Update Project" : "Create Project"}</Button>

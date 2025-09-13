@@ -12,10 +12,15 @@ import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import { supabase } from "@/lib/supabase";
 
+/* -----------------------
+   Types
+----------------------- */
 type SocialLinks = {
+  google?: string;
+  youtube?: string;
   github?: string;
+  facebook?: string;
   linkedin?: string;
-  twitter?: string;
   website?: string;
 };
 
@@ -30,23 +35,25 @@ export default function Profile() {
     bio: user?.bio ?? "",
     skills: (user?.skills as string[] | undefined) ?? [],
     social_links: {
+      google: user?.social_links?.google ?? "",
+      youtube: user?.social_links?.youtube ?? "",
       github: user?.social_links?.github ?? "",
+      facebook: user?.social_links?.facebook ?? "",
       linkedin: user?.social_links?.linkedin ?? "",
-      twitter: user?.social_links?.twitter ?? "",
       website: user?.social_links?.website ?? "",
     } as SocialLinks,
   });
 
   if (!user) return null;
 
+  /* -----------------------
+     Handlers
+  ----------------------- */
   const handleInputChange = (field: "name" | "bio", value: string) => {
     setProfileData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSocialLinkChange = (
-    platform: keyof SocialLinks,
-    value: string
-  ) => {
+  const handleSocialLinkChange = (platform: keyof SocialLinks, value: string) => {
     setProfileData((prev) => ({
       ...prev,
       social_links: { ...prev.social_links, [platform]: value },
@@ -72,15 +79,16 @@ export default function Profile() {
     e.preventDefault();
     setLoading(true);
     try {
-      const { error } = await supabase.auth.updateUser({
-        data: {
+      const { error } = await supabase
+        .from("profiles")
+        .update({
           name: profileData.name,
           bio: profileData.bio,
           skills: profileData.skills,
           social_links: profileData.social_links,
-          avatarUrl: user?.avatar,
-        },
-      });
+          avatar: user?.avatar,
+        })
+        .eq("id", user?.id);
       if (error) throw error;
       toast.success("Profile updated successfully!");
     } catch (err: any) {
@@ -90,6 +98,9 @@ export default function Profile() {
     }
   };
 
+  /* -----------------------
+     JSX
+  ----------------------- */
   return (
     <div className="max-w-2xl mx-auto space-y-8">
       {/* Header */}
@@ -110,7 +121,7 @@ export default function Profile() {
         )}
       </div>
 
-      {/* Current Avatar */}
+      {/* Avatar */}
       <Card>
         <CardHeader>
           <CardTitle>Profile Picture</CardTitle>
@@ -201,14 +212,7 @@ export default function Profile() {
             </div>
 
             <Button type="submit" disabled={loading} className="w-full">
-              {loading ? (
-                <>Saving...</>
-              ) : (
-                <>
-                  <Save className="h-4 w-4 mr-2" />
-                  Save Changes
-                </>
-              )}
+              {loading ? "Saving..." : (<><Save className="h-4 w-4 mr-2" />Save Changes</>)}
             </Button>
           </form>
         </CardContent>
@@ -223,45 +227,17 @@ export default function Profile() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="github">GitHub</Label>
-            <Input
-              id="github"
-              placeholder="https://github.com/username"
-              value={profileData.social_links.github ?? ""}
-              onChange={(e) => handleSocialLinkChange("github", e.target.value)}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="linkedin">LinkedIn</Label>
-            <Input
-              id="linkedin"
-              placeholder="https://linkedin.com/in/username"
-              value={profileData.social_links.linkedin ?? ""}
-              onChange={(e) => handleSocialLinkChange("linkedin", e.target.value)}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="twitter">Twitter</Label>
-            <Input
-              id="twitter"
-              placeholder="https://twitter.com/username"
-              value={profileData.social_links.twitter ?? ""}
-              onChange={(e) => handleSocialLinkChange("twitter", e.target.value)}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="website">Personal Website</Label>
-            <Input
-              id="website"
-              placeholder="https://yourwebsite.com"
-              value={profileData.social_links.website ?? ""}
-              onChange={(e) => handleSocialLinkChange("website", e.target.value)}
-            />
-          </div>
+          {["google", "youtube", "github", "facebook", "linkedin", "website"].map((platform) => (
+            <div className="space-y-2" key={platform}>
+              <Label htmlFor={platform}>{platform.charAt(0).toUpperCase() + platform.slice(1)}</Label>
+              <Input
+                id={platform}
+                placeholder={`https://${platform}.com/username`}
+                value={(profileData.social_links as any)[platform] ?? ""}
+                onChange={(e) => handleSocialLinkChange(platform as keyof SocialLinks, e.target.value)}
+              />
+            </div>
+          ))}
         </CardContent>
       </Card>
     </div>

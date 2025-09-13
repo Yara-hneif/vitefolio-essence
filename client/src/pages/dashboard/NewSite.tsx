@@ -1,18 +1,18 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useUser } from '@clerk/clerk-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
+import { useAuth } from "@/context/AuthContext";
+import { Button } from '@/components/ui/navigation/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/data-display/card';
+import { Input } from '@/components/ui/form/input';
+import { Label } from '@/components/ui/form/label';
+import { Textarea } from '@/components/ui/form/textarea';
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
+} from '@/components/ui/overlay/dialog';
 import TemplateSelector from '@/features/templates/TemplateSelector';
 import { ArrowLeft, Globe, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -38,7 +38,7 @@ interface SiteFormData {
 
 const NewSite = () => {
   const navigate = useNavigate();
-  const { user } = useUser();
+  const { user } = useAuth();
   const [step, setStep] = useState<'form' | 'template'>('form');
   const [loading, setLoading] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
@@ -50,7 +50,7 @@ const NewSite = () => {
     description: ''
   });
 
-  const username = user?.username || user?.primaryEmailAddress?.emailAddress?.split("@")[0] || "user";
+  const username = user?.username ||user?.email?.split("@")[0] || "user";
 
   const handleInputChange = (field: keyof SiteFormData, value: string) => {
     setFormData(prev => ({

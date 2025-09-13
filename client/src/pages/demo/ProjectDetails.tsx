@@ -33,7 +33,7 @@ const ProjectDetails = () => {
         {/* Image */}
         <div className="relative w-full md:w-1/2 aspect-video md:aspect-auto">
           <img
-            src={resolveImageUrl(project.imageUrl || "") || placeholderImg}
+            src={resolveImageUrl(project.cover_image || "") || placeholderImg}
             onError={(e) => {
               e.currentTarget.onerror = null;
               e.currentTarget.src = placeholderImg;
@@ -54,12 +54,12 @@ const ProjectDetails = () => {
           {/* Tags */}
           <div className="flex flex-wrap gap-2 mb-4">
             {Array.isArray(project.tags) && project.tags.length > 0 ? (
-              project.tags.map((tag: string) => (
+              project.tags.map(tag => (
                 <span
-                  key={tag}
+                  key={tag.id}
                   className="bg-secondary text-secondary-foreground text-xs px-2 py-0.5 rounded-full"
                 >
-                  #{tag}
+                  #{tag.name}
                 </span>
               ))
             ) : (
@@ -69,9 +69,9 @@ const ProjectDetails = () => {
 
           {/* Links */}
           <div className="flex gap-4">
-            {project.liveUrl && (
+            {project.live_url && (
               <a
-                href={project.liveUrl}
+                href={project.live_url}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-primary hover:underline text-sm inline-flex items-center gap-1"
@@ -79,9 +79,9 @@ const ProjectDetails = () => {
                 <ExternalLink className="h-4 w-4" /> Live Demo
               </a>
             )}
-            {project.repoUrl && (
+            {project.repo_url && (
               <a
-                href={project.repoUrl}
+                href={project.repo_url}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-muted-foreground hover:underline text-sm inline-flex items-center gap-1"
