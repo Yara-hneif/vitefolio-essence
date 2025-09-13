@@ -1,50 +1,12 @@
 import { supabase } from "@/lib/supabase";
-
-export type DbSite = {
-  id: string;
-  user_id: string | null;
-  title: string;
-  slug: string;
-  template?: string | null;
-  published: boolean;
-  created_at: string;
-  name?: string | null;
-  status?: string | null;
-};
-
-export type Site = {
-  id: string;
-  user_id: string;
-  title: string;
-  slug: string;
-  template?: string;
-  published: boolean;
-  created_at: string;
-  name?: string;
-  status?: string;
-};
-
-export type SitePage = {
-  id: string;
-  site_id: string;
-  name: string;
-  slug: string;
-  is_home: boolean;
-  content: any;
-  updated_at: string;
-};
+import type { DbSite, Site, SitePage } from "@/types/models/Site";
 
 function mapDbSiteToSite(db: DbSite): Site {
   return {
-    id: db.id,
-    user_id: db.user_id ?? "",
-    title: db.title,
-    slug: db.slug,
-    template: db.template ?? undefined,
-    published: db.published,
-    created_at: db.created_at,
-    name: db.name ?? undefined,
-    status: db.status ?? undefined,
+    ...db,
+    name: db.name ?? null,
+    status: db.status ?? null,
+    template: db.template ?? "", 
   };
 }
 
@@ -56,7 +18,7 @@ export async function listSites(userId: string): Promise<Site[]> {
   const { data, error } = await supabase
     .from("sites")
     .select("*")
-    .eq("user_id", userId)
+    .eq("owner_id", userId)
     .order("created_at", { ascending: false });
 
   if (error) throw error;
@@ -73,6 +35,7 @@ export async function getSiteBySlug(slug: string): Promise<Site | null> {
   if (error) throw error;
   return data ? mapDbSiteToSite(data as DbSite) : null;
 }
+
 
 export async function setSitePublished(siteId: string, published: boolean) {
   const { error } = await supabase
@@ -134,13 +97,9 @@ export async function savePage(pageId: string, content: any) {
 export async function createSiteFromTemplate({
   title,
   slug,
-  clerkId,
-  email,
 }: {
   title: string;
   slug: string;
-  clerkId: string;
-  email?: string | null;
 }) {
   const user = (await supabase.auth.getUser()).data.user;
   if (!user) throw new Error("Not authenticated");
@@ -148,7 +107,7 @@ export async function createSiteFromTemplate({
   const { data: site, error: siteError } = await supabase
     .from("sites")
     .insert({
-      user_id: clerkId,
+      owner_id: user.id,
       title,
       slug,
       template: "demo",
