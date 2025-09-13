@@ -33,10 +33,10 @@ async function insertDraftProject(p) {
 
 export async function syncNewReposAsDraft({ username, includeTopics, token }) {
   const repos = await fetchPublicRepos(username, includeTopics, token);
-  const { data: existing } = await supabase.from("projects").select("slug, repoUrl");
+  const { data: existing } = await supabase.from("projects").select("slug, repo_url");
 
   const slugSet = new Set(existing?.map((r) => r.slug?.toLowerCase()));
-  const urlSet = new Set(existing?.map((r) => r.repoUrl?.toLowerCase()));
+  const urlSet = new Set(existing?.map((r) => r.repo_url?.toLowerCase()));
 
   const candidates = repos.filter((r) => {
     const s = slugify(r.name);
@@ -52,9 +52,9 @@ export async function syncNewReposAsDraft({ username, includeTopics, token }) {
         slug: slugify(r.name),
         category: "Open Source",
         description: r.description ?? null,
-        imageUrl: repoOgImage(r.owner?.login, r.name),
-        liveUrl: r.homepage || (r.has_pages ? pagesUrl(r.owner?.login, r.name) : null),
-        repoUrl: r.html_url,
+        cover_image: repoOgImage(r.owner?.login, r.name),
+        live_url: r.homepage || (r.has_pages ? pagesUrl(r.owner?.login, r.name) : null),
+        repo_url: r.html_url,
         tags: r.language ? [r.language] : [],
       };
       await insertDraftProject(payload);
