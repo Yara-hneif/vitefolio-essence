@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useProjects } from "@/hooks/useProjects";
-import { Project } from "@/utils/types/Project";
+import { Project } from "@/types/models/Project";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/navigation/button";
@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/form/label";
 import { Switch } from "@/components/ui/effects/switch";
 import { Badge } from "@/components/ui/data-display/badge";
 
-import ProjectForm from "@/features/admin/components/projects/ProjectForm";
+import ProjectForm from "@/features/admin/components/projects/AdminProjectForm";
 import ImportFromGitHub from "@/features/admin/components/projects/ImportFromGitHub";
 
 import {
@@ -217,14 +217,14 @@ export default function AdminProjectsPage() {
               <span className="text-sm">Include Topics</span>
             </div>
           </div>
-            <div className="md:col-span-1 flex items-end justify-end gap-2">
-              <Button variant="secondary" onClick={() => void fetchConfig()} disabled={cfgLoading}>
-                {cfgLoading ? "Refreshing..." : "Refresh"}
-              </Button>
-              <Button onClick={() => void triggerSync()} disabled={syncingNow}>
-                {syncingNow ? "Syncing..." : "Sync Now"}
-              </Button>
-            </div>
+          <div className="md:col-span-1 flex items-end justify-end gap-2">
+            <Button variant="secondary" onClick={() => void fetchConfig()} disabled={cfgLoading}>
+              {cfgLoading ? "Refreshing..." : "Refresh"}
+            </Button>
+            <Button onClick={() => void triggerSync()} disabled={syncingNow}>
+              {syncingNow ? "Syncing..." : "Sync Now"}
+            </Button>
+          </div>
 
           <div className="md:col-span-5 flex items-center justify-between text-sm text-muted-foreground">
             <div>
@@ -262,11 +262,11 @@ export default function AdminProjectsPage() {
                 <div>
                   <div className="font-medium">{p.title}</div>
                   <div className="text-xs text-muted-foreground">
-                    {p.repoUrl ? (
+                    {p.repo_url ? (
                       <>
                         Source:{" "}
-                        <a className="underline" href={p.repoUrl} target="_blank" rel="noreferrer">
-                          {p.repoUrl}
+                        <a className="underline" href={p.repo_url} target="_blank" rel="noreferrer">
+                          {p.repo_url}
                         </a>
                       </>
                     ) : (
@@ -319,12 +319,13 @@ export default function AdminProjectsPage() {
                 <CardContent>
                   <p className="text-muted-foreground">{project.description}</p>
                   <div className="mt-2 flex flex-wrap gap-2">
-                    {(project.tags ?? []).map((tag, index) => (
+                    {(project.tags ?? []).map((tag) => (
                       <span
-                        key={`${tag}-${index}`}
+                        key={tag.id}
                         className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-secondary text-secondary-foreground"
                       >
-                        {tag}
+                        #{tag.name}
+
                       </span>
                     ))}
                   </div>

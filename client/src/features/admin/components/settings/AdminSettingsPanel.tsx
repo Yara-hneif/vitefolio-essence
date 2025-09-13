@@ -11,7 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/data-d
 import { Separator } from "@/components/ui/data-display/separator";
 import { ScrollArea } from "@/components/ui/layout/scroll-area";
 import { Switch } from "@/components/ui/effects/switch";
-import { api } from "@/lib/api";
+import { api } from"@/api/client.api";
 
 type SettingsState = {
   profileName: string;

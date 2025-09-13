@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState, useCallback } from "react";
 import { useAdmin } from "@/features/admin/hooks/useAdminMode";
-import { api } from "@/lib/api";
+import { api } from"@/api/client.api";
 import { toast } from "sonner";
 import {
   X,

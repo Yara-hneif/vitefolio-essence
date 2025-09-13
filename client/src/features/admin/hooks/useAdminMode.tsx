@@ -7,7 +7,7 @@ import React, {
   useCallback,
 } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { api } from "@/lib/api";
+import { api } from"@/api/client.api";
 import { SidebarClose } from "lucide-react";
 
 // ===== Types =====

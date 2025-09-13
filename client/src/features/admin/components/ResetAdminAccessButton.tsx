@@ -2,7 +2,7 @@ import { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/navigation/button";
 import { LogOut } from "lucide-react";
-import { setAdminSecret as applyAdminHeader } from "@/lib/api";
+import { setAdminSecret as applyAdminHeader } from "@/api/client.api";
 
 const ADMIN_KEYS = ["ADMIN_SECRET", "admin_secret", "admin_token"];
 

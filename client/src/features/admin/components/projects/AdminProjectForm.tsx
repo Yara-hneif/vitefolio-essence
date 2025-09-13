@@ -1,7 +1,6 @@
-// src/features/admin/components/ProjectForm.tsx
 import React, { useMemo } from "react";
 import { useForm } from "react-hook-form";
-import { Project } from "@/utils/types/Project";
+import { Project } from "@/types/models/Project";
 import { Button } from "@/components/ui/navigation/button";
 import {
   Dialog,
@@ -28,9 +27,10 @@ type ProjectFormValues = {
   slug?: string;
   status?: Project["status"];
   description?: string;
-  imageUrl?: string;
-  liveUrl?: string;
-  repoUrl?: string;
+  cover_image?: string;
+  gallery?: string[];
+  live_url?: string;
+  repo_url?: string;
   tags?: string[];
 };
 
@@ -47,10 +47,11 @@ const defaultsFromInitial = (initial?: Partial<Project>): ProjectFormValues => {
     slug: initial?.slug ?? "",
     status: (initial?.status as Project["status"]) ?? "draft",
     description: initial?.description ?? "",
-    imageUrl: initial?.imageUrl ?? "",
-    liveUrl: initial?.liveUrl ?? "",
-    repoUrl: initial?.repoUrl ?? "",
-    tags: Array.isArray(initial?.tags) ? initial?.tags : [],
+    cover_image: initial?.cover_image ?? "",
+    gallery: Array.isArray(initial?.gallery) ? initial?.gallery : [],
+    live_url: initial?.live_url ?? "",
+    repo_url: initial?.repo_url ?? "",
+    tags: Array.isArray(initial?.tags) ? initial?.tags.map(t => t.name) : [],
   };
 };
 
@@ -83,10 +84,17 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
     values: defaultsFromInitial(initial),
   });
 
+
   const tagsArray = watch("tags") ?? [];
   const tagsText = useMemo(
     () => (tagsArray.length ? tagsArray.join(", ") : ""),
     [tagsArray]
+  );
+
+  const galleryArray = watch("gallery") ?? [];
+  const galleryText = useMemo(
+    () => (galleryArray.length ? galleryArray.join(", ") : ""),
+    [galleryArray]
   );
 
   const submitHandler = async (data: ProjectFormValues) => {
@@ -97,10 +105,14 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
       slug: emptyToUndefined(data.slug),
       status: data.status,
       description: emptyToUndefined(data.description),
-      imageUrl: emptyToUndefined(data.imageUrl),
-      liveUrl: emptyToUndefined(data.liveUrl),
-      repoUrl: emptyToUndefined(data.repoUrl),
-      tags: (data.tags ?? []).filter(Boolean),
+      cover_image: emptyToUndefined(data.cover_image),
+      gallery: (data.gallery ?? []).filter(Boolean),
+      live_url: emptyToUndefined(data.live_url),
+      repo_url: emptyToUndefined(data.repo_url),
+      tags: (data.tags ?? []).map(t => ({
+        id: t.toLowerCase().replace(/\s+/g, "-"),
+        name: t,
+      })),
     };
     await onSubmit(payload);
     reset(defaultsFromInitial(undefined));
@@ -149,7 +161,6 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
                   setValue("status", val as Project["status"], { shouldDirty: true })
                 }
               >
-
                 <SelectTrigger>
                   <SelectValue placeholder="Select status" />
                 </SelectTrigger>
@@ -166,18 +177,33 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
             </div>
 
             <div className="col-span-2">
-              <Label htmlFor="imageUrl">Image URL</Label>
-              <Input id="imageUrl" {...register("imageUrl")} />
+              <Label htmlFor="cover_image">Cover Image (URL)</Label>
+              <Input id="cover_image" {...register("cover_image")} />
             </div>
 
             <div className="col-span-2">
-              <Label htmlFor="liveUrl">Live URL</Label>
-              <Input id="liveUrl" {...register("liveUrl")} />
+              <Label htmlFor="gallery">Gallery (comma separated URLs)</Label>
+              <Input
+                id="gallery"
+                value={galleryText}
+                onChange={(e) => {
+                  const arr = e.target.value
+                    .split(",")
+                    .map((t) => t.trim())
+                    .filter(Boolean);
+                  setValue("gallery", arr, { shouldDirty: true });
+                }}
+              />
             </div>
 
             <div className="col-span-2">
-              <Label htmlFor="repoUrl">Repo URL</Label>
-              <Input id="repoUrl" {...register("repoUrl")} />
+              <Label htmlFor="live_url">Live URL</Label>
+              <Input id="live_url" {...register("live_url")} />
+            </div>
+
+            <div className="col-span-2">
+              <Label htmlFor="repo_url">Repo URL</Label>
+              <Input id="repo_url" {...register("repo_url")} />
             </div>
 
             <div className="col-span-2">

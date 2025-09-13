@@ -1,8 +1,8 @@
 import { lazy, Suspense } from "react";
 
 import { useEffect, useState } from "react";
-import { getAllContacts, deleteContactMessage } from "@/lib/api";
-import { Contact } from "@/utils/types/Contact";
+import { getAllContacts, deleteContactMessage } from"@/api/contact.api";
+import { Contact } from "@/types/models/Contact";
 const MessageCard = lazy(() => import("@/features/admin/components/inbox/components/messageCard"));
 import { toast } from "sonner";
 

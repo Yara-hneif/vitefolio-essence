@@ -1,4 +1,4 @@
-import { Contact } from "@/utils/types/Contact";
+import { Contact } from "@/types/models/Contact";
 import { Button } from "@/components/ui/navigation/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/data-display/card";
 
@@ -8,7 +8,16 @@ type Props = {
 };
 
 const MessageCard = ({ message, onDelete }: Props) => {
-  const { id, name, email, subject, message: content, created_at } = message;
+  const { id, name, email, subject, message: content, updated_at } = message;
+
+  let formattedDate = "—";
+  if (updated_at) {
+    try {
+      formattedDate = new Date(updated_at).toLocaleString();
+    } catch {
+      formattedDate = "Invalid date";
+    }
+  }
 
   return (
     <Card>
@@ -24,9 +33,15 @@ const MessageCard = ({ message, onDelete }: Props) => {
         </Button>
       </CardHeader>
       <CardContent className="space-y-1 text-sm">
-        <p><strong>From:</strong> {name} ({email})</p>
-        <p><strong>Date:</strong> {new Date(created_at).toLocaleString()}</p>
-        <p><strong>Message:</strong> {content}</p>
+        <p>
+          <strong>From:</strong> {name} ({email})
+        </p>
+        <p>
+          <strong>Date:</strong> {formattedDate}
+        </p>
+        <p>
+          <strong>Message:</strong> {content}
+        </p>
       </CardContent>
     </Card>
   );

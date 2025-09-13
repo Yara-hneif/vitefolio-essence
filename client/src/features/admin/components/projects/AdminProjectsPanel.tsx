@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useAdmin } from "@/features/admin/hooks/useAdminMode";
 import { useProjects } from "@/hooks/useProjects";
-import { Project } from "@/utils/types/Project";
+import { Project } from "@/types/models/Project";
 import { toast } from "sonner";
 import { X, Github, Plus, RefreshCw, Settings2, Upload, Edit3, Trash2, CheckCircle2 } from "lucide-react";
 
@@ -14,7 +14,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/data-d
 import { Separator } from "@/components/ui/data-display/separator";
 import { ScrollArea } from "@/components/ui/layout/scroll-area";
 
-import ProjectForm from "@/features/admin/components/projects/ProjectForm";
+import ProjectForm from "@/features/admin/components/projects/AdminProjectForm";
 import ImportFromGitHub from "@/features/admin/components/projects/ImportFromGitHub";
 
 import {
@@ -181,9 +181,8 @@ const AdminProjectsPanel = () => {
     <>
       {/* Backdrop */}
       <div
-        className={`fixed inset-0 z-[70] bg-black/30 backdrop-blur-sm transition-opacity ${
-          projectsOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
-        }`}
+        className={`fixed inset-0 z-[70] bg-black/30 backdrop-blur-sm transition-opacity ${projectsOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+          }`}
         onClick={closeProjects}
         aria-hidden
       />
@@ -361,11 +360,11 @@ const AdminProjectsPanel = () => {
                       <div className="min-w-0">
                         <div className="truncate font-medium">{p.title}</div>
                         <div className="text-xs text-muted-foreground truncate">
-                          {p.repoUrl ? (
+                          {p.repo_url ? (
                             <>
                               Source:{" "}
-                              <a className="underline" href={p.repoUrl} target="_blank" rel="noreferrer">
-                                {p.repoUrl}
+                              <a className="underline" href={p.repo_url} target="_blank" rel="noreferrer">
+                                {p.repo_url}
                               </a>
                             </>
                           ) : (
@@ -428,19 +427,28 @@ const AdminProjectsPanel = () => {
                       </div>
                     </CardHeader>
                     <CardContent className="pt-0">
+                      {project.cover_image || (project.gallery?.length > 0 && (
+                        <img
+                          src={project.cover_image ?? project.gallery[0]}
+                          alt={project.title}
+                          className="w-full h-40 object-cover rounded mb-3"
+                        />
+                      ))}
+
                       <p className="text-sm text-muted-foreground line-clamp-2">
                         {project.description}
                       </p>
                       <div className="mt-2 flex flex-wrap gap-2">
-                        {(project.tags ?? []).map((tag, idx) => (
+                        {(project.tags ?? []).map((tag) => (
                           <span
-                            key={`${tag}-${idx}`}
+                            key={tag.id}
                             className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-secondary text-secondary-foreground"
                           >
-                            {tag}
+                            #{tag.name}
                           </span>
                         ))}
                       </div>
+
                     </CardContent>
                   </Card>
                 ))

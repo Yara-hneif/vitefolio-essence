@@ -1,17 +1,20 @@
+import { useAuth } from "@/context/AuthContext";
 import { useAdmin } from "@/features/admin/hooks/useAdminMode";
 import { Mail } from "lucide-react";
 
 export default function AdminFab() {
-  const { isAdmin, toggleSidebar, unread, openInbox } = useAdmin(); 
-  if (!isAdmin) return null;
+  const { isAuthenticated } = useAuth();
+  const { isAdmin, toggleSidebar, unread, openInbox } = useAdmin();
 
+  if (!isAuthenticated) return null; 
+  
   const avatar = import.meta.env.VITE_PROFILE_AVATAR || "/icons/avatar.png";
 
   return (
     <div className="fixed bottom-6 right-6 z-[100] flex items-center gap-2">
       <button
         type="button"
-        onClick={openInbox}                 
+        onClick={openInbox}
         title="Inbox"
         className="rounded-full shadow-lg border bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md h-12 w-12 flex items-center justify-center"
         aria-label="Open Inbox"
