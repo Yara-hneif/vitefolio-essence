@@ -6,17 +6,14 @@ export default function AuthButtons() {
 
   return (
     <div className="grid gap-2">
-      <Button onClick={() => authWithProvider("oauth_google")}>
+      <Button onClick={() => authWithProvider("google")}>
         Continue with Google
       </Button>
-      <Button onClick={() => authWithProvider("oauth_github")}>
+      <Button onClick={() => authWithProvider("github")}>
         Continue with GitHub
       </Button>
-      <Button onClick={() => authWithProvider("oauth_facebook")}>
+      <Button onClick={() => authWithProvider("facebook")}>
         Continue with Facebook
-      </Button>
-      <Button onClick={() => authWithProvider("oauth_linkedin_oidc")}>
-        Continue with LinkedIn
       </Button>
     </div>
   );

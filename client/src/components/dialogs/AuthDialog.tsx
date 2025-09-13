@@ -146,23 +146,16 @@ export default function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
           <Button
             variant="outline"
             className="w-full"
-            onClick={() => authWithProvider("oauth_google")}
+            onClick={() => authWithProvider("google")}
           >
             <Mail className="mr-2 h-4 w-4 text-red-500" /> Continue with Google
           </Button>
           <Button
             variant="outline"
             className="w-full"
-            onClick={() => authWithProvider("oauth_github")}
+            onClick={() => authWithProvider("github")}
           >
             <Github className="mr-2 h-4 w-4" /> Continue with GitHub
-          </Button>
-          <Button
-            variant="outline"
-            className="w-full"
-            onClick={() => authWithProvider("oauth_linkedin_oidc")}
-          >
-            <Linkedin className="mr-2 h-4 w-4 text-blue-600" /> Continue with LinkedIn
           </Button>
         </div>
       </DialogContent>

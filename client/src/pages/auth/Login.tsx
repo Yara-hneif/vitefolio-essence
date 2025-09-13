@@ -10,30 +10,29 @@ import { Loader2, Mail, Lock, ArrowLeft, Github, Linkedin } from 'lucide-react';
 import { toast } from 'sonner';
 
 const Login = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [formData, setFormData] = useState({ email: "", password: "" });
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const { login, loading, authWithProvider } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-
-  const from = location.state?.from?.pathname || '/dashboard';
+  const from = location.state?.from?.pathname || "/dashboard";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const result = await login(email, password);
-    if (result.status === 'complete') {
+
+    if (result.status === "complete") {
       toast.success("Welcome back!");
       navigate(from, { replace: true });
-    } else if (result.status === 'needs_verification') {
+    } else if (result.status === "needs_verification") {
       toast.info("Please verify your email to complete login.");
     } else {
       toast.error(result.error || "Login failed");
     }
   };
 
-  const handleSocialLogin = async (provider: 'oauth_google' | 'oauth_github' | 'oauth_facebook' | 'oauth_linkedin_oidc') => {
+  const handleSocialLogin = async (provider: "google" | "github" | "facebook") => {
     try {
       await authWithProvider(provider);
     } catch (error) {
@@ -85,7 +84,7 @@ const Login = () => {
                 type="button"
                 variant="outline"
                 className="w-full h-12 hover-lift transition-all duration-300"
-                onClick={() => handleSocialLogin('oauth_google')}
+                onClick={() => handleSocialLogin('google')}
 
               >
                 <Mail className="h-5 w-5 mr-3 text-red-500" />
@@ -96,21 +95,10 @@ const Login = () => {
                 type="button"
                 variant="outline"
                 className="w-full h-12 hover-lift transition-all duration-300"
-                onClick={() => handleSocialLogin('oauth_github')}
+                onClick={() => handleSocialLogin('github')}
               >
                 <Github className="h-5 w-5 mr-3" />
                 <span className="font-medium">Continue with GitHub</span>
-              </Button>
-
-              {/* ----------- LinkedIn - login ----------- */}
-              <Button
-                type="button"
-                variant="outline"
-                className="w-full h-12 hover-lift transition-all duration-300"
-                onClick={() => handleSocialLogin('oauth_linkedin_oidc')}
-              >
-                <Linkedin className="h-5 w-5 mr-3 text-blue-600" />
-                <span className="font-medium">Continue with LinkedIn</span>
               </Button>
 
               {/* ----------- Facebook - login ----------- */}
@@ -118,7 +106,7 @@ const Login = () => {
                 type="button"
                 variant="outline"
                 className="w-full h-12 hover-lift transition-all duration-300"
-                onClick={() => handleSocialLogin('oauth_facebook')}
+                onClick={() => handleSocialLogin('facebook')}
               >
                 <div className="w-5 h-5 mr-3 bg-blue-600 rounded text-white flex items-center justify-center text-sm font-bold">
                   f

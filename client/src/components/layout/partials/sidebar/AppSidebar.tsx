@@ -37,8 +37,7 @@ import {
   User,
 } from "lucide-react";
 
-// util function لعرض اسم المستخدم
-const getUserDisplayName = (user: any) =>
+ const getUserDisplayName = (user: any) =>
   user?.name ||
   user?.username ||
   user?.email ||
