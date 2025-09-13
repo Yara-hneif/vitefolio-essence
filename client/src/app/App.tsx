@@ -30,8 +30,6 @@ export default function App() {
         {/* Global notifications */}
         <Toaster />
         <Sonner />
-
-        <AuthProvider>
           <AdminProvider>
             {/* Lazy-loaded routes and admin UI */}
             <Suspense
@@ -45,7 +43,6 @@ export default function App() {
               <AdminUI />
             </Suspense>
           </AdminProvider>
-        </AuthProvider>
       </TooltipProvider>
     </QueryClientProvider>
   );
