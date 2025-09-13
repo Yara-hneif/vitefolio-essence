@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/navigation/button";
-import { SignedIn, SignedOut, SignInButton, SignUpButton } from "@clerk/clerk-react";
 
 export default function FinalCTA({
   onPrimary,
@@ -19,19 +18,13 @@ export default function FinalCTA({
         </p>
 
         <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
-          <Button size="lg" className="px-8" onClick={onPrimary}>View Demo</Button>
+          <Button size="lg" className="px-8" onClick={onPrimary}>
+            View Demo
+          </Button>
 
-          <SignedOut>
-            <SignUpButton mode="modal">
-              <Button size="lg" variant="outline" className="px-8">Get Started</Button>
-            </SignUpButton>
-          </SignedOut>
-
-          <SignedIn>
-            <Button size="lg" variant="outline" className="px-8" onClick={onSecondary}>
-              Go to Dashboard
-            </Button>
-          </SignedIn>
+          <Button size="lg" variant="outline" className="px-8" onClick={onSecondary}>
+            Go to Dashboard
+          </Button>
         </div>
       </div>
     </section>

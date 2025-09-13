@@ -1,10 +1,24 @@
 import { Link } from "react-router-dom";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/data-display/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/data-display/card";
 import { Badge } from "@/components/ui/data-display/badge";
 import { Button } from "@/components/ui/navigation/button";
-import { Github, ExternalLink, Eye, Edit, Trash2, Calendar } from "lucide-react";
+import Carousel from "@/components/ui/data-display/carousel";
+
+import {
+  Github,
+  ExternalLink,
+  Eye,
+  Edit,
+  Trash2,
+  Calendar,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Project } from "@/utils/types/Project";
+import { Project } from "@/types/models/Project";
 
 interface ProjectCardProps {
   project: Project;
@@ -19,18 +33,22 @@ export default function ProjectCard({
   onDelete,
   className,
 }: ProjectCardProps) {
+  const cover =
+    project.cover_image && project.cover_image.trim() !== ""
+      ? project.cover_image
+      : "/placeholder.svg";
+
   return (
     <Card className={cn("hover-lift overflow-hidden", className)}>
-      {(project.coverImage || project.imageUrl) && (
-        <div className="aspect-video relative overflow-hidden">
-          <img
-            src={project.coverImage || project.imageUrl || "/placeholder.svg"}
-            alt={project.title}
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
-        </div>
-      )}
+      {/* صورة الغلاف */}
+      <div className="aspect-video relative overflow-hidden">
+        <img
+          src={cover}
+          alt={project.title}
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+      </div>
 
       <CardHeader>
         <CardTitle className="text-xl">
@@ -44,34 +62,39 @@ export default function ProjectCard({
           </p>
         )}
       </CardHeader>
-
       <CardContent className="space-y-4">
         {/* Tags */}
         {project.tags && project.tags.length > 0 && (
           <div className="flex flex-wrap gap-2">
             {project.tags.map((tag) => (
-              <Badge key={tag} variant="outline">
-                {tag}
+              <Badge key={tag.id} variant="outline">
+                #{tag.name}
               </Badge>
             ))}
           </div>
         )}
 
         {/* Meta Info */}
-        {project.updatedAt && (
+        {project.updated_at && (
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Calendar className="h-4 w-4" />
             <span>
-              Updated {new Date(project.updatedAt).toLocaleDateString()}
+              Updated {new Date(project.updated_at).toLocaleDateString()}
             </span>
           </div>
         )}
 
+        {/* Carousel */}
+        {project.gallery && project.gallery.length > 0 && (
+          <Carousel images={project.gallery} className="mt-4" />
+        )}
+
+        {/* Links */}
         <div className="flex items-center gap-2">
-          {project.repoUrl && (
+          {project.repo_url && (
             <Button variant="outline" size="sm" asChild>
               <a
-                href={project.repoUrl}
+                href={project.repo_url}
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -80,10 +103,10 @@ export default function ProjectCard({
               </a>
             </Button>
           )}
-          {(project.liveUrl || project.url) && (
+          {project.live_url && (
             <Button variant="outline" size="sm" asChild>
               <a
-                href={project.liveUrl || project.url}
+                href={project.live_url}
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -94,6 +117,7 @@ export default function ProjectCard({
           )}
         </div>
 
+        {/* Actions */}
         {showActions && (
           <div className="flex items-center gap-2 pt-2">
             <Button variant="ghost" size="sm" asChild>
