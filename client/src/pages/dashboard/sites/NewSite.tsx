@@ -22,7 +22,7 @@ import {
 import TemplateSelector from '@/features/templates/TemplateSelector';
 import { ArrowLeft, Globe, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { createSiteFromTemplate } from '@/lib/templates';
+import { createSiteFromTemplate } from '@/api/site.api';
 
 interface Template {
   id: string;
@@ -45,8 +45,8 @@ interface SiteFormData {
 const NewSite = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [step, setStep] = useState<'form' | 'template'>('form');
   const [loading, setLoading] = useState(false);
+
   const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
   const [showTemplateDialog, setShowTemplateDialog] = useState(false);
 
@@ -64,7 +64,6 @@ const NewSite = () => {
       [field]: value,
     }));
 
-    // Auto-generate slug from name
     if (field === 'name' && !formData.slug) {
       const slug = value
         .toLowerCase()
@@ -107,21 +106,27 @@ const NewSite = () => {
       toast.error('Please select a template');
       return;
     }
+    if (!user?.id) {
+      toast.error('You must be logged in');
+      return;
+    }
 
     setLoading(true);
 
     try {
-      const siteId = await createSiteFromTemplate(selectedTemplate, {
-        name: formData.name,
+      const { site, homePageId } = await createSiteFromTemplate({
+        profile_id: user.id,
+        title: formData.name,
         slug: formData.slug,
         description: formData.description,
-        userId: user?.id || '',
+        template: selectedTemplate.name,
       });
 
-      toast.success('Site created successfully!');
-      navigate('/dashboard/sites');
+      toast.success('✅ Site created successfully! Redirecting...');
+      navigate(`/editor/${homePageId}`);
     } catch (error) {
-      toast.error('Failed to create site. Please try again.');
+      console.error(error);
+      toast.error('❌ Failed to create site. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -143,39 +148,6 @@ const NewSite = () => {
         <div>
           <h1 className="text-3xl font-bold">Create New Site</h1>
           <p className="text-muted-foreground">Set up your new portfolio website</p>
-        </div>
-      </div>
-
-      {/* Progress Steps */}
-      <div className="flex items-center gap-4">
-        <div
-          className={`flex items-center gap-2 ${step === 'form' ? 'text-primary' : 'text-muted-foreground'}`}
-        >
-          <div
-            className={`w-8 h-8 rounded-full border-2 flex items-center justify-center text-sm font-medium ${
-              step === 'form'
-                ? 'border-primary bg-primary text-primary-foreground'
-                : 'border-muted-foreground'
-            }`}
-          >
-            1
-          </div>
-          <span className="text-sm font-medium">Site Details</span>
-        </div>
-        <div className="flex-1 h-px bg-border"></div>
-        <div
-          className={`flex items-center gap-2 ${selectedTemplate ? 'text-primary' : 'text-muted-foreground'}`}
-        >
-          <div
-            className={`w-8 h-8 rounded-full border-2 flex items-center justify-center text-sm font-medium ${
-              selectedTemplate
-                ? 'border-primary bg-primary text-primary-foreground'
-                : 'border-muted-foreground'
-            }`}
-          >
-            2
-          </div>
-          <span className="text-sm font-medium">Choose Template</span>
         </div>
       </div>
 

@@ -28,47 +28,10 @@ import {
 } from '@/components/ui/feedback/alert-dialog';
 import { Plus, Globe, Edit, Eye, MoreVertical, Trash2, ExternalLink, Calendar } from 'lucide-react';
 import { toast } from 'sonner';
-import { supabase } from '@/lib/supabase';
 
-/* ------- Types ------- */
-export type Site = {
-  id: string;
-  profile_id: string;
-  name: string;
-  slug: string;
-  description?: string;
-  template?: string;
-  status: string;
-  published: boolean;
-  created_at: string;
-};
+import { listSites, deleteSite } from '@/api/site.api';
+import type { Site } from '@/types/models/Site';
 
-/* ------- API Helpers ------- */
-export async function listSites(userId: string): Promise<Site[]> {
-  const { data, error } = await supabase
-    .from('sites')
-    .select('*')
-    .eq('profile_id', userId)
-    .order('created_at', { ascending: false });
-
-  if (error) {
-    console.error('Error fetching sites:', error);
-    throw error;
-  }
-
-  return (data || []).map((site: any) => ({
-    ...site,
-    name: site.name ?? '',
-    status: site.status ?? 'draft',
-  })) as Site[];
-}
-
-export async function deleteSite(siteId: string) {
-  const { error } = await supabase.from('sites').delete().eq('id', siteId);
-  if (error) throw error;
-}
-
-/* ------- Component ------- */
 function Sites() {
   const { user } = useAuth();
   const [sites, setSites] = useState<Site[]>([]);
@@ -90,17 +53,17 @@ function Sites() {
     })();
   }, [user?.id]);
 
-  const handleDelete = async (id: string) => {
-    try {
-      toast.promise(deleteSite(id), {
+  const handleDelete = (id: string) => {
+    toast.promise(
+      deleteSite(id).then(() => {
+        setSites((prev) => prev.filter((s) => s.id !== id));
+      }),
+      {
         loading: 'Deleting site…',
         success: 'Site deleted successfully',
         error: 'Failed to delete site',
-      });
-      setSites((prev) => prev.filter((s) => s.id !== id));
-    } catch (err) {
-      console.error(err);
-    }
+      }
+    );
   };
 
   return (

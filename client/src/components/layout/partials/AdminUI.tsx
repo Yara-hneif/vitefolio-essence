@@ -5,18 +5,18 @@ import { useAdmin } from '@/features/admin/hooks/useAdminMode';
 
 const AdminSidebar = lazy(() => import('@/features/admin/components/sidebar/AdminSidebar'));
 const AdminFab = lazy(() => import('@/features/admin/components/sidebar/AdminFab'));
-const AdminProjectsPanel = lazy(
-  () => import('@/features/admin/components/projects/AdminProjectsPanel')
-);
-const AdminSettingsPanel = lazy(
-  () => import('@/features/admin/components/settings/AdminSettingsPanel')
-);
+const AdminProjectsPanel = lazy(() => import('@/features/admin/components/projects/AdminProjectsPanel'));
+const AdminSettingsPanel = lazy(() => import('@/features/admin/components/settings/AdminSettingsPanel'));
 const AdminInboxPanel = lazy(() => import('@/features/admin/components/inbox/AdminInboxPanel'));
 
 export default function AdminUI() {
   const { pathname } = useLocation();
-  const { isAuthenticated, user } = useAuth();
+  const auth = useAuth(); 
   const { isAdmin, inboxOpen, closeInbox } = useAdmin();
+
+  if (!auth) return null;
+
+  const { isAuthenticated, user } = auth;
 
   const userIsAdmin =
     user?.role === 'owner' ||

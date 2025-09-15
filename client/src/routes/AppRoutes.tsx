@@ -17,9 +17,9 @@ const NotFound = lazy(() => import('@/pages/NotFound'));
 const Landing = lazy(() => import('@/pages/Landing'));
 
 // User profile & public sites
-const UserPortfolioPage = lazy(() => import('@/pages/profolio/UserPortfolioPage'));
-const PublicProfile = lazy(() => import('@/pages/profolio/PublicProfile'));
-const PublicSite = lazy(() => import('@/pages/profolio/PublicSite'));
+const UserPortfolioPage = lazy(() => import('@/pages/dashboard/portfolio/UserPortfolioPage'));
+const PublicProfile = lazy(() => import('@/pages/dashboard/portfolio/PublicProfile'));
+const PublicSite = lazy(() => import('@/pages/dashboard/sites/PublicSite'));
 
 // Admin
 const Admin = lazy(() => import('@/features/admin/pages/Admin'));
@@ -29,13 +29,13 @@ const ProtectedAdmin = lazy(() => import('@/features/admin/guards/ProtectedAdmin
 // Dashboard
 const DashboardLayout = lazy(() => import('@/components/layout/DashboardLayout'));
 const Dashboard = lazy(() => import('@/pages/dashboard/Dashboard'));
-const Sites = lazy(() => import('@/pages/dashboard/Sites'));
-const NewSite = lazy(() => import('@/pages/dashboard/NewSite'));
-const ProjectsList = lazy(() => import('@/pages/dashboard/ProjectsList'));
-const ProjectForm = lazy(() => import('@/pages/dashboard/ProjectForm'));
-const Editor = lazy(() => import('@/pages/dashboard/Editor'));
-const DashboardTemplates = lazy(() => import('@/pages/dashboard/DashboardTemplates'));
-const DashboardAnalytics = lazy(() => import('@/pages/dashboard/DashboardAnalytics'));
+const Sites = lazy(() => import('@/pages/dashboard/sites/Sites'));
+const NewSite = lazy(() => import('@/pages/dashboard/sites/NewSite'));
+const ProjectsList = lazy(() => import('@/pages/dashboard/projects/ProjectsList'));
+const ProjectForm = lazy(() => import('@/pages/dashboard/projects/ProjectForm'));
+const Editor = lazy(() => import('@/pages/dashboard/sites/Editor'));
+const DashboardTemplates = lazy(() => import('@/pages/dashboard/sites/DashboardTemplates'));
+const DashboardAnalytics = lazy(() => import('@/pages/dashboard/portfolio/DashboardAnalytics'));
 const DashboardSettings = lazy(() => import('@/pages/dashboard/settings/DashboardSettings'));
 
 export default function AppRoutes() {

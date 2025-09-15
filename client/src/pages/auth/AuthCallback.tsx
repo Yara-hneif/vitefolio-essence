@@ -23,13 +23,11 @@ export default function AuthCallback() {
           }
 
           if (data?.session) {
-            // ✅ الجلسة جاهزة
             navigate('/dashboard', { replace: true });
             return;
           }
         }
 
-        // fallback: لو ما في code أو session
         const { data } = await supabase.auth.getSession();
         if (data.session) {
           navigate('/dashboard', { replace: true });

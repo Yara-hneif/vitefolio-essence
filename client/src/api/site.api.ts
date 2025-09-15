@@ -1,6 +1,9 @@
 import { supabase } from '@/lib/supabase';
 import type { DbSite, Site, SitePage } from '@/types/models/Site';
 
+/* -----------------------
+   Helpers
+----------------------- */
 function mapDbSiteToSite(db: DbSite): Site {
   return {
     ...db,
@@ -13,7 +16,6 @@ function mapDbSiteToSite(db: DbSite): Site {
 /* -----------------------
    Sites
 ----------------------- */
-
 export async function listSites(userId: string): Promise<Site[]> {
   const { data, error } = await supabase
     .from('sites')
@@ -26,7 +28,11 @@ export async function listSites(userId: string): Promise<Site[]> {
 }
 
 export async function getSiteBySlug(slug: string): Promise<Site | null> {
-  const { data, error } = await supabase.from('sites').select('*').eq('slug', slug).maybeSingle();
+  const { data, error } = await supabase
+    .from('sites')
+    .select('*')
+    .eq('slug', slug)
+    .maybeSingle();
 
   if (error) throw error;
   return data ? mapDbSiteToSite(data as DbSite) : null;
@@ -40,7 +46,6 @@ export async function setSitePublished(siteId: string, published: boolean) {
 /* -----------------------
    Pages
 ----------------------- */
-
 export async function listPages(siteId: string): Promise<SitePage[]> {
   const { data, error } = await supabase
     .from('site_pages')
@@ -80,34 +85,48 @@ export async function savePage(pageId: string, content: any) {
     .from('site_pages')
     .update({ content, updated_at: new Date().toISOString() })
     .eq('id', pageId);
+
   if (error) throw error;
 }
 
 /* -----------------------
    Create Site (from template)
 ----------------------- */
-export async function createSiteFromTemplate({ title, slug }: { title: string; slug: string }) {
-  const user = (await supabase.auth.getUser()).data.user;
-  if (!user) throw new Error('Not authenticated');
+export async function createSiteFromTemplate(siteData: {
+  profile_id: string;
+  title: string;
+  slug: string;
+  description?: string;
+  template: string;
+}) {
+  const { profile_id, title, slug, description, template } = siteData;
 
+  // 1. Insert site
   const { data: site, error: siteError } = await supabase
     .from('sites')
     .insert({
-      owner_id: user.id,
+      owner_id: profile_id,
+      profile_id,
       title,
       slug,
-      template: 'demo',
+      template,
       published: false,
+      is_public: false,
+      status: 'draft',
+      created_at: new Date().toISOString(),
+      description: description ?? '',
     })
     .select()
     .single();
 
   if (siteError) throw siteError;
 
+  // 2. Insert default home page
   const { data: page, error: pageError } = await supabase
     .from('site_pages')
     .insert({
       site_id: site.id,
+      profile_id,
       name: 'Home',
       slug: 'home',
       is_home: true,
@@ -126,4 +145,42 @@ export async function createSiteFromTemplate({ title, slug }: { title: string; s
   if (pageError) throw pageError;
 
   return { site: mapDbSiteToSite(site as DbSite), homePageId: page.id };
+}
+
+/* -----------------------
+   Extra Site APIs
+----------------------- */
+
+/** Get single site by id */
+export async function getSiteById(id: string): Promise<Site | null> {
+  const { data, error } = await supabase.from('sites').select('*').eq('id', id).maybeSingle();
+  if (error) throw error;
+  return data ? mapDbSiteToSite(data as DbSite) : null;
+}
+
+/** Update site */
+export async function updateSite(id: string, updates: Partial<Site>) {
+  const { data, error } = await supabase
+    .from('sites')
+    .update({
+      ...updates,
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', id)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return mapDbSiteToSite(data as DbSite);
+}
+
+/** Delete site and its pages */
+export async function deleteSite(id: string) {
+  const { error: pagesError } = await supabase.from('site_pages').delete().eq('site_id', id);
+  if (pagesError) throw pagesError;
+
+  const { error } = await supabase.from('sites').delete().eq('id', id);
+  if (error) throw error;
+
+  return true;
 }

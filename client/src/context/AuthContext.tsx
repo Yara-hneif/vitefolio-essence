@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import { supabase } from '@/lib/supabase';
-import { useNavigate } from 'react-router-dom';
 import type { Session, User as SbUser, AuthChangeEvent } from '@supabase/supabase-js';
 
 /* ---------------------------
@@ -89,29 +88,45 @@ function mapSbUser(u: SbUser | null): Partial<UserProfile> | null {
 /* ---------------------------
    Provider
 --------------------------- */
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
 
   useEffect(() => {
+    // استعادة الجلسة من التخزين
+    supabase.auth.getSession().then(({ data }) => {
+      if (data.session?.user) {
+        const u = data.session.user;
+        const fallback = mapSbUser(u);
+        setUser({
+          id: u.id,
+          email: u.email ?? '',
+          name: fallback?.name,
+          username: fallback?.username,
+          avatar: fallback?.avatar ?? '/placeholder.svg',
+          bio: fallback?.bio,
+          role: 'user',
+          skills: fallback?.skills ?? [],
+          social_links: fallback?.social_links ?? {},
+        });
+      }
+      setLoading(false);
+    });
+
+    // مراقبة تغييرات الجلسة
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(
       async (_event: AuthChangeEvent, session: Session | null) => {
-        setLoading(true);
-
         if (session?.user) {
           const u = session.user;
 
-          // Try to fetch profile from DB
           const { data: profile } = await supabase
             .from('profiles')
             .select('id, email, name, username, avatar, bio, role, skills, social_links')
             .eq('id', u.id)
             .maybeSingle();
 
-          // Fallback to user_metadata
           const fallback = mapSbUser(u);
 
           setUser({
@@ -229,13 +244,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-};
+}
 
 /* ---------------------------
    Hook
 --------------------------- */
-export const useAuth = () => {
+export function useAuth() {
   const ctx = useContext(AuthContext);
   if (!ctx) throw new Error('useAuth must be used within AuthProvider');
   return ctx;
-};
+}

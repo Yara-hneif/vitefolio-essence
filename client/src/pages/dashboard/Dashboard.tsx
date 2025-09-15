@@ -2,6 +2,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/navigation/button';
+import { toast } from 'sonner';
 import {
   Card,
   CardContent,
@@ -13,7 +14,7 @@ import { Badge } from '@/components/ui/data-display/badge';
 import { FolderOpen, Plus, Users, Eye, BarChart3, TrendingUp } from 'lucide-react';
 
 import { listSites, listPages } from '@/api/site.api';
-import { listProjects } from '@/api/project.api';
+import { listProjects, updateProject } from '@/api/project.api';
 import type { Site, SitePage } from '@/types/models/Site';
 import type { Project } from '@/types/models/Project';
 
@@ -195,9 +196,9 @@ export default function Dashboard() {
                   <div className="flex items-center gap-4 mt-2">
                     <Badge
                       variant={
-                        project.status === 'completed'
+                        project.status === 'published'
                           ? 'default'
-                          : project.status === 'in-progress'
+                          : project.status === 'draft'
                             ? 'secondary'
                             : 'outline'
                       }
@@ -216,16 +217,45 @@ export default function Dashboard() {
                     </span>
                   </div>
                 </div>
-                <Link to={`/dashboard/projects/${project.id}/edit`}>
-                  <Button variant="ghost" size="sm">
-                    <Eye className="h-4 w-4" />
+                <div className="flex gap-2">
+                  {/* View Project */}
+                  <Link to={`/dashboard/projects/${project.id}/edit`}>
+                    <Button variant="ghost" size="sm">
+                      <Eye className="h-4 w-4" />
+                    </Button>
+                  </Link>
+
+                  {/* Publish / Unpublish Toggle */}
+                  <Button
+                    variant={project.status === 'published' ? 'secondary' : 'default'}
+                    size="sm"
+                    onClick={async () => {
+                      const newStatus =
+                        project.status === 'published' ? 'draft' : 'published';
+                      try {
+                        await updateProject(project.id, { status: newStatus });
+                        setProjects((prev) =>
+                          prev.map((p) =>
+                            p.id === project.id ? { ...p, status: newStatus } : p
+                          )
+                        );
+                        toast.success(
+                          `Project "${project.title}" is now ${newStatus}`
+                        );
+                      } catch (err: any) {
+                        toast.error(err?.message || 'Failed to update status');
+                      }
+                    }}
+                  >
+                    {project.status === 'published' ? 'Unpublish' : 'Publish'}
                   </Button>
-                </Link>
+                </div>
               </div>
             ))
           )}
         </CardContent>
       </Card>
+
 
       {/* Quick Actions */}
       <Card>

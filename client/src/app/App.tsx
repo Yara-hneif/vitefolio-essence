@@ -7,7 +7,6 @@ import { initBuilder } from '@/features/builder';
 import { useGlobalStructuredData } from '@/lib/globalStructuredData';
 
 // Auth & Admin
-import { AuthProvider } from '@/context/AuthContext';
 import { AdminProvider } from '@/features/admin/hooks/useAdminMode';
 
 // Lazy loaded components
