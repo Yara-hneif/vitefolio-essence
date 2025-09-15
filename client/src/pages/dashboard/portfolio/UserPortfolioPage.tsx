@@ -45,7 +45,9 @@ export default function UserPortfolioPage() {
 
         try {
           const projs = await listProjects(prof.id);
-          if (mounted) setProjects(projs);
+          if (mounted) {
+            setProjects(projs.filter((p) => p.status === "published")); // ✅ عرض المنشورة فقط
+          }
         } catch (error) {
           console.error('Failed to load projects', error);
           if (mounted) setProjects([]);

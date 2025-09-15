@@ -67,8 +67,9 @@ export default function PublicProfile() {
       const { data: projs, error: pjErr } = await supabase
         .from('projects')
         .select('*')
-        .eq('profile_id', prof.id)
-        .order('created_at', { ascending: false });
+        .eq("profile_id", prof.id)
+        .eq("status", "published")
+        .order("created_at", { ascending: false });
 
       if (mounted) {
         setProfile(prof as User);

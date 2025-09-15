@@ -1,12 +1,13 @@
 import { useAuth } from '@/context/AuthContext';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { listProjects, deleteProject } from '@/api/project.api';
+import { listProjects, deleteProject, updateProject } from '@/api/project.api';
 import type { Project } from '@/types/models/Project';
 import { Button } from '@/components/ui/navigation/button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/data-display/card';
 import { Badge } from '@/components/ui/data-display/badge';
-import { Trash2, Edit, Plus, Users, Calendar } from 'lucide-react';
+import { Trash2, Edit, Plus, Users, Calendar, CheckCircle, EyeOff } from 'lucide-react';
+import { toast } from 'sonner';
 
 export default function ProjectsList() {
   const { user } = useAuth();
@@ -24,6 +25,24 @@ export default function ProjectsList() {
     if (confirm('Are you sure you want to delete this project?')) {
       await deleteProject(id);
       setProjects((prev) => prev.filter((p) => p.id !== id));
+      toast.success('Project deleted');
+    }
+  };
+
+  const togglePublish = async (p: Project) => {
+    try {
+      const newStatus = p.status === 'published' ? 'draft' : 'published';
+      await updateProject(p.id, { status: newStatus });
+      setProjects((prev) =>
+        prev.map((proj) =>
+          proj.id === p.id ? { ...proj, status: newStatus } : proj
+        )
+      );
+      toast.success(
+        `Project "${p.title}" is now ${newStatus === 'published' ? 'Published' : 'Draft'}`
+      );
+    } catch (err: any) {
+      toast.error(err?.message || 'Failed to update project status');
     }
   };
 
@@ -56,7 +75,15 @@ export default function ProjectsList() {
               <Card key={p.id} className="overflow-hidden hover-lift">
                 {cover && <img src={cover} alt={p.title} className="w-full h-40 object-cover" />}
                 <CardHeader>
-                  <CardTitle>{p.title}</CardTitle>
+                  <CardTitle className="flex items-center gap-2">
+                    {p.title}
+                    <Badge
+                      variant={p.status === 'published' ? 'default' : 'secondary'}
+                      className="ml-2"
+                    >
+                      {p.status}
+                    </Badge>
+                  </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2">
                   {p.description && (
@@ -80,6 +107,22 @@ export default function ProjectsList() {
                         <Edit className="h-4 w-4" /> Edit
                       </Button>
                     </Link>
+                    <Button
+                      size="sm"
+                      variant={p.status === 'published' ? 'secondary' : 'default'}
+                      onClick={() => togglePublish(p)}
+                      className="gap-1"
+                    >
+                      {p.status === 'published' ? (
+                        <>
+                          <EyeOff className="h-4 w-4" /> Unpublish
+                        </>
+                      ) : (
+                        <>
+                          <CheckCircle className="h-4 w-4" /> Publish
+                        </>
+                      )}
+                    </Button>
                     <Button
                       size="sm"
                       variant="destructive"
