@@ -1,6 +1,6 @@
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Pagination, Autoplay } from "swiper/modules";
-import { cn } from "@/lib/utils";
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation, Pagination, Autoplay } from 'swiper/modules';
+import { cn } from '@/lib/utils';
 
 interface CarouselProps {
   images: string[];
@@ -17,7 +17,7 @@ export default function Carousel({ images, className }: CarouselProps) {
   }
 
   return (
-    <div className={cn("w-full", className)}>
+    <div className={cn('w-full', className)}>
       <Swiper
         modules={[Navigation, Pagination, Autoplay]}
         navigation

@@ -1,12 +1,12 @@
-import { useAuth } from "@/context/AuthContext";
-import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { listProjects, deleteProject } from "@/api/project.api";
-import type { Project } from "@/types/models/Project";
-import { Button } from "@/components/ui/navigation/button";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/data-display/card";
-import { Badge } from "@/components/ui/data-display/badge";
-import { Trash2, Edit, Plus, Users, Calendar } from "lucide-react";
+import { useAuth } from '@/context/AuthContext';
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { listProjects, deleteProject } from '@/api/project.api';
+import type { Project } from '@/types/models/Project';
+import { Button } from '@/components/ui/navigation/button';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/data-display/card';
+import { Badge } from '@/components/ui/data-display/badge';
+import { Trash2, Edit, Plus, Users, Calendar } from 'lucide-react';
 
 export default function ProjectsList() {
   const { user } = useAuth();
@@ -21,7 +21,7 @@ export default function ProjectsList() {
   }, [user?.id]);
 
   const handleDelete = async (id: string) => {
-    if (confirm("Are you sure you want to delete this project?")) {
+    if (confirm('Are you sure you want to delete this project?')) {
       await deleteProject(id);
       setProjects((prev) => prev.filter((p) => p.id !== id));
     }
@@ -48,27 +48,19 @@ export default function ProjectsList() {
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {projects.map((p) => {
             const cover =
-              p.cover_image && p.cover_image.trim() !== ""
+              p.cover_image && p.cover_image.trim() !== ''
                 ? p.cover_image
-                : p.gallery?.[0] || "/placeholder.svg";
+                : p.gallery?.[0] || '/placeholder.svg';
 
             return (
               <Card key={p.id} className="overflow-hidden hover-lift">
-                {cover && (
-                  <img
-                    src={cover}
-                    alt={p.title}
-                    className="w-full h-40 object-cover"
-                  />
-                )}
+                {cover && <img src={cover} alt={p.title} className="w-full h-40 object-cover" />}
                 <CardHeader>
                   <CardTitle>{p.title}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2">
                   {p.description && (
-                    <p className="text-sm text-muted-foreground line-clamp-2">
-                      {p.description}
-                    </p>
+                    <p className="text-sm text-muted-foreground line-clamp-2">{p.description}</p>
                   )}
                   <div className="flex items-center gap-2 text-xs text-muted-foreground">
                     <Badge>{p.status}</Badge>

@@ -1,7 +1,6 @@
-
-import { Button } from "@/components/ui/navigation/button";
-import { Link } from "react-router-dom";
-import { Home, Search } from "lucide-react";
+import { Button } from '@/components/ui/navigation/button';
+import { Link } from 'react-router-dom';
+import { Home, Search } from 'lucide-react';
 
 const NotFound = () => {
   return (
@@ -16,8 +15,8 @@ const NotFound = () => {
           </div>
           <h2 className="text-3xl font-semibold mb-6">Page Not Found</h2>
           <p className="text-muted-foreground max-w-md mx-auto mb-8">
-            The page you are looking for might have been removed, had its name changed,
-            or is temporarily unavailable.
+            The page you are looking for might have been removed, had its name changed, or is
+            temporarily unavailable.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button asChild size="lg" className="rounded-full glass hover-glow">

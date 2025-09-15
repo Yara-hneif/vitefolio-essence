@@ -4,7 +4,13 @@ import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/navigation/button';
 import { Input } from '@/components/ui/form/input';
 import { Label } from '@/components/ui/form/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/data-display/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/data-display/card';
 import { Loader2, Mail, Lock, ArrowLeft } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -19,7 +25,7 @@ const Login = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     try {
       await login(email, password);
       toast.success('Welcome back!');
@@ -33,27 +39,18 @@ const Login = () => {
     <div className="min-h-screen flex items-center justify-center px-4 py-12 sparkle-bg">
       <div className="w-full max-w-md space-y-6">
         <div className="text-center">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="mb-4"
-            onClick={() => navigate('/')}
-          >
+          <Button variant="ghost" size="sm" className="mb-4" onClick={() => navigate('/')}>
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Home
           </Button>
           <h1 className="text-3xl font-bold">Welcome Back</h1>
-          <p className="text-muted-foreground mt-2">
-            Sign in to your portfolio account
-          </p>
+          <p className="text-muted-foreground mt-2">Sign in to your portfolio account</p>
         </div>
 
         <Card className="glass">
           <CardHeader>
             <CardTitle>Sign In</CardTitle>
-            <CardDescription>
-              Enter your credentials to access your dashboard
-            </CardDescription>
+            <CardDescription>Enter your credentials to access your dashboard</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -89,11 +86,7 @@ const Login = () => {
                 </div>
               </div>
 
-              <Button 
-                type="submit" 
-                className="w-full rounded-full" 
-                disabled={loading}
-              >
+              <Button type="submit" className="w-full rounded-full" disabled={loading}>
                 {loading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -107,10 +100,7 @@ const Login = () => {
 
             <div className="mt-6 text-center text-sm">
               <span className="text-muted-foreground">Don't have an account? </span>
-              <Link 
-                to="/register" 
-                className="text-primary hover:underline font-medium"
-              >
+              <Link to="/register" className="text-primary hover:underline font-medium">
                 Sign up
               </Link>
             </div>

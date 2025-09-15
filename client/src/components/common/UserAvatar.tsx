@@ -15,13 +15,13 @@ const UserAvatar: React.FC<UserAvatarProps> = ({ user, size = 'md', className })
   const sizeClasses = {
     sm: 'h-8 w-8',
     md: 'h-10 w-10',
-    lg: 'h-16 w-16'
+    lg: 'h-16 w-16',
   };
 
   const getInitials = (name: string) => {
     return name
       .split(' ')
-      .map(n => n[0])
+      .map((n) => n[0])
       .join('')
       .toUpperCase()
       .slice(0, 2);

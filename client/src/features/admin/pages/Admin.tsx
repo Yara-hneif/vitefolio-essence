@@ -1,6 +1,6 @@
-import { Suspense, lazy } from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/navigation/tabs";
-const AdminProjects = lazy(() => import("@/features/admin/pages/AdminProjects")); 
+import { Suspense, lazy } from 'react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/navigation/tabs';
+const AdminProjects = lazy(() => import('@/features/admin/pages/AdminProjects'));
 
 const Admin = () => {
   return (
@@ -9,9 +9,7 @@ const Admin = () => {
         <div className="container px-4 md:px-6">
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="text-4xl font-bold mb-2">Admin Dashboard</h1>
-            <p className="text-muted-foreground">
-              Manage your portfolio content and settings.
-            </p>
+            <p className="text-muted-foreground">Manage your portfolio content and settings.</p>
           </div>
         </div>
       </section>

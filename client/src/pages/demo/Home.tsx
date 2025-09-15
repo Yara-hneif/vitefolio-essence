@@ -1,14 +1,13 @@
-
-import { Button } from "@/components/ui/navigation/button";
-import { Link } from "react-router-dom";
-import { ArrowRight, Code, Heart, Sparkles, Star } from "lucide-react";
-import { 
+import { Button } from '@/components/ui/navigation/button';
+import { Link } from 'react-router-dom';
+import { ArrowRight, Code, Heart, Sparkles, Star } from 'lucide-react';
+import {
   Carousel,
   CarouselContent,
   CarouselItem,
   CarouselNext,
-  CarouselPrevious
-} from "@/components/ui/effects/carousel";
+  CarouselPrevious,
+} from '@/components/ui/effects/carousel';
 
 const Home = () => {
   return (
@@ -24,11 +23,12 @@ const Home = () => {
               </h1>
               <Sparkles className="absolute -right-8 -bottom-2 text-primary h-8 w-8 animate-pulse" />
             </div>
-            
+
             <p className="text-xl text-muted-foreground max-w-2xl">
-              I'm a passionate developer with an eye for design, transforming ideas into elegant and functional solutions.
+              I'm a passionate developer with an eye for design, transforming ideas into elegant and
+              functional solutions.
             </p>
-            
+
             <div className="flex flex-col sm:flex-row gap-4 mt-8">
               <Button asChild size="lg" className="rounded-full glass hover-glow">
                 <Link to="/projects" className="flex items-center gap-2">
@@ -43,7 +43,7 @@ const Home = () => {
             </div>
           </div>
         </div>
-        
+
         {/* Decorative elements */}
         <div className="absolute top-1/4 -left-24 w-48 h-48 bg-primary/10 rounded-full blur-3xl"></div>
         <div className="absolute bottom-1/4 -right-24 w-64 h-64 bg-accent/10 rounded-full blur-3xl"></div>
@@ -63,7 +63,7 @@ const Home = () => {
             </p>
           </div>
 
-          <Carousel className="w-full max-w-5xl mx-auto" opts={{ align: "center" }}>
+          <Carousel className="w-full max-w-5xl mx-auto" opts={{ align: 'center' }}>
             <CarouselContent>
               {[1, 2, 3].map((item) => (
                 <CarouselItem key={item} className="md:basis-1/2 lg:basis-1/3">
@@ -78,7 +78,12 @@ const Home = () => {
                           <p className="text-muted-foreground mb-4 text-sm">
                             A brief description of this beautiful project and the technologies used.
                           </p>
-                          <Button asChild variant="outline" size="sm" className="flex gap-2 rounded-full">
+                          <Button
+                            asChild
+                            variant="outline"
+                            size="sm"
+                            className="flex gap-2 rounded-full"
+                          >
                             <Link to={`/projects/${item}`}>Explore Details</Link>
                           </Button>
                         </div>
@@ -114,13 +119,16 @@ const Home = () => {
               <h2 className="text-3xl font-bold mb-4">Passionate Creator</h2>
               <div className="space-y-4 text-muted-foreground">
                 <p>
-                  I'm a detail-oriented developer with a passion for creating beautiful, user-centric digital experiences that solve real problems.
+                  I'm a detail-oriented developer with a passion for creating beautiful,
+                  user-centric digital experiences that solve real problems.
                 </p>
                 <p>
-                  My approach combines technical precision with creative thinking, allowing me to build solutions that are both functional and aesthetically pleasing.
+                  My approach combines technical precision with creative thinking, allowing me to
+                  build solutions that are both functional and aesthetically pleasing.
                 </p>
                 <p>
-                  When I'm not coding, you might find me exploring design trends, experimenting with new technologies, or finding inspiration in art and nature.
+                  When I'm not coding, you might find me exploring design trends, experimenting with
+                  new technologies, or finding inspiration in art and nature.
                 </p>
               </div>
               <Button asChild className="mt-6 rounded-full glass hover-glow">
@@ -148,7 +156,8 @@ const Home = () => {
           <div className="glass p-8 md:p-12 rounded-2xl max-w-3xl mx-auto">
             <h2 className="text-3xl font-bold mb-4 text-white">Let's Create Something Amazing</h2>
             <p className="max-w-2xl mx-auto mb-8 text-white/90">
-              Have a project in mind or want to know more about my work? I'd love to hear from you and discuss how we can collaborate.
+              Have a project in mind or want to know more about my work? I'd love to hear from you
+              and discuss how we can collaborate.
             </p>
             <Button asChild variant="secondary" size="lg" className="rounded-full neu-element">
               <Link to="/contact" className="flex items-center gap-2">

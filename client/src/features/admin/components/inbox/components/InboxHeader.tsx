@@ -1,4 +1,4 @@
-import { X } from "lucide-react";
+import { X } from 'lucide-react';
 
 type Props = {
   unreadCount: number;
@@ -11,9 +11,7 @@ export default function InboxHeader({ unreadCount, onClose }: Props) {
       <div className="flex items-center justify-between px-4 md:px-6 py-3">
         <div className="flex items-center gap-3">
           {/* Bigger title */}
-          <h2 className="text-[clamp(18px,1.6vw,22px)] font-bold tracking-tight">
-            Inbox
-          </h2>
+          <h2 className="text-[clamp(18px,1.6vw,22px)] font-bold tracking-tight">Inbox</h2>
 
           {/* Softer violet pill for unread */}
           <span className="inline-flex items-center gap-1.5 text-[12px] px-2.5 py-0.5 rounded-full bg-purple-600 text-white ring-1 ring-violet-600/20 shadow-sm dark:bg-violet-500">

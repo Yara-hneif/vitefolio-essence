@@ -1,10 +1,10 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense } from 'react';
 
-import { useEffect, useState } from "react";
-import { getAllContacts, deleteContactMessage } from"@/api/contact.api";
-import { Contact } from "@/types/models/Contact";
-const MessageCard = lazy(() => import("@/features/admin/components/inbox/components/messageCard"));
-import { toast } from "sonner";
+import { useEffect, useState } from 'react';
+import { getAllContacts, deleteContactMessage } from '@/api/contact.api';
+import { Contact } from '@/types/models/Contact';
+const MessageCard = lazy(() => import('@/features/admin/components/inbox/components/messageCard'));
+import { toast } from 'sonner';
 
 const AdminMessages = () => {
   const [messages, setMessages] = useState<Contact[]>([]);
@@ -16,7 +16,7 @@ const AdminMessages = () => {
         const res = await getAllContacts();
         setMessages(res || []);
       } catch (error) {
-        toast.error("Failed to load contact messages");
+        toast.error('Failed to load contact messages');
       } finally {
         setLoading(false);
       }
@@ -29,9 +29,9 @@ const AdminMessages = () => {
     try {
       await deleteContactMessage(id);
       setMessages((prev) => prev.filter((msg) => msg.id !== id));
-      toast.success("Message deleted successfully");
+      toast.success('Message deleted successfully');
     } catch (error) {
-      toast.error("Failed to delete message");
+      toast.error('Failed to delete message');
     }
   };
 

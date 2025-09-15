@@ -1,9 +1,9 @@
-import { Link, useLocation } from "react-router-dom";
-import { Github, Twitter, Linkedin, Mail } from "lucide-react";
+import { Link, useLocation } from 'react-router-dom';
+import { Github, Twitter, Linkedin, Mail } from 'lucide-react';
 
 export default function Footer() {
   const { pathname } = useLocation();
-  const isLanding = pathname === "/";
+  const isLanding = pathname === '/';
   const year = new Date().getFullYear();
 
   return (
@@ -16,30 +16,44 @@ export default function Footer() {
             <div className="text-xl font-extrabold">Vitefolio</div>
             <p className="mt-2 text-sm text-muted-foreground">
               {isLanding
-                ? "Build and share a beautiful portfolio in minutes."
-                : "Creating beautiful digital experiences with a focus on design and functionality."}
+                ? 'Build and share a beautiful portfolio in minutes.'
+                : 'Creating beautiful digital experiences with a focus on design and functionality.'}
             </p>
           </div>
 
           {/* Column 2 */}
           <div>
-            <div className="text-sm font-semibold">
-              {isLanding ? "Product" : "Quick Links"}
-            </div>
+            <div className="text-sm font-semibold">{isLanding ? 'Product' : 'Quick Links'}</div>
             <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
               {isLanding ? (
                 <>
-                  <li><a href="/#features">Features</a></li>
-                  <li><a href="/#templates">Templates</a></li>
-                  <li><a href="/#how-it-works">How it works</a></li>
-                  <li><a href="/#faq">FAQ</a></li>
+                  <li>
+                    <a href="/#features">Features</a>
+                  </li>
+                  <li>
+                    <a href="/#templates">Templates</a>
+                  </li>
+                  <li>
+                    <a href="/#how-it-works">How it works</a>
+                  </li>
+                  <li>
+                    <a href="/#faq">FAQ</a>
+                  </li>
                 </>
               ) : (
                 <>
-                  <li><Link to="/">Home</Link></li>
-                  <li><Link to="/projects">Projects</Link></li>
-                  <li><Link to="/about">About</Link></li>
-                  <li><Link to="/contact">Contact</Link></li>
+                  <li>
+                    <Link to="/">Home</Link>
+                  </li>
+                  <li>
+                    <Link to="/projects">Projects</Link>
+                  </li>
+                  <li>
+                    <Link to="/about">About</Link>
+                  </li>
+                  <li>
+                    <Link to="/contact">Contact</Link>
+                  </li>
                 </>
               )}
             </ul>
@@ -47,10 +61,12 @@ export default function Footer() {
 
           {/* Column 3 */}
           <div>
-            <div className="text-sm font-semibold">{isLanding ? "Company" : "Contact"}</div>
+            <div className="text-sm font-semibold">{isLanding ? 'Company' : 'Contact'}</div>
             {isLanding ? (
               <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
-                <li><Link to="/contact">Contact</Link></li>
+                <li>
+                  <Link to="/contact">Contact</Link>
+                </li>
                 <li>
                   <a href="#" onClick={(e) => e.preventDefault()}>
                     Terms

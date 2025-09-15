@@ -1,20 +1,20 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/navigation/button";
-import { Input } from "@/components/ui/form/input";
-import { Label } from "@/components/ui/form/label";
-import { Textarea } from "@/components/ui/form/textarea";
-import { Badge } from "@/components/ui/data-display/badge";
-import { Plus, X, ArrowLeft } from "lucide-react";
-import { toast } from "sonner";
-import { useProjects } from "@/hooks/useProjects";
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/navigation/button';
+import { Input } from '@/components/ui/form/input';
+import { Label } from '@/components/ui/form/label';
+import { Textarea } from '@/components/ui/form/textarea';
+import { Badge } from '@/components/ui/data-display/badge';
+import { Plus, X, ArrowLeft } from 'lucide-react';
+import { toast } from 'sonner';
+import { useProjects } from '@/hooks/useProjects';
 
 function slugify(s: string) {
   return s
     .toLowerCase()
-    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/[^a-z0-9\s-]/g, '')
     .trim()
-    .replace(/\s+/g, "-")
+    .replace(/\s+/g, '-')
     .slice(0, 80);
 }
 
@@ -22,21 +22,21 @@ export default function NewProject() {
   const navigate = useNavigate();
   const { createProject } = useProjects();
 
-  const [title, setTitle] = useState("");
-  const [desc, setDesc] = useState("");
-  const [coverImage, setCoverImage] = useState("");
+  const [title, setTitle] = useState('');
+  const [desc, setDesc] = useState('');
+  const [coverImage, setCoverImage] = useState('');
   const [gallery, setGallery] = useState<string[]>([]);
-  const [galleryInput, setGalleryInput] = useState("");
-  const [github, setGithub] = useState("");
-  const [live, setLive] = useState("");
+  const [galleryInput, setGalleryInput] = useState('');
+  const [github, setGithub] = useState('');
+  const [live, setLive] = useState('');
   const [tags, setTags] = useState<string[]>([]);
-  const [tagInput, setTagInput] = useState("");
+  const [tagInput, setTagInput] = useState('');
 
   // Add tag
   const addTag = () => {
     const t = tagInput.trim();
     if (t && !tags.includes(t)) setTags((a) => [...a, t]);
-    setTagInput("");
+    setTagInput('');
   };
   const removeTag = (t: string) => setTags((a) => a.filter((x) => x !== t));
 
@@ -44,15 +44,14 @@ export default function NewProject() {
   const addGalleryImage = () => {
     const img = galleryInput.trim();
     if (img && !gallery.includes(img)) setGallery((a) => [...a, img]);
-    setGalleryInput("");
+    setGalleryInput('');
   };
-  const removeGalleryImage = (img: string) =>
-    setGallery((a) => a.filter((x) => x !== img));
+  const removeGalleryImage = (img: string) => setGallery((a) => a.filter((x) => x !== img));
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim() || !desc.trim()) {
-      toast.error("Please fill required fields");
+      toast.error('Please fill required fields');
       return;
     }
     try {
@@ -65,15 +64,14 @@ export default function NewProject() {
         cover_image: coverImage || null,
         gallery: gallery.length ? gallery : undefined,
         tags: (tags ?? []).map((t) => ({
-          id: t.toLowerCase().replace(/\s+/g, "-"), // slugify ID
+          id: t.toLowerCase().replace(/\s+/g, '-'), // slugify ID
           name: t,
         })),
-
       });
-      toast.success("Project created");
-      navigate("/dashboard/projects");
+      toast.success('Project created');
+      navigate('/dashboard/projects');
     } catch (err: any) {
-      toast.error(err?.message || "Failed to create project");
+      toast.error(err?.message || 'Failed to create project');
     }
   };
 
@@ -88,28 +86,16 @@ export default function NewProject() {
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <Label>Title *</Label>
-          <Input
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            required
-          />
+          <Input value={title} onChange={(e) => setTitle(e.target.value)} required />
         </div>
         <div>
           <Label>Description *</Label>
-          <Textarea
-            rows={3}
-            value={desc}
-            onChange={(e) => setDesc(e.target.value)}
-            required
-          />
+          <Textarea rows={3} value={desc} onChange={(e) => setDesc(e.target.value)} required />
         </div>
         <div className="grid md:grid-cols-2 gap-4">
           <div>
             <Label>GitHub URL</Label>
-            <Input
-              value={github}
-              onChange={(e) => setGithub(e.target.value)}
-            />
+            <Input value={github} onChange={(e) => setGithub(e.target.value)} />
           </div>
           <div>
             <Label>Live URL</Label>
@@ -132,9 +118,7 @@ export default function NewProject() {
             <Input
               value={galleryInput}
               onChange={(e) => setGalleryInput(e.target.value)}
-              onKeyDown={(e) =>
-                e.key === "Enter" && (e.preventDefault(), addGalleryImage())
-              }
+              onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addGalleryImage())}
               placeholder="Add image URL…"
             />
             <Button type="button" onClick={addGalleryImage}>
@@ -146,10 +130,7 @@ export default function NewProject() {
               {gallery.map((img) => (
                 <Badge key={img} variant="secondary" className="gap-1">
                   {img}
-                  <X
-                    className="h-3 w-3 cursor-pointer"
-                    onClick={() => removeGalleryImage(img)}
-                  />
+                  <X className="h-3 w-3 cursor-pointer" onClick={() => removeGalleryImage(img)} />
                 </Badge>
               ))}
             </div>
@@ -162,9 +143,7 @@ export default function NewProject() {
             <Input
               value={tagInput}
               onChange={(e) => setTagInput(e.target.value)}
-              onKeyDown={(e) =>
-                e.key === "Enter" && (e.preventDefault(), addTag())
-              }
+              onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
               placeholder="Add technology…"
             />
             <Button type="button" onClick={addTag}>
@@ -176,10 +155,7 @@ export default function NewProject() {
               {tags.map((t) => (
                 <Badge key={t} variant="secondary" className="gap-1">
                   {t}
-                  <X
-                    className="h-3 w-3 cursor-pointer"
-                    onClick={() => removeTag(t)}
-                  />
+                  <X className="h-3 w-3 cursor-pointer" onClick={() => removeTag(t)} />
                 </Badge>
               ))}
             </div>
@@ -188,7 +164,7 @@ export default function NewProject() {
 
         <div className="flex justify-end">
           <Button type="submit" disabled={createProject.isPending}>
-            {createProject.isPending ? "Creating…" : "Create"}
+            {createProject.isPending ? 'Creating…' : 'Create'}
           </Button>
         </div>
       </form>

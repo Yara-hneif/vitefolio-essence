@@ -1,4 +1,4 @@
-import { builder, Builder } from "@builder.io/react";
+import { builder, Builder } from '@builder.io/react';
 
 const builderPublicKey = import.meta.env.VITE_BUILDER_PUBLIC_KEY as string;
 builder.init(builderPublicKey);

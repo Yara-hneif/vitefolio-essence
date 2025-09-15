@@ -1,28 +1,21 @@
-import { useAuth } from "@/context/AuthContext";
-import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/navigation/button";
+import { useAuth } from '@/context/AuthContext';
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { Button } from '@/components/ui/navigation/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/data-display/card";
-import { Badge } from "@/components/ui/data-display/badge";
-import {
-  FolderOpen,
-  Plus,
-  Users,
-  Eye,
-  BarChart3,
-  TrendingUp,
-} from "lucide-react";
+} from '@/components/ui/data-display/card';
+import { Badge } from '@/components/ui/data-display/badge';
+import { FolderOpen, Plus, Users, Eye, BarChart3, TrendingUp } from 'lucide-react';
 
-import { listSites, listPages } from "@/api/site.api";
-import { listProjects } from "@/api/project.api";
-import type { Site, SitePage } from "@/types/models/Site";
-import type { Project } from "@/types/models/Project";
+import { listSites, listPages } from '@/api/site.api';
+import { listProjects } from '@/api/project.api';
+import type { Site, SitePage } from '@/types/models/Site';
+import type { Project } from '@/types/models/Project';
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -31,7 +24,7 @@ export default function Dashboard() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const username = user?.username || user?.email?.split("@")[0] || "user";
+  const username = user?.username || user?.email?.split('@')[0] || 'user';
   const siteSlug = username;
 
   useEffect(() => {
@@ -63,7 +56,7 @@ export default function Dashboard() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">
-            Welcome back, {user?.name || user?.username || "User"}!
+            Welcome back, {user?.name || user?.username || 'User'}!
           </h1>
           <p className="text-muted-foreground mt-2">
             Manage your portfolio and sites: /profile/{siteSlug}
@@ -81,9 +74,7 @@ export default function Dashboard() {
       <Card>
         <CardHeader>
           <CardTitle>My Pages</CardTitle>
-          <CardDescription>
-            Manage your site pages and content
-          </CardDescription>
+          <CardDescription>Manage your site pages and content</CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
           {loading ? (
@@ -99,15 +90,12 @@ export default function Dashboard() {
             </div>
           ) : (
             pages.map((p) => (
-              <div
-                key={p.id}
-                className="rounded-xl border p-4 flex items-center justify-between"
-              >
+              <div key={p.id} className="rounded-xl border p-4 flex items-center justify-between">
                 <div>
                   <div className="font-medium">{p.name}</div>
                   <div className="text-sm text-muted-foreground">
-                    /profile/{siteSlug}/{p.is_home ? "" : p.slug}
-                    {p.is_home ? " (home)" : ""}
+                    /profile/{siteSlug}/{p.is_home ? '' : p.slug}
+                    {p.is_home ? ' (home)' : ''}
                   </div>
                 </div>
                 <div className="flex gap-2">
@@ -117,7 +105,7 @@ export default function Dashboard() {
                     </Button>
                   </Link>
                   <a
-                    href={`/${siteSlug}/${p.is_home ? "" : p.slug}`}
+                    href={`/${siteSlug}/${p.is_home ? '' : p.slug}`}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -203,30 +191,28 @@ export default function Dashboard() {
               >
                 <div className="flex-1">
                   <h4 className="font-medium">{project.title}</h4>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    {project.description}
-                  </p>
+                  <p className="text-sm text-muted-foreground mt-1">{project.description}</p>
                   <div className="flex items-center gap-4 mt-2">
                     <Badge
                       variant={
-                        project.status === "completed"
-                          ? "default"
-                          : project.status === "in-progress"
-                          ? "secondary"
-                          : "outline"
+                        project.status === 'completed'
+                          ? 'default'
+                          : project.status === 'in-progress'
+                            ? 'secondary'
+                            : 'outline'
                       }
                     >
                       {project.status}
                     </Badge>
                     <span className="text-xs text-muted-foreground">
                       {project.collaborators} collaborator
-                      {project.collaborators !== 1 ? "s" : ""}
+                      {project.collaborators !== 1 ? 's' : ''}
                     </span>
                     <span className="text-xs text-muted-foreground">
-                      Updated{" "}
+                      Updated{' '}
                       {project.updated_at
                         ? new Date(project.updated_at).toLocaleDateString()
-                        : "N/A"}
+                        : 'N/A'}
                     </span>
                   </div>
                 </div>

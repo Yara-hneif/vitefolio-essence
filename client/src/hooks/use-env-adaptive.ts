@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
-import { useMediaQuery } from "usehooks-ts";
-import { useReducedMotion } from "framer-motion";
+import { useEffect, useState } from 'react';
+import { useMediaQuery } from 'usehooks-ts';
+import { useReducedMotion } from 'framer-motion';
 
 export const BREAKPOINTS = {
   mobileMax: 767.98,
@@ -10,9 +10,9 @@ export const BREAKPOINTS = {
 const qMobile = `(max-width: ${BREAKPOINTS.mobileMax}px)`;
 const qTablet = `(min-width: ${BREAKPOINTS.mobileMax + 0.02}px) and (max-width: ${BREAKPOINTS.tabletMax}px)`;
 const qDesktop = `(min-width: ${BREAKPOINTS.tabletMax + 0.02}px)`;
-const qPortrait = "(orientation: portrait)";
-const qHover = "(hover: hover)";
-const qPointerCoarse = "(pointer: coarse)";
+const qPortrait = '(orientation: portrait)';
+const qHover = '(hover: hover)';
+const qPointerCoarse = '(pointer: coarse)';
 
 export function useEnvAdaptive() {
   const isMobile = useMediaQuery(qMobile, { initializeWithValue: false });
@@ -37,17 +37,17 @@ export function useEnvAdaptive() {
       raf = requestAnimationFrame(updateNow);
     };
     updateNow();
-    window.addEventListener("resize", onResize, { passive: true });
-    window.addEventListener("orientationchange", onResize, { passive: true });
+    window.addEventListener('resize', onResize, { passive: true });
+    window.addEventListener('orientationchange', onResize, { passive: true });
     return () => {
       cancelAnimationFrame(raf);
-      window.removeEventListener("resize", onResize);
-      window.removeEventListener("orientationchange", onResize);
+      window.removeEventListener('resize', onResize);
+      window.removeEventListener('orientationchange', onResize);
     };
   }, []);
 
   const isTouch = pointerCoarse || !canHover;
-  const device = isMobile ? "mobile" : isTablet ? "tablet" : "desktop";
+  const device = isMobile ? 'mobile' : isTablet ? 'tablet' : 'desktop';
 
   return {
     // breakpoints

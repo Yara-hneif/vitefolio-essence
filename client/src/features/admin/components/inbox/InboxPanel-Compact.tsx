@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useState, useCallback } from "react";
-import { useAdmin } from "@/features/admin/hooks/useAdminMode";
-import { api } from"@/api/client.api";
-import { toast } from "sonner";
+import { useEffect, useMemo, useState, useCallback } from 'react';
+import { useAdmin } from '@/features/admin/hooks/useAdminMode';
+import { api } from '@/api/client.api';
+import { toast } from 'sonner';
 import {
   X,
   Mail,
@@ -12,17 +12,17 @@ import {
   Search,
   ChevronLeft,
   ChevronRight,
-} from "lucide-react";
+} from 'lucide-react';
 
-import { Button } from "@/components/ui/navigation/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/data-display/card";
-import { Input } from "@/components/ui/form/input";
-import { Label } from "@/components/ui/form/label";
-import { Badge } from "@/components/ui/data-display/badge";
-import { Separator } from "@/components/ui/data-display/separator";
-import { ScrollArea } from "@/components/ui/layout/scroll-area";
-import { Textarea } from "@/components/ui/form/textarea";
-import { Switch } from "@/components/ui/effects/switch";
+import { Button } from '@/components/ui/navigation/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/data-display/card';
+import { Input } from '@/components/ui/form/input';
+import { Label } from '@/components/ui/form/label';
+import { Badge } from '@/components/ui/data-display/badge';
+import { Separator } from '@/components/ui/data-display/separator';
+import { ScrollArea } from '@/components/ui/layout/scroll-area';
+import { Textarea } from '@/components/ui/form/textarea';
+import { Switch } from '@/components/ui/effects/switch';
 
 type Message = {
   id: string;
@@ -59,7 +59,7 @@ export default function AdminInboxPanel({ open, onClose }: Props) {
   const [rows, setRows] = useState<Message[]>([]);
   const [total, setTotal] = useState(0);
 
-  const [q, setQ] = useState("");
+  const [q, setQ] = useState('');
   const [onlyUnread, setOnlyUnread] = useState(false);
 
   const [selected, setSelected] = useState<Message | null>(null);
@@ -70,14 +70,14 @@ export default function AdminInboxPanel({ open, onClose }: Props) {
     if (!isAdmin) return;
     try {
       setLoading(true);
-      const resp = await api.get<MessagesApiResponse>("/api/admin/messages", {
+      const resp = await api.get<MessagesApiResponse>('/api/admin/messages', {
         params: { page, pageSize },
       });
       const items = Array.isArray(resp.data?.items) ? resp.data.items : [];
       setRows(items);
       setTotal(Number(resp.data?.total ?? items.length));
     } catch (e: any) {
-      if (e?.response?.status !== 404) toast.error("Failed to load messages");
+      if (e?.response?.status !== 404) toast.error('Failed to load messages');
     } finally {
       setLoading(false);
     }
@@ -90,10 +90,10 @@ export default function AdminInboxPanel({ open, onClose }: Props) {
   // close on Escape
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && open) onClose();
+      if (e.key === 'Escape' && open) onClose();
     };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
   }, [open, onClose]);
 
   const listFiltered = useMemo(() => {
@@ -115,23 +115,23 @@ export default function AdminInboxPanel({ open, onClose }: Props) {
       setRows((r) => r.map((m) => (m.id === msg.id ? { ...m, is_read: isRead } : m)));
       if (selected?.id === msg.id) setSelected({ ...msg, is_read: isRead });
     } catch {
-      toast.error("Failed to update message");
+      toast.error('Failed to update message');
     } finally {
       setMarking(null);
     }
   };
 
   const remove = async (msg: Message) => {
-    const ok = window.confirm("Delete this message?");
+    const ok = window.confirm('Delete this message?');
     if (!ok) return;
     try {
       setRemoving(msg.id);
       await api.delete(`/api/admin/messages/${msg.id}`);
       setRows((r) => r.filter((m) => m.id !== msg.id));
       if (selected?.id === msg.id) setSelected(null);
-      toast.success("Message deleted");
+      toast.success('Message deleted');
     } catch {
-      toast.error("Failed to delete message");
+      toast.error('Failed to delete message');
     } finally {
       setRemoving(null);
     }
@@ -139,13 +139,13 @@ export default function AdminInboxPanel({ open, onClose }: Props) {
 
   const replyTo = (msg: Message) => {
     if (!msg.email) return;
-    const subject = encodeURIComponent(`Re: ${msg.subject ?? "Message"}`);
+    const subject = encodeURIComponent(`Re: ${msg.subject ?? 'Message'}`);
     const body = encodeURIComponent(
-      `Hi ${msg.name ?? ""},\n\n` +
-      `Thanks for reaching out.\n\n` +
-      `--- Original message ---\n${msg.body ?? ""}\n`
+      `Hi ${msg.name ?? ''},\n\n` +
+        `Thanks for reaching out.\n\n` +
+        `--- Original message ---\n${msg.body ?? ''}\n`
     );
-    window.open(`mailto:${msg.email}?subject=${subject}&body=${body}`, "_blank");
+    window.open(`mailto:${msg.email}?subject=${subject}&body=${body}`, '_blank');
   };
 
   return (
@@ -153,7 +153,7 @@ export default function AdminInboxPanel({ open, onClose }: Props) {
       {/* Backdrop */}
       <div
         className={`fixed inset-0 z-[70] bg-black/30 backdrop-blur-sm transition-opacity ${
-          open ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+          open ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
         }`}
         onClick={onClose}
         aria-hidden
@@ -163,7 +163,7 @@ export default function AdminInboxPanel({ open, onClose }: Props) {
       <aside
         className={`fixed right-0 top-0 z-[75] h-full w-full md:w-[880px] 
         bg-white/90 dark:bg-zinc-900/90 border-l shadow-2xl backdrop-blur-md
-        transition-transform ${open ? "translate-x-0" : "translate-x-full"}`}
+        transition-transform ${open ? 'translate-x-0' : 'translate-x-full'}`}
         role="dialog"
         aria-label="Inbox panel"
       >
@@ -175,7 +175,11 @@ export default function AdminInboxPanel({ open, onClose }: Props) {
           </div>
           <div className="flex items-center gap-2">
             <Button variant="outline" size="sm" onClick={() => void load()} disabled={loading}>
-              {loading ? <RefreshCw className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
+              {loading ? (
+                <RefreshCw className="h-4 w-4 animate-spin" />
+              ) : (
+                <RefreshCw className="h-4 w-4" />
+              )}
             </Button>
             <button
               className="p-2 rounded-full hover:bg-black/5"
@@ -202,7 +206,11 @@ export default function AdminInboxPanel({ open, onClose }: Props) {
                 />
               </div>
               <div className="flex items-center gap-2 px-2">
-                <Switch id="onlyUnread" checked={onlyUnread} onCheckedChange={(v) => setOnlyUnread(Boolean(v))} />
+                <Switch
+                  id="onlyUnread"
+                  checked={onlyUnread}
+                  onCheckedChange={(v) => setOnlyUnread(Boolean(v))}
+                />
                 <Label htmlFor="onlyUnread" className="text-xs text-muted-foreground">
                   Unread only
                 </Label>
@@ -225,23 +233,21 @@ export default function AdminInboxPanel({ open, onClose }: Props) {
                       key={m.id}
                       onClick={() => setSelected(m)}
                       className={`w-full text-left rounded-lg border p-3 hover:bg-muted/40 transition ${
-                        selected?.id === m.id ? "bg-muted/50" : ""
+                        selected?.id === m.id ? 'bg-muted/50' : ''
                       }`}
                     >
                       <div className="flex items-center justify-between">
-                        <div className="font-medium truncate">
-                          {m.subject || "(no subject)"}
-                        </div>
-                        <Badge variant={m.is_read ? "secondary" : "default"}>
-                          {m.is_read ? "Read" : "New"}
+                        <div className="font-medium truncate">{m.subject || '(no subject)'}</div>
+                        <Badge variant={m.is_read ? 'secondary' : 'default'}>
+                          {m.is_read ? 'Read' : 'New'}
                         </Badge>
                       </div>
                       <div className="text-xs text-muted-foreground truncate">
-                        {m.name ? `${m.name} • ` : ""}
-                        {m.email || "unknown"}
+                        {m.name ? `${m.name} • ` : ''}
+                        {m.email || 'unknown'}
                       </div>
                       <div className="text-xs text-muted-foreground">
-                        {m.created_at ? new Date(m.created_at).toLocaleString() : ""}
+                        {m.created_at ? new Date(m.created_at).toLocaleString() : ''}
                       </div>
                     </button>
                   ))
@@ -293,25 +299,27 @@ export default function AdminInboxPanel({ open, onClose }: Props) {
                           <Mail className="h-4 w-4" />
                         )}
                         <h3 className="text-lg font-semibold truncate">
-                          {selected.subject || "(no subject)"}
+                          {selected.subject || '(no subject)'}
                         </h3>
                       </div>
                       <div className="text-xs text-muted-foreground">
-                        From: {selected.name ? `${selected.name} — ` : ""}
-                        <a className="underline" href={`mailto:${selected.email}`}>{selected.email}</a>
+                        From: {selected.name ? `${selected.name} — ` : ''}
+                        <a className="underline" href={`mailto:${selected.email}`}>
+                          {selected.email}
+                        </a>
                       </div>
                       <div className="text-xs text-muted-foreground">
-                        {selected.created_at ? new Date(selected.created_at).toLocaleString() : ""}
+                        {selected.created_at ? new Date(selected.created_at).toLocaleString() : ''}
                       </div>
                     </div>
                     <div className="flex gap-2">
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => markRead(selected, !Boolean(selected.is_read))}
+                        onClick={() => markRead(selected, !selected.is_read)}
                         disabled={marking === selected.id}
                       >
-                        {selected.is_read ? "Mark unread" : "Mark read"}
+                        {selected.is_read ? 'Mark unread' : 'Mark read'}
                       </Button>
                       <Button
                         variant="destructive"
@@ -331,7 +339,7 @@ export default function AdminInboxPanel({ open, onClose }: Props) {
                     </CardHeader>
                     <CardContent>
                       <p className="whitespace-pre-wrap text-sm">
-                        {selected.body || "(empty message)"}
+                        {selected.body || '(empty message)'}
                       </p>
                     </CardContent>
                   </Card>
@@ -342,11 +350,9 @@ export default function AdminInboxPanel({ open, onClose }: Props) {
                     </CardHeader>
                     <CardContent className="space-y-3">
                       <Textarea
-                        placeholder={`Reply to ${selected.email ?? "sender"}…`}
+                        placeholder={`Reply to ${selected.email ?? 'sender'}…`}
                         rows={5}
-                        defaultValue={
-                          `Hi ${selected.name ?? ""},\n\nThanks for reaching out.\n\nBest,\n${import.meta.env.VITE_PROFILE_NAME || "Admin"}`
-                        }
+                        defaultValue={`Hi ${selected.name ?? ''},\n\nThanks for reaching out.\n\nBest,\n${import.meta.env.VITE_PROFILE_NAME || 'Admin'}`}
                       />
                       <div className="flex justify-end">
                         <Button size="sm" onClick={() => replyTo(selected)}>

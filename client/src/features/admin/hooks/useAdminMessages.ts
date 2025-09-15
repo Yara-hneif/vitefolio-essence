@@ -1,5 +1,5 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { api } from"@/api/client.api";
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { api } from '@/api/client.api';
 
 /* ========= Types ========= */
 
@@ -28,7 +28,7 @@ export interface MessagesQueryParams {
   q?: string;
   page?: number;
   pageSize?: number;
-  sort?: string;       // e.g. "created_at:desc"
+  sort?: string; // e.g. "created_at:desc"
   is_read?: boolean;
   is_starred?: boolean;
 }
@@ -37,9 +37,9 @@ export interface MessagesQueryParams {
 
 export function useAdminMessages(params: MessagesQueryParams = {}) {
   return useQuery({
-    queryKey: ["admin-messages", params] as const,
+    queryKey: ['admin-messages', params] as const,
     queryFn: async (): Promise<MessagesResponse> => {
-      const res = await api.get<MessagesResponse>("/api/admin/messages", { params });
+      const res = await api.get<MessagesResponse>('/api/admin/messages', { params });
       return res.data;
     },
   });
@@ -53,13 +53,13 @@ export function useAdminUpdateMessage() {
       patch,
     }: {
       id: string;
-      patch: Partial<Pick<ContactMessage, "is_read" | "is_starred">>;
+      patch: Partial<Pick<ContactMessage, 'is_read' | 'is_starred'>>;
     }) => {
       const res = await api.patch<ContactMessage>(`/api/admin/messages/${id}`, patch);
       return res.data;
     },
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["admin-messages"] });
+      qc.invalidateQueries({ queryKey: ['admin-messages'] });
     },
   });
 }
@@ -71,7 +71,7 @@ export function useAdminDeleteMessage() {
       await api.delete(`/api/admin/messages/${id}`);
     },
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["admin-messages"] });
+      qc.invalidateQueries({ queryKey: ['admin-messages'] });
     },
   });
 }
@@ -81,15 +81,15 @@ export function useAdminBulkDelete() {
   return useMutation({
     mutationFn: async (ids: string[]) => {
       const res = await api.request<any>({
-        url: "/api/admin/messages",
-        method: "DELETE",
+        url: '/api/admin/messages',
+        method: 'DELETE',
         data: { ids },
-        headers: { "Content-Type": "application/json" },
+        headers: { 'Content-Type': 'application/json' },
       });
       return res.data as { ok: boolean; removed: number };
     },
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["admin-messages"] });
+      qc.invalidateQueries({ queryKey: ['admin-messages'] });
     },
   });
 }
@@ -98,11 +98,14 @@ export function useAdminReply() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async ({ id, subject, body }: { id: string; subject: string; body: string }) => {
-      const res = await api.post<{ ok: true }>(`/api/admin/messages/${id}/reply`, { subject, body });
+      const res = await api.post<{ ok: true }>(`/api/admin/messages/${id}/reply`, {
+        subject,
+        body,
+      });
       return res.data;
     },
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["admin-messages"] });
+      qc.invalidateQueries({ queryKey: ['admin-messages'] });
     },
   });
 }

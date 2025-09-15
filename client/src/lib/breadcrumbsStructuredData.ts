@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect } from 'react';
 
 type BreadcrumbItem = {
   name: string;
@@ -7,21 +7,21 @@ type BreadcrumbItem = {
 
 export function useBreadcrumbStructuredData(items: BreadcrumbItem[]) {
   useEffect(() => {
-    const scriptId = "breadcrumbs-structured-data";
+    const scriptId = 'breadcrumbs-structured-data';
     let script = document.getElementById(scriptId) as HTMLScriptElement | null;
 
     if (!script) {
-      script = document.createElement("script");
+      script = document.createElement('script');
       script.id = scriptId;
-      script.type = "application/ld+json";
+      script.type = 'application/ld+json';
       document.head.appendChild(script);
     }
 
     const jsonLd = {
-      "@context": "https://schema.org",
-      "@type": "BreadcrumbList",
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
       itemListElement: items.map((item, index) => ({
-        "@type": "ListItem",
+        '@type': 'ListItem',
         position: index + 1,
         name: item.name,
         item: item.url,

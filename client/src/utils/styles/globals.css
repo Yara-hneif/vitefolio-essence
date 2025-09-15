@@ -45,7 +45,7 @@
     --ring: 260 60% 65%;
 
     --radius: 1rem;
-    
+
     /* Sidebar variables */
     --sidebar-background: 260 30% 98%;
     --sidebar-foreground: 260 20% 12%;
@@ -85,7 +85,7 @@
     --border: 260 20% 20%;
     --input: 260 20% 20%;
     --ring: 260 50% 70%;
-    
+
     /* Sidebar variables */
     --sidebar-background: 260 25% 12%;
     --sidebar-foreground: 0 0% 95%;
@@ -108,16 +108,31 @@
     font-family: 'Montserrat', sans-serif;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply font-semibold;
     font-family: 'Playfair Display', serif;
   }
 
-  h1 { @apply text-4xl md:text-5xl; }
-  h2 { @apply text-3xl md:text-4xl; }
-  h3 { @apply text-2xl md:text-3xl; }
-  h4 { @apply text-xl md:text-2xl; }
-  h5 { @apply text-lg md:text-xl; }
+  h1 {
+    @apply text-4xl md:text-5xl;
+  }
+  h2 {
+    @apply text-3xl md:text-4xl;
+  }
+  h3 {
+    @apply text-2xl md:text-3xl;
+  }
+  h4 {
+    @apply text-xl md:text-2xl;
+  }
+  h5 {
+    @apply text-lg md:text-xl;
+  }
 }
 
 /* ============================= */
@@ -127,7 +142,7 @@
   .card-hover {
     @apply transition-all duration-500 hover:shadow-xl hover:-translate-y-2;
   }
-  
+
   .section-padding {
     @apply py-16 md:py-24;
   }
@@ -139,13 +154,13 @@
   .dark .glass {
     @apply bg-black/30 border-white/10;
   }
-  
+
   /* Neumorphism */
   .neu-element {
     @apply bg-background shadow-[8px_8px_16px_rgba(0,0,0,0.1),-8px_-8px_16px_rgba(255,255,255,0.7)]
            dark:shadow-[5px_5px_10px_rgba(0,0,0,0.3),-5px_-5px_10px_rgba(255,255,255,0.05)];
   }
-  
+
   /* Enhanced animations */
   .hover-lift {
     @apply transition-all duration-300 ease-in-out hover:-translate-y-1 hover:shadow-lg;
@@ -153,7 +168,7 @@
   .hover-glow {
     @apply transition-all duration-300 hover:shadow-[0_0_15px_rgba(var(--primary),0.5)];
   }
-  
+
   /* 3D Card effect */
   .card-3d {
     @apply relative transition-transform duration-500 transform-gpu hover:scale-[1.02];
@@ -167,11 +182,12 @@
   .card-3d:hover .card-3d-content {
     transform: translateZ(20px);
   }
-  
+
   /* Sparkle background */
   .sparkle-bg {
-    background-image: radial-gradient(circle at top right, rgba(var(--primary), 0.15) 0%, transparent 70%),
-                      radial-gradient(circle at bottom left, rgba(var(--accent), 0.15) 0%, transparent 70%);
+    background-image:
+      radial-gradient(circle at top right, rgba(var(--primary), 0.15) 0%, transparent 70%),
+      radial-gradient(circle at bottom left, rgba(var(--accent), 0.15) 0%, transparent 70%);
   }
 }
 
@@ -179,19 +195,34 @@
 /* Animations & Utilities        */
 /* ============================= */
 @keyframes float {
-  0%   { transform: translateY(0px); }
-  50%  { transform: translateY(-10px); }
-  100% { transform: translateY(0px); }
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
 }
 
 @keyframes shine {
-  0%   { background-position: -100% 0; }
-  100% { background-position: 200% 0; }
+  0% {
+    background-position: -100% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
 }
 
 @keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 5px 2px rgba(var(--primary), 0.3); }
-  50%      { box-shadow: 0 0 15px 5px rgba(var(--primary), 0.5); }
+  0%,
+  100% {
+    box-shadow: 0 0 5px 2px rgba(var(--primary), 0.3);
+  }
+  50% {
+    box-shadow: 0 0 15px 5px rgba(var(--primary), 0.5);
+  }
 }
 
 @layer utilities {
@@ -200,10 +231,10 @@
     overflow: hidden;
   }
   .shimmer::after {
-    content: "";
+    content: '';
     position: absolute;
     inset: 0;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
     background-size: 200% 100%;
     animation: shine 3s infinite;
   }

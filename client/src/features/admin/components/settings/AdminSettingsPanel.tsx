@@ -1,39 +1,45 @@
-import { useEffect, useState } from "react";
-import { useAdmin } from "@/features/admin/hooks/useAdminMode";
-import { toast } from "sonner";
-import { X, UserRound, Paintbrush, ShieldCheck, Save, RefreshCw } from "lucide-react";
+import { useEffect, useState } from 'react';
+import { useAdmin } from '@/features/admin/hooks/useAdminMode';
+import { toast } from 'sonner';
+import { X, UserRound, Paintbrush, ShieldCheck, Save, RefreshCw } from 'lucide-react';
 
-import { Button } from "@/components/ui/navigation/button";
-import { Input } from "@/components/ui/form/input";
-import { Label } from "@/components/ui/form/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/form/select";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/data-display/card";
-import { Separator } from "@/components/ui/data-display/separator";
-import { ScrollArea } from "@/components/ui/layout/scroll-area";
-import { Switch } from "@/components/ui/effects/switch";
-import { api } from"@/api/client.api";
+import { Button } from '@/components/ui/navigation/button';
+import { Input } from '@/components/ui/form/input';
+import { Label } from '@/components/ui/form/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/form/select';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/data-display/card';
+import { Separator } from '@/components/ui/data-display/separator';
+import { ScrollArea } from '@/components/ui/layout/scroll-area';
+import { Switch } from '@/components/ui/effects/switch';
+import { api } from '@/api/client.api';
 
 type SettingsState = {
   profileName: string;
   avatarUrl: string;
-  theme: "system" | "light" | "dark";
+  theme: 'system' | 'light' | 'dark';
   enableAnimations: boolean;
 };
 
-const LS_KEY = "admin.settings.v1";
+const LS_KEY = 'admin.settings.v1';
 
 const AdminSettingsPanel = () => {
   const { isAdmin, settingsOpen, closeSettings } = useAdmin();
   const hidden = !isAdmin;
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [profileName, setProfileName] = useState<string>(import.meta.env.VITE_PROFILE_NAME || "");
-  const [avatarUrl, setAvatarUrl] = useState<string>(import.meta.env.VITE_PROFILE_AVATAR || "");
+  const [profileName, setProfileName] = useState<string>(import.meta.env.VITE_PROFILE_NAME || '');
+  const [avatarUrl, setAvatarUrl] = useState<string>(import.meta.env.VITE_PROFILE_AVATAR || '');
 
   const [st, setSt] = useState<SettingsState>({
-    profileName: import.meta.env.VITE_PROFILE_NAME || "Admin",
-    avatarUrl: import.meta.env.VITE_PROFILE_AVATAR || "/icons/avatar.png",
-    theme: (localStorage.getItem("theme") as SettingsState["theme"]) || "system",
+    profileName: import.meta.env.VITE_PROFILE_NAME || 'Admin',
+    avatarUrl: import.meta.env.VITE_PROFILE_AVATAR || '/icons/avatar.png',
+    theme: (localStorage.getItem('theme') as SettingsState['theme']) || 'system',
     enableAnimations: true,
   });
 
@@ -61,12 +67,12 @@ const AdminSettingsPanel = () => {
   useEffect(() => {
     const root = document.documentElement;
     const current = st.theme;
-    if (current === "system") {
-      root.removeAttribute("data-theme");
-      localStorage.removeItem("theme");
+    if (current === 'system') {
+      root.removeAttribute('data-theme');
+      localStorage.removeItem('theme');
     } else {
-      root.setAttribute("data-theme", current);
-      localStorage.setItem("theme", current);
+      root.setAttribute('data-theme', current);
+      localStorage.setItem('theme', current);
     }
   }, [st.theme]);
 
@@ -75,13 +81,13 @@ const AdminSettingsPanel = () => {
       setSaving(true);
       localStorage.setItem(LS_KEY, JSON.stringify(st));
       try {
-        await api.post("/api/admin/settings", st);
+        await api.post('/api/admin/settings', st);
       } catch {
         // ignore if server endpoint is not available
       }
-      toast.success("Settings saved");
+      toast.success('Settings saved');
     } catch {
-      toast.error("Failed to save settings");
+      toast.error('Failed to save settings');
     } finally {
       setSaving(false);
     }
@@ -91,8 +97,9 @@ const AdminSettingsPanel = () => {
     <>
       {/* -------------------- Backdrop -------------------- */}
       <div
-        className={`fixed inset-0 z-[70] bg-black/30 backdrop-blur-sm transition-opacity ${settingsOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
-          }`}
+        className={`fixed inset-0 z-[70] bg-black/30 backdrop-blur-sm transition-opacity ${
+          settingsOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+        }`}
         onClick={closeSettings}
         aria-hidden
       />
@@ -101,7 +108,7 @@ const AdminSettingsPanel = () => {
       <aside
         className={`fixed right-0 top-0 z-[75] h-full w-full sm:w-[520px] lg:w-[640px]
         bg-white/90 dark:bg-zinc-900/90 border-l shadow-2xl backdrop-blur-md
-        transition-transform ${settingsOpen ? "translate-x-0" : "translate-x-full"}`}
+        transition-transform ${settingsOpen ? 'translate-x-0' : 'translate-x-full'}`}
         aria-hidden={hidden}
         role="dialog"
         aria-label="Settings panel"
@@ -115,8 +122,17 @@ const AdminSettingsPanel = () => {
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" onClick={() => void loadSettings()} disabled={loading}>
-              {loading ? <RefreshCw className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => void loadSettings()}
+              disabled={loading}
+            >
+              {loading ? (
+                <RefreshCw className="h-4 w-4 animate-spin" />
+              ) : (
+                <RefreshCw className="h-4 w-4" />
+              )}
             </Button>
             <Button size="sm" onClick={save} disabled={saving}>
               <Save className="h-4 w-4 mr-1" />
@@ -135,7 +151,6 @@ const AdminSettingsPanel = () => {
         {/* Content */}
         <ScrollArea className="h-[calc(100vh-64px)]">
           <div className="p-4 space-y-6">
-
             {/* Profile */}
             <Card>
               <CardHeader className="pb-2">
@@ -179,7 +194,7 @@ const AdminSettingsPanel = () => {
                   <Label>Theme</Label>
                   <Select
                     value={st.theme}
-                    onValueChange={(val: "system" | "light" | "dark") =>
+                    onValueChange={(val: 'system' | 'light' | 'dark') =>
                       setSt((s) => ({ ...s, theme: val }))
                     }
                   >
@@ -201,7 +216,9 @@ const AdminSettingsPanel = () => {
                     <Switch
                       id="animations"
                       checked={st.enableAnimations}
-                      onCheckedChange={(v) => setSt((s) => ({ ...s, enableAnimations: Boolean(v) }))}
+                      onCheckedChange={(v) =>
+                        setSt((s) => ({ ...s, enableAnimations: Boolean(v) }))
+                      }
                     />
                   </div>
                 </div>
@@ -218,7 +235,8 @@ const AdminSettingsPanel = () => {
               </CardHeader>
               <CardContent className="space-y-2 text-sm text-muted-foreground">
                 <p>
-                  You can manage server-side admin options here in the future (JWT, secrets rotation, rate limits).
+                  You can manage server-side admin options here in the future (JWT, secrets
+                  rotation, rate limits).
                 </p>
                 <p className="text-xs">
                   Tip: avoid storing secrets in localStorage. Use secure server-side storage.

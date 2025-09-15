@@ -1,10 +1,10 @@
-import type { Database } from "@/types/database.types";
+import type { Database } from '@/types/database.types';
 
-export type DbProject = Database["public"]["Tables"]["projects"]["Row"];
-export type DbProjectInsert = Database["public"]["Tables"]["projects"]["Insert"];
-export type DbProjectUpdate = Database["public"]["Tables"]["projects"]["Update"];
+export type DbProject = Database['public']['Tables']['projects']['Row'];
+export type DbProjectInsert = Database['public']['Tables']['projects']['Insert'];
+export type DbProjectUpdate = Database['public']['Tables']['projects']['Update'];
 
-const FALLBACK_IMAGE = "/placeholder.svg";
+const FALLBACK_IMAGE = '/placeholder.svg';
 
 /**
  * Frontend Project type:
@@ -13,7 +13,7 @@ const FALLBACK_IMAGE = "/placeholder.svg";
  * - Adds tags[] joined from project_tags
  * - Expands with profile relation
  */
-export interface Project extends Omit<DbProject, "collaborators" | "gallery"> {
+export interface Project extends Omit<DbProject, 'collaborators' | 'gallery'> {
   collaborators: number;
   cover_image: string | null;
   gallery: string[];
@@ -32,11 +32,7 @@ export function mapDbProjectToProject(db: any): Project {
     ...db,
     collaborators: (db.collaborators as number) ?? 0,
     cover_image: db.cover_image,
-    gallery: Array.isArray(db.gallery)
-      ? db.gallery
-      : db.gallery
-      ? [db.gallery]
-      : [FALLBACK_IMAGE],
+    gallery: Array.isArray(db.gallery) ? db.gallery : db.gallery ? [db.gallery] : [FALLBACK_IMAGE],
     tags: Array.isArray(db.tags)
       ? db.tags.map((t: any) => ({
           id: t.id,

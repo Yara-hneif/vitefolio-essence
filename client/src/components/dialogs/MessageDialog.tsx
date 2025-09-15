@@ -1,12 +1,12 @@
-import React, { useState } from "react";
-import { supabase } from "@/lib/supabase";
-import { useAuth } from "@/context/AuthContext";
-import { Button } from "@/components/ui/navigation/button";
-import { Input } from "@/components/ui/form/input";
-import { Label } from "@/components/ui/form/label";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/data-display/card";
-import { Loader2 } from "lucide-react";
-import { toast } from "sonner";
+import React, { useState } from 'react';
+import { supabase } from '@/lib/supabase';
+import { useAuth } from '@/context/AuthContext';
+import { Button } from '@/components/ui/navigation/button';
+import { Input } from '@/components/ui/form/input';
+import { Label } from '@/components/ui/form/label';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/data-display/card';
+import { Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface MessageDialogProps {
   receiverId: string;
@@ -15,22 +15,22 @@ interface MessageDialogProps {
 
 export default function MessageDialog({ receiverId, onClose }: MessageDialogProps) {
   const { user } = useAuth();
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleSend = async () => {
     if (!user) {
-      toast.error("You must be logged in to send a message.");
+      toast.error('You must be logged in to send a message.');
       return;
     }
     if (!message.trim()) {
-      toast.error("Message cannot be empty.");
+      toast.error('Message cannot be empty.');
       return;
     }
 
     try {
       setLoading(true);
-      const { error } = await supabase.from("messages").insert([
+      const { error } = await supabase.from('messages').insert([
         {
           sender_id: user.id,
           receiver_id: receiverId,
@@ -40,17 +40,16 @@ export default function MessageDialog({ receiverId, onClose }: MessageDialogProp
 
       if (error) throw error;
 
-      toast.success("Message sent successfully!");
-      setMessage("");
+      toast.success('Message sent successfully!');
+      setMessage('');
       onClose();
     } catch (err) {
       console.error(err);
-      toast.error(err instanceof Error ? err.message : "Failed to send message");
+      toast.error(err instanceof Error ? err.message : 'Failed to send message');
     } finally {
       setLoading(false);
     }
   };
-
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
@@ -82,7 +81,7 @@ export default function MessageDialog({ receiverId, onClose }: MessageDialogProp
                   Sending...
                 </>
               ) : (
-                "Send"
+                'Send'
               )}
             </Button>
           </div>

@@ -1,45 +1,44 @@
-import { useEffect, useMemo, useState } from "react";
-import { useAdmin } from "@/features/admin/hooks/useAdminMode";
-import { useProjects } from "@/hooks/useProjects";
-import { Project } from "@/types/models/Project";
-import { toast } from "sonner";
-import { X, Github, Plus, RefreshCw, Settings2, Upload, Edit3, Trash2, CheckCircle2 } from "lucide-react";
-
-import { Button } from "@/components/ui/navigation/button";
-import { Input } from "@/components/ui/form/input";
-import { Label } from "@/components/ui/form/label";
-import { Switch } from "@/components/ui/effects/switch";
-import { Badge } from "@/components/ui/data-display/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/data-display/card";
-import { Separator } from "@/components/ui/data-display/separator";
-import { ScrollArea } from "@/components/ui/layout/scroll-area";
-
-import ProjectForm from "@/features/admin/components/projects/AdminProjectForm";
-import ImportFromGitHub from "@/features/admin/components/projects/ImportFromGitHub";
-
+import { useEffect, useMemo, useState } from 'react';
+import { useAdmin } from '@/features/admin/hooks/useAdminMode';
+import { useProjects } from '@/hooks/useProjects';
+import { Project } from '@/types/models/Project';
+import { toast } from 'sonner';
 import {
-  getSyncConfig,
-  runSyncNow,
-  updateSyncConfig,
-  type SyncConfig,
-} from "@/lib/syncApi";
+  X,
+  Github,
+  Plus,
+  RefreshCw,
+  Settings2,
+  Upload,
+  Edit3,
+  Trash2,
+  CheckCircle2,
+} from 'lucide-react';
+
+import { Button } from '@/components/ui/navigation/button';
+import { Input } from '@/components/ui/form/input';
+import { Label } from '@/components/ui/form/label';
+import { Switch } from '@/components/ui/effects/switch';
+import { Badge } from '@/components/ui/data-display/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/data-display/card';
+import { Separator } from '@/components/ui/data-display/separator';
+import { ScrollArea } from '@/components/ui/layout/scroll-area';
+
+import ProjectForm from '@/features/admin/components/projects/AdminProjectForm';
+import ImportFromGitHub from '@/features/admin/components/projects/ImportFromGitHub';
+
+import { getSyncConfig, runSyncNow, updateSyncConfig, type SyncConfig } from '@/lib/syncApi';
 
 const AdminProjectsPanel = () => {
   const { projectsOpen, closeProjects, isAdmin } = useAdmin();
-  const {
-    projects,
-    isLoading,
-    isError,
-    createProject,
-    updateProject,
-    deleteProject,
-  } = useProjects();
+  const { projects, isLoading, isError, createProject, updateProject, deleteProject } =
+    useProjects();
 
   const hidden = !isAdmin;
 
   // Create/Edit modal state
   const [formOpen, setFormOpen] = useState(false);
-  const [formMode, setFormMode] = useState<"create" | "edit">("create");
+  const [formMode, setFormMode] = useState<'create' | 'edit'>('create');
   const [currentProject, setCurrentProject] = useState<Project | undefined>(undefined);
   const [submitting, setSubmitting] = useState(false);
 
@@ -47,7 +46,7 @@ const AdminProjectsPanel = () => {
   const [importOpen, setImportOpen] = useState(false);
 
   // search/filter
-  const [q, setQ] = useState("");
+  const [q, setQ] = useState('');
 
   // Server sync config
   const [cfg, setCfg] = useState<SyncConfig | null>(null);
@@ -61,7 +60,7 @@ const AdminProjectsPanel = () => {
       const c = await getSyncConfig();
       setCfg(c);
     } catch (e: any) {
-      toast.error(e?.message ?? "Failed to load sync config");
+      toast.error(e?.message ?? 'Failed to load sync config');
     } finally {
       setCfgLoading(false);
     }
@@ -74,10 +73,10 @@ const AdminProjectsPanel = () => {
   // close on Escape
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && projectsOpen) closeProjects();
+      if (e.key === 'Escape' && projectsOpen) closeProjects();
     };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
   }, [projectsOpen, closeProjects]);
 
   const saveConfig = async (patch: Partial<SyncConfig>) => {
@@ -85,9 +84,9 @@ const AdminProjectsPanel = () => {
       setCfgSaving(true);
       const next = await updateSyncConfig({ ...cfg, ...patch });
       setCfg(next);
-      toast.success("Sync config saved");
+      toast.success('Sync config saved');
     } catch (e: any) {
-      toast.error(e?.message ?? "Failed to save config");
+      toast.error(e?.message ?? 'Failed to save config');
     } finally {
       setCfgSaving(false);
     }
@@ -100,7 +99,7 @@ const AdminProjectsPanel = () => {
       toast.success(`Sync completed: created ${res.created}, failed ${res.failed}`);
       // optional: invalidate queries here if your useProjects supports it
     } catch (e: any) {
-      toast.error(e?.message ?? "Sync failed");
+      toast.error(e?.message ?? 'Sync failed');
     } finally {
       setSyncingNow(false);
       void fetchConfig();
@@ -109,41 +108,41 @@ const AdminProjectsPanel = () => {
 
   const openCreate = () => {
     setCurrentProject(undefined);
-    setFormMode("create");
+    setFormMode('create');
     setFormOpen(true);
   };
 
   const openEdit = (project: Project) => {
     setCurrentProject(project);
-    setFormMode("edit");
+    setFormMode('edit');
     setFormOpen(true);
   };
 
   const handleDelete = async (id: string) => {
-    const ok = window.confirm("Delete this project?");
+    const ok = window.confirm('Delete this project?');
     if (!ok) return;
     try {
       await deleteProject.mutateAsync(id);
-      toast.success("Project deleted");
+      toast.success('Project deleted');
     } catch {
-      toast.error("Failed to delete project");
+      toast.error('Failed to delete project');
     }
   };
 
   const handleSubmitForm = async (payload: Partial<Project>) => {
     try {
       setSubmitting(true);
-      if (formMode === "edit" && currentProject?.id) {
+      if (formMode === 'edit' && currentProject?.id) {
         await updateProject.mutateAsync({ id: currentProject.id, updates: payload });
-        toast.success("Project updated");
+        toast.success('Project updated');
       } else {
         await createProject.mutateAsync(payload);
-        toast.success("Project created");
+        toast.success('Project created');
       }
       setFormOpen(false);
       setCurrentProject(undefined);
     } catch {
-      toast.error("Save failed");
+      toast.error('Save failed');
     } finally {
       setSubmitting(false);
     }
@@ -151,7 +150,7 @@ const AdminProjectsPanel = () => {
 
   // Drafts & filtered list
   const draftQueue = useMemo(
-    () => (Array.isArray(projects) ? projects.filter((p) => p.status === "draft") : []),
+    () => (Array.isArray(projects) ? projects.filter((p) => p.status === 'draft') : []),
     [projects]
   );
 
@@ -168,21 +167,22 @@ const AdminProjectsPanel = () => {
 
   const publishQuick = async (p: Project) => {
     try {
-      await updateProject.mutateAsync({ id: p.id, updates: { status: "published" } });
+      await updateProject.mutateAsync({ id: p.id, updates: { status: 'published' } });
       toast.success(`Published "${p.title}"`);
     } catch {
-      toast.error("Publish failed");
+      toast.error('Publish failed');
     }
   };
 
-  const lastRunLabel = cfg?.lastRunAt ? new Date(cfg.lastRunAt).toLocaleString() : "Never";
+  const lastRunLabel = cfg?.lastRunAt ? new Date(cfg.lastRunAt).toLocaleString() : 'Never';
 
   return (
     <>
       {/* Backdrop */}
       <div
-        className={`fixed inset-0 z-[70] bg-black/30 backdrop-blur-sm transition-opacity ${projectsOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
-          }`}
+        className={`fixed inset-0 z-[70] bg-black/30 backdrop-blur-sm transition-opacity ${
+          projectsOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+        }`}
         onClick={closeProjects}
         aria-hidden
       />
@@ -191,7 +191,7 @@ const AdminProjectsPanel = () => {
       <aside
         className={`fixed right-0 top-0 z-[75] h-full w-full sm:w-[560px] lg:w-[720px] 
         bg-white/90 dark:bg-zinc-900/90 border-l shadow-2xl backdrop-blur-md
-        transition-transform ${projectsOpen ? "translate-x-0" : "translate-x-full"}`}
+        transition-transform ${projectsOpen ? 'translate-x-0' : 'translate-x-full'}`}
         role="dialog"
         aria-label="Projects panel"
       >
@@ -204,8 +204,17 @@ const AdminProjectsPanel = () => {
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" onClick={() => void fetchConfig()} disabled={cfgLoading}>
-              {cfgLoading ? <RefreshCw className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => void fetchConfig()}
+              disabled={cfgLoading}
+            >
+              {cfgLoading ? (
+                <RefreshCw className="h-4 w-4 animate-spin" />
+              ) : (
+                <RefreshCw className="h-4 w-4" />
+              )}
             </Button>
             <Button variant="default" size="sm" onClick={openCreate}>
               <Plus className="h-4 w-4 mr-1" />
@@ -248,9 +257,9 @@ const AdminProjectsPanel = () => {
                   <Input
                     id="gh-username"
                     placeholder="e.g. octocat"
-                    value={cfg?.username ?? ""}
+                    value={cfg?.username ?? ''}
                     onChange={(e) => setCfg((c) => (c ? { ...c, username: e.target.value } : c))}
-                    onBlur={() => saveConfig({ username: cfg?.username ?? "" })}
+                    onBlur={() => saveConfig({ username: cfg?.username ?? '' })}
                     disabled={cfgLoading || cfgSaving}
                   />
                 </div>
@@ -286,10 +295,10 @@ const AdminProjectsPanel = () => {
                     onClick={() => void fetchConfig()}
                     disabled={cfgLoading}
                   >
-                    {cfgLoading ? "Refreshing..." : "Refresh"}
+                    {cfgLoading ? 'Refreshing...' : 'Refresh'}
                   </Button>
                   <Button onClick={() => void triggerSync()} disabled={syncingNow}>
-                    {syncingNow ? "Syncing..." : "Sync Now"}
+                    {syncingNow ? 'Syncing...' : 'Sync Now'}
                   </Button>
                 </div>
 
@@ -298,10 +307,11 @@ const AdminProjectsPanel = () => {
                     Last run: <span className="font-medium">{lastRunLabel}</span>
                     {cfg?.lastResult ? (
                       <>
-                        {" "}
-                        ·{" "}
+                        {' '}
+                        ·{' '}
                         <Badge variant="secondary" className="align-middle">
-                          created {cfg.lastResult?.created ?? "-"} / failed {cfg.lastResult?.failed ?? "-"}
+                          created {cfg.lastResult?.created ?? '-'} / failed{' '}
+                          {cfg.lastResult?.failed ?? '-'}
                         </Badge>
                       </>
                     ) : null}
@@ -362,13 +372,18 @@ const AdminProjectsPanel = () => {
                         <div className="text-xs text-muted-foreground truncate">
                           {p.repo_url ? (
                             <>
-                              Source:{" "}
-                              <a className="underline" href={p.repo_url} target="_blank" rel="noreferrer">
+                              Source:{' '}
+                              <a
+                                className="underline"
+                                href={p.repo_url}
+                                target="_blank"
+                                rel="noreferrer"
+                              >
                                 {p.repo_url}
                               </a>
                             </>
                           ) : (
-                            "No repository URL"
+                            'No repository URL'
                           )}
                         </div>
                       </div>
@@ -405,7 +420,7 @@ const AdminProjectsPanel = () => {
                     <CardHeader className="pb-2">
                       <div className="flex justify-between items-start">
                         <CardTitle className="truncate">
-                          {project.title}{" "}
+                          {project.title}{' '}
                           <span className="text-xs font-normal text-muted-foreground">
                             ({project.status})
                           </span>
@@ -427,13 +442,14 @@ const AdminProjectsPanel = () => {
                       </div>
                     </CardHeader>
                     <CardContent className="pt-0">
-                      {project.cover_image || (project.gallery?.length > 0 && (
-                        <img
-                          src={project.cover_image ?? project.gallery[0]}
-                          alt={project.title}
-                          className="w-full h-40 object-cover rounded mb-3"
-                        />
-                      ))}
+                      {project.cover_image ||
+                        (project.gallery?.length > 0 && (
+                          <img
+                            src={project.cover_image ?? project.gallery[0]}
+                            alt={project.title}
+                            className="w-full h-40 object-cover rounded mb-3"
+                          />
+                        ))}
 
                       <p className="text-sm text-muted-foreground line-clamp-2">
                         {project.description}
@@ -448,7 +464,6 @@ const AdminProjectsPanel = () => {
                           </span>
                         ))}
                       </div>
-
                     </CardContent>
                   </Card>
                 ))

@@ -1,6 +1,6 @@
-import React from "react";
-import { NavLink } from "react-router-dom";
-import { useAuth } from "@/context/AuthContext";
+import React from 'react';
+import { NavLink } from 'react-router-dom';
+import { useAuth } from '@/context/AuthContext';
 import {
   Sidebar,
   SidebarContent,
@@ -12,7 +12,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarFooter,
-} from "@/components/ui/navigation/sidebar";
+} from '@/components/ui/navigation/sidebar';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,9 +20,9 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/navigation/dropdown-menu";
-import { Button } from "@/components/ui/navigation/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/data-display/avatar";
+} from '@/components/ui/navigation/dropdown-menu';
+import { Button } from '@/components/ui/navigation/button';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/data-display/avatar';
 import {
   LayoutDashboard,
   FolderOpen,
@@ -35,28 +35,18 @@ import {
   BarChart3,
   ChevronUp,
   User,
-} from "lucide-react";
+} from 'lucide-react';
 
- const getUserDisplayName = (user: any) =>
-  user?.name ||
-  user?.username ||
-  user?.email ||
-  "User";
+const getUserDisplayName = (user: any) => user?.name || user?.username || user?.email || 'User';
 
-const SidebarNavList = ({
-  items,
-}: {
-  items: { name: string; href: string; icon: any }[];
-}) => (
+const SidebarNavList = ({ items }: { items: { name: string; href: string; icon: any }[] }) => (
   <SidebarMenu>
     {items.map((item) => (
       <SidebarMenuItem key={item.name}>
         <SidebarMenuButton asChild>
           <NavLink
             to={item.href}
-            className={({ isActive }) =>
-              isActive ? "text-primary font-semibold" : ""
-            }
+            className={({ isActive }) => (isActive ? 'text-primary font-semibold' : '')}
           >
             <item.icon className="size-4" />
             <span>{item.name}</span>
@@ -72,17 +62,17 @@ const AppSidebar = () => {
   const username = user?.username || user?.id;
 
   const navigation = [
-    { name: "Overview", href: "/dashboard", icon: LayoutDashboard },
-    { name: "My Sites", href: "/dashboard/sites", icon: Globe },
-    { name: "Projects", href: "/dashboard/projects", icon: FolderOpen },
-    { name: "Templates", href: "/dashboard/templates", icon: Palette },
-    { name: "Analytics", href: "/dashboard/analytics", icon: BarChart3 },
-    { name: "Settings", href: "/dashboard/settings", icon: Settings },
+    { name: 'Overview', href: '/dashboard', icon: LayoutDashboard },
+    { name: 'My Sites', href: '/dashboard/sites', icon: Globe },
+    { name: 'Projects', href: '/dashboard/projects', icon: FolderOpen },
+    { name: 'Templates', href: '/dashboard/templates', icon: Palette },
+    { name: 'Analytics', href: '/dashboard/analytics', icon: BarChart3 },
+    { name: 'Settings', href: '/dashboard/settings', icon: Settings },
   ];
 
   const quickActions = [
-    { name: "New Site", href: "/dashboard/sites/new", icon: Plus },
-    { name: "New Project", href: "/dashboard/projects/new", icon: FolderOpen },
+    { name: 'New Site', href: '/dashboard/sites/new', icon: Plus },
+    { name: 'New Project', href: '/dashboard/projects/new', icon: FolderOpen },
   ];
 
   return (
@@ -134,15 +124,13 @@ const AppSidebar = () => {
                   className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
                 >
                   <Avatar className="h-8 w-8 rounded-lg">
-                    <AvatarImage src={user?.avatar} alt={user?.name || ""} />
+                    <AvatarImage src={user?.avatar} alt={user?.name || ''} />
                     <AvatarFallback className="rounded-lg">
                       {getUserDisplayName(user)?.charAt(0)}
                     </AvatarFallback>
                   </Avatar>
                   <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-semibold">
-                      {getUserDisplayName(user)}
-                    </span>
+                    <span className="truncate font-semibold">{getUserDisplayName(user)}</span>
                     <span className="truncate text-xs">{user?.email}</span>
                   </div>
                   <ChevronUp className="ml-auto size-4" />
@@ -157,22 +145,20 @@ const AppSidebar = () => {
                 <DropdownMenuLabel className="p-0 font-normal">
                   <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                     <Avatar className="h-8 w-8 rounded-lg">
-                      <AvatarImage src={user?.avatar} alt={user?.name || ""} />
+                      <AvatarImage src={user?.avatar} alt={user?.name || ''} />
                       <AvatarFallback className="rounded-lg">
                         {getUserDisplayName(user)?.charAt(0)}
                       </AvatarFallback>
                     </Avatar>
                     <div className="grid flex-1 text-left text-sm leading-tight">
-                      <span className="truncate font-semibold">
-                        {getUserDisplayName(user)}
-                      </span>
+                      <span className="truncate font-semibold">{getUserDisplayName(user)}</span>
                       <span className="truncate text-xs">{user?.email}</span>
                     </div>
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
-                  <NavLink to={`/u/${username}`}>
+                  <NavLink to={`/${username}`}>
                     <User className="mr-2 h-4 w-4" />
                     Profile
                   </NavLink>

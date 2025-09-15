@@ -1,10 +1,10 @@
-import { useParams } from "react-router-dom";
-import { ArrowLeft, ExternalLink, Github } from "lucide-react";
-import { Button } from "@/components/ui/navigation/button";
-import { Link } from "react-router-dom";
-import { useProject } from "@/hooks/useProject";
-import { resolveImageUrl } from "@/lib/urls";
-import placeholderImg from "@/assets/images/placeholder.svg";
+import { useParams } from 'react-router-dom';
+import { ArrowLeft, ExternalLink, Github } from 'lucide-react';
+import { Button } from '@/components/ui/navigation/button';
+import { Link } from 'react-router-dom';
+import { useProject } from '@/hooks/useProject';
+import { resolveImageUrl } from '@/lib/urls';
+import placeholderImg from '@/assets/images/placeholder.svg';
 
 const ProjectDetails = () => {
   const { slug } = useParams();
@@ -14,7 +14,8 @@ const ProjectDetails = () => {
 
   const { data: project, isLoading, isError } = useProject(slug);
   if (isLoading) return <p className="text-center mt-10">Loading project...</p>;
-  if (isError || !project) return <p className="text-center mt-10 text-red-500">Project not found.</p>;
+  if (isError || !project)
+    return <p className="text-center mt-10 text-red-500">Project not found.</p>;
 
   return (
     <div className="max-w-4xl mx-auto p-6 animate-fade-in">
@@ -29,11 +30,10 @@ const ProjectDetails = () => {
 
       {/* Card Container */}
       <div className="card-3d-content rounded-lg shadow border bg-gradient-to-br from-primary/10 to-accent/10 overflow-hidden flex flex-col md:flex-row">
-        
         {/* Image */}
         <div className="relative w-full md:w-1/2 aspect-video md:aspect-auto">
           <img
-            src={resolveImageUrl(project.cover_image || "") || placeholderImg}
+            src={resolveImageUrl(project.cover_image || '') || placeholderImg}
             onError={(e) => {
               e.currentTarget.onerror = null;
               e.currentTarget.src = placeholderImg;
@@ -54,7 +54,7 @@ const ProjectDetails = () => {
           {/* Tags */}
           <div className="flex flex-wrap gap-2 mb-4">
             {Array.isArray(project.tags) && project.tags.length > 0 ? (
-              project.tags.map(tag => (
+              project.tags.map((tag) => (
                 <span
                   key={tag.id}
                   className="bg-secondary text-secondary-foreground text-xs px-2 py-0.5 rounded-full"

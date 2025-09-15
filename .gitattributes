@@ -1,0 +1,42 @@
+# ──────────────
+# Line endings
+# ──────────────
+# Force LF for all text files (JS, TS, JSON, etc.)
+* text=auto eol=lf
+
+# ──────────────
+# Code files
+# ──────────────
+*.js   text eol=lf
+*.jsx  text eol=lf
+*.ts   text eol=lf
+*.tsx  text eol=lf
+*.json text eol=lf
+*.css  text eol=lf
+*.scss text eol=lf
+*.md   text eol=lf
+*.yml  text eol=lf
+*.yaml text eol=lf
+
+# ──────────────
+# OS / IDE specific
+# ──────────────
+*.bat  text eol=crlf   # Windows batch files should stay CRLF
+*.sh   text eol=lf     # Shell scripts should stay LF
+
+# ──────────────
+# Binary files (don’t touch line endings)
+# ──────────────
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.gif  binary
+*.ico  binary
+*.lock binary
+*.pdf  binary
+*.woff binary
+*.woff2 binary
+*.ttf  binary
+*.eot  binary
+*.mp4  binary
+*.mov  binary

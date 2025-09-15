@@ -1,5 +1,81 @@
 {
+  "name": "vitefolio-essence",
+  "version": "1.0.0",
+  "description": "A modern, full-stack portfolio application built with Vite + React + TypeScript on the frontend and Node.js + Express on the backend. This project serves as a personal portfolio site template, offering a clean and professional structure for showcasing projects, contact forms, and future personal branding content.",
+  "main": "index.js",
+  "type": "commonjs",
+  "scripts": {
+    "dev": "concurrently \"npm run dev --prefix client\" \"npm run dev --prefix server\"",
+    "build": "npm run build:client",
+    "build:client": "npm run build --prefix client",
+    "start": "npm run start --prefix server",
+    "dev:server": "npm run dev --prefix server",
+    "start:client": "npm start --prefix client",
+    "start:server": "npm start --prefix server",
+    "build:server": "npm run build --prefix server",
+    "preview": "npm run preview --prefix client",
+    "lint": "eslint \"{client,server}/src/**/*.{ts,tsx,js,jsx}\"",
+    "lint:fix": "eslint --fix \"{client,server}/src/**/*.{ts,tsx,js,jsx}\"",
+    "format": "prettier --write \"{client,server}/src/**/*.{ts,tsx,js,jsx,json,md,css,scss}\"",
+    "clean": "rimraf node_modules client/node_modules server/node_modules client/dist server/dist",
+    "reset": "npm run clean && npm install && npm install --prefix client && npm install --prefix server",
+    "testAll": "concurrently \"npm run test --prefix client\" \"npm run test --prefix server\"",
+    "test:client": "npm run test --prefix client",
+    "test:server": "npm run test --prefix server",
+    "prod": "npm-run-all build start:server",
+    "watch:server": "npm run dev --prefix server -- --watch",
+    "logs": "concurrently \"npm run dev:client\" \"npm run watch:server\"",
+    "analyze:unused": "depcheck",
+    "analyze:exports": "ts-prune",
+    "analyze:dup": "jscpd --min-lines 5 --reporters console --path client/src --path server/src",
+    "analyze": "npm-run-all analyze:*",
+    "clean:comments": "replace-in-file \"[\\u0600-\\u06FF]+\" \"\" \"client/src/**/*.{js,jsx,ts,tsx}\" \"server/src/**/*.{js,ts}\"",
+    "prepare": "husky",
+    "commit": "cz",
+    "test": "jest --config jest.config.js",
+    "test:watch": "jest --watchAll",
+    "pre-commit": "npm run lint && npm run format"
+  },
   "devDependencies": {
-    "@types/node": "^24.3.0"
-  }
+    "@testing-library/jest-dom": "^6.8.0",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^24.3.0",
+    "@typescript-eslint/eslint-plugin": "^8.43.0",
+    "@typescript-eslint/parser": "^8.43.0",
+    "concurrently": "^9.2.1",
+    "cz-conventional-changelog": "^3.0.1",
+    "depcheck": "^1.4.3",
+    "eslint": "^9.13.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.2.1",
+    "husky": "^9.1.7",
+    "jest": "^30.1.3",
+    "jest-environment-jsdom": "^30.1.2",
+    "jscpd": "^4.0.4",
+    "jsdom": "^27.0.0",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^3.3.3",
+    "replace-in-file": "^7.2.0",
+    "rimraf": "^6.0.1",
+    "ts-jest": "^29.4.1",
+    "ts-prune": "^0.10.3"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Yara-hneif/vitefolio-essence.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Yara-hneif/vitefolio-essence/issues"
+  },
+  "homepage": "https://github.com/Yara-hneif/vitefolio-essence#readme"
 }

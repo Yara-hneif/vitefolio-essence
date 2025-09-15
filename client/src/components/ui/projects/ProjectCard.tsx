@@ -1,24 +1,12 @@
-import { Link } from "react-router-dom";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/data-display/card";
-import { Badge } from "@/components/ui/data-display/badge";
-import { Button } from "@/components/ui/navigation/button";
-import Carousel from "@/components/ui/data-display/carousel";
+import { Link } from 'react-router-dom';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/data-display/card';
+import { Badge } from '@/components/ui/data-display/badge';
+import { Button } from '@/components/ui/navigation/button';
+import Carousel from '@/components/ui/data-display/carousel';
 
-import {
-  Github,
-  ExternalLink,
-  Eye,
-  Edit,
-  Trash2,
-  Calendar,
-} from "lucide-react";
-import { cn } from "@/lib/utils";
-import { Project } from "@/types/models/Project";
+import { Github, ExternalLink, Eye, Edit, Trash2, Calendar } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { Project } from '@/types/models/Project';
 
 interface ProjectCardProps {
   project: Project;
@@ -34,19 +22,15 @@ export default function ProjectCard({
   className,
 }: ProjectCardProps) {
   const cover =
-    project.cover_image && project.cover_image.trim() !== ""
+    project.cover_image && project.cover_image.trim() !== ''
       ? project.cover_image
-      : "/placeholder.svg";
+      : '/placeholder.svg';
 
   return (
-    <Card className={cn("hover-lift overflow-hidden", className)}>
+    <Card className={cn('hover-lift overflow-hidden', className)}>
       {/* صورة الغلاف */}
       <div className="aspect-video relative overflow-hidden">
-        <img
-          src={cover}
-          alt={project.title}
-          className="w-full h-full object-cover"
-        />
+        <img src={cover} alt={project.title} className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
       </div>
 
@@ -57,9 +41,7 @@ export default function ProjectCard({
           </Link>
         </CardTitle>
         {project.description && (
-          <p className="text-sm text-muted-foreground mt-2">
-            {project.description}
-          </p>
+          <p className="text-sm text-muted-foreground mt-2">{project.description}</p>
         )}
       </CardHeader>
       <CardContent className="space-y-4">
@@ -78,9 +60,7 @@ export default function ProjectCard({
         {project.updated_at && (
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Calendar className="h-4 w-4" />
-            <span>
-              Updated {new Date(project.updated_at).toLocaleDateString()}
-            </span>
+            <span>Updated {new Date(project.updated_at).toLocaleDateString()}</span>
           </div>
         )}
 
@@ -93,11 +73,7 @@ export default function ProjectCard({
         <div className="flex items-center gap-2">
           {project.repo_url && (
             <Button variant="outline" size="sm" asChild>
-              <a
-                href={project.repo_url}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
+              <a href={project.repo_url} target="_blank" rel="noopener noreferrer">
                 <Github className="h-4 w-4 mr-1" />
                 Code
               </a>
@@ -105,11 +81,7 @@ export default function ProjectCard({
           )}
           {project.live_url && (
             <Button variant="outline" size="sm" asChild>
-              <a
-                href={project.live_url}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
+              <a href={project.live_url} target="_blank" rel="noopener noreferrer">
                 <ExternalLink className="h-4 w-4 mr-1" />
                 Live
               </a>
@@ -130,11 +102,7 @@ export default function ProjectCard({
                 <Edit className="h-4 w-4" />
               </Link>
             </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => onDelete?.(project.id)}
-            >
+            <Button variant="ghost" size="sm" onClick={() => onDelete?.(project.id)}>
               <Trash2 className="h-4 w-4 text-red-500" />
             </Button>
           </div>

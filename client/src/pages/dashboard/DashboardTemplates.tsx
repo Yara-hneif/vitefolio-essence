@@ -1,8 +1,8 @@
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from '@/context/AuthContext';
 
-import { useNavigate } from "react-router-dom";
-import TemplateSelector from "@/features/templates/TemplateSelector";
-import { createSiteFromTemplate } from "@/lib/templates";
+import { useNavigate } from 'react-router-dom';
+import TemplateSelector from '@/features/templates/TemplateSelector';
+import { createSiteFromTemplate } from '@/lib/templates';
 
 export default function DashboardTemplates() {
   const { user } = useAuth();
@@ -21,10 +21,7 @@ export default function DashboardTemplates() {
 
   return (
     <div className="p-6">
-      <TemplateSelector
-        onSelectTemplate={handleSelect}
-        onClose={() => nav("/dashboard")}
-      />
+      <TemplateSelector onSelectTemplate={handleSelect} onClose={() => nav('/dashboard')} />
     </div>
   );
 }

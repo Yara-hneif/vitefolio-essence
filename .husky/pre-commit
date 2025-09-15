@@ -1,0 +1,11 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+echo "🔍 Running ESLint..."
+npm run lint:fix
+
+echo "✅ Running Prettier..."
+npm run format
+
+echo "🧪 Running tests..."
+npm run test -- --passWithNoTests

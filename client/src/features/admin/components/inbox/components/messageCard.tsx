@@ -1,6 +1,6 @@
-import { Contact } from "@/types/models/Contact";
-import { Button } from "@/components/ui/navigation/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/data-display/card";
+import { Contact } from '@/types/models/Contact';
+import { Button } from '@/components/ui/navigation/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/data-display/card';
 
 type Props = {
   message: Contact;
@@ -10,12 +10,12 @@ type Props = {
 const MessageCard = ({ message, onDelete }: Props) => {
   const { id, name, email, subject, message: content, updated_at } = message;
 
-  let formattedDate = "—";
+  let formattedDate = '—';
   if (updated_at) {
     try {
       formattedDate = new Date(updated_at).toLocaleString();
     } catch {
-      formattedDate = "Invalid date";
+      formattedDate = 'Invalid date';
     }
   }
 
@@ -23,12 +23,7 @@ const MessageCard = ({ message, onDelete }: Props) => {
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0">
         <CardTitle className="text-lg">{subject}</CardTitle>
-        <Button
-          variant="destructive"
-          size="sm"
-          onClick={() => onDelete(id)}
-          className="ml-4"
-        >
+        <Button variant="destructive" size="sm" onClick={() => onDelete(id)} className="ml-4">
           Delete
         </Button>
       </CardHeader>

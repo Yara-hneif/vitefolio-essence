@@ -1,4 +1,4 @@
-import { useReducedMotion } from "framer-motion";
+import { useReducedMotion } from 'framer-motion';
 
 export default function FloorGrid3D() {
   const reduceMotion = useReducedMotion();
@@ -19,7 +19,7 @@ export default function FloorGrid3D() {
               absolute inset-0 opacity-70
               [background:repeating-linear-gradient(0deg,rgba(99,102,241,0.12)_0_1px,transparent_1px_24px),
                           repeating-linear-gradient(90deg,rgba(99,102,241,0.12)_0_1px,transparent_1px_24px)]
-              ${reduceMotion ? "" : "animate-[gridMove_12s_linear_infinite]"}
+              ${reduceMotion ? '' : 'animate-[gridMove_12s_linear_infinite]'}
             `}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-white/80 via-transparent to-transparent" />

@@ -1,21 +1,23 @@
-import { useEffect, useState } from "react";
-import { ChevronDown, Reply } from "lucide-react";
+import { useEffect, useState } from 'react';
+import { ChevronDown, Reply } from 'lucide-react';
 
 export default function ReplyForm({
-  toEmail, defaultSubject, onSend,
+  toEmail,
+  defaultSubject,
+  onSend,
 }: {
   toEmail: string;
   defaultSubject: string;
   onSend: (subject: string, body: string) => Promise<void>;
 }) {
   const [subject, setSubject] = useState(defaultSubject);
-  const [body, setBody] = useState("");
+  const [body, setBody] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => setSubject(defaultSubject), [defaultSubject]);
 
   const insertTemplate = (t: string) => {
-    setBody((prev) => (prev ? prev + "\n\n" + t : t));
+    setBody((prev) => (prev ? prev + '\n\n' + t : t));
     setMenuOpen(false);
   };
 
@@ -26,7 +28,7 @@ export default function ReplyForm({
         e.preventDefault();
         if (!body.trim()) return;
         await onSend(subject, body);
-        setBody("");
+        setBody('');
       }}
     >
       <div className="flex flex-col md:flex-row md:items-center gap-2">
@@ -47,9 +49,25 @@ export default function ReplyForm({
           </button>
           {menuOpen && (
             <div className="absolute right-0 mt-1 w-64 rounded-xl border bg-popover shadow-md p-1 z-50">
-              <QuickItem onClick={() => insertTemplate("Thanks for reaching out! I’ll get back to you shortly.")} />
-              <QuickItem onClick={() => insertTemplate("Appreciate your message. Noted, and I will follow up with details soon.")} text="Appreciate your message…" />
-              <QuickItem onClick={() => insertTemplate("Received, thank you. I’ll review and respond with next steps.")} text="Received, thank you…" />
+              <QuickItem
+                onClick={() =>
+                  insertTemplate('Thanks for reaching out! I’ll get back to you shortly.')
+                }
+              />
+              <QuickItem
+                onClick={() =>
+                  insertTemplate(
+                    'Appreciate your message. Noted, and I will follow up with details soon.'
+                  )
+                }
+                text="Appreciate your message…"
+              />
+              <QuickItem
+                onClick={() =>
+                  insertTemplate('Received, thank you. I’ll review and respond with next steps.')
+                }
+                text="Received, thank you…"
+              />
             </div>
           )}
         </div>
@@ -64,9 +82,7 @@ export default function ReplyForm({
       </div>
 
       <div className="rounded-2xl border bg-background">
-        <div className="px-3 pt-2 text-[12px] text-muted-foreground">
-          To: {toEmail}
-        </div>
+        <div className="px-3 pt-2 text-[12px] text-muted-foreground">To: {toEmail}</div>
         <textarea
           value={body}
           onChange={(e) => setBody(e.target.value)}
@@ -85,7 +101,7 @@ function QuickItem({ onClick, text }: { onClick: () => void; text?: string }) {
       onClick={onClick}
       className="w-full text-left px-3 py-2 rounded-lg hover:bg-black/5 text-[14px]"
     >
-      {text ?? "Thanks for reaching out…"}
+      {text ?? 'Thanks for reaching out…'}
     </button>
   );
 }

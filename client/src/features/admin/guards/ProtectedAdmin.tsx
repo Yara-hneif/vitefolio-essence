@@ -1,12 +1,12 @@
-import React, { useState, useEffect, useMemo } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import { Button } from "@/components/ui/navigation/button";
-import { Input } from "@/components/ui/form/input";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/data-display/avatar";
-import { ADMIN_SECRET } from "@/lib/config";
-import { setAdminSecret as applyAdminHeader } from"@/api/client.api";
+import React, { useState, useEffect, useMemo } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { Button } from '@/components/ui/navigation/button';
+import { Input } from '@/components/ui/form/input';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/data-display/avatar';
+import { ADMIN_SECRET } from '@/lib/config';
+import { setAdminSecret as applyAdminHeader } from '@/api/client.api';
 
-const STORAGE_KEYS = ["ADMIN_SECRET", "admin_secret"];
+const STORAGE_KEYS = ['ADMIN_SECRET', 'admin_secret'];
 
 function getStoredSecret(): string | null {
   for (const k of STORAGE_KEYS) {
@@ -31,12 +31,12 @@ export default function ProtectedAdmin({ children }: ProtectedAdminProps) {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [password, setPassword] = useState("");
+  const [password, setPassword] = useState('');
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
-    const fromQuery = params.get("admin");
+    const fromQuery = params.get('admin');
     if (fromQuery) storeSecret(fromQuery);
   }, [location.search]);
 
@@ -48,18 +48,18 @@ export default function ProtectedAdmin({ children }: ProtectedAdminProps) {
   const handleLogin = () => {
     if (password === ADMIN_SECRET) {
       storeSecret(password);
-      setPassword("");
+      setPassword('');
       setAvatarUrl(`https://api.dicebear.com/7.x/identicon/svg?seed=${Date.now()}`);
       navigate(location.pathname, { replace: true });
     } else {
-      alert("❌ Wrong password");
+      alert('❌ Wrong password');
     }
   };
 
   const handleLogout = () => {
     STORAGE_KEYS.forEach((k) => localStorage.removeItem(k));
     setAvatarUrl(null);
-    navigate("/", { replace: true });
+    navigate('/', { replace: true });
   };
 
   if (!authorized) {

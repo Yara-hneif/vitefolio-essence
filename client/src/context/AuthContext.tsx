@@ -1,7 +1,7 @@
-import React, { createContext, useContext, useState, useEffect, useMemo } from "react";
-import { supabase } from "@/lib/supabase";
-import { useNavigate } from "react-router-dom";
-import type { Session, User as SbUser, AuthChangeEvent } from "@supabase/supabase-js";
+import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
+import { supabase } from '@/lib/supabase';
+import { useNavigate } from 'react-router-dom';
+import type { Session, User as SbUser, AuthChangeEvent } from '@supabase/supabase-js';
 
 /* ---------------------------
    Types
@@ -34,7 +34,7 @@ interface RegisterData {
   name: string;
 }
 
-type OAuthProvider = "google" | "github" | "facebook";
+type OAuthProvider = 'google' | 'github' | 'facebook';
 
 interface AuthContextType {
   user: UserProfile | null;
@@ -51,7 +51,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 /* ---------------------------
-   Fallback mapper from user_metadata
+   Map Supabase user → UserProfile
 --------------------------- */
 function mapSbUser(u: SbUser | null): Partial<UserProfile> | null {
   if (!u) return null;
@@ -62,18 +62,18 @@ function mapSbUser(u: SbUser | null): Partial<UserProfile> | null {
     m.nickname ||
     m.preferred_username ||
     m.login ||
-    (u.email ? u.email.split("@")[0] : "");
+    (u.email ? u.email.split('@')[0] : '');
 
   return {
     id: u.id,
-    email: u.email || "",
-    username: (username || "")
+    email: u.email || '',
+    username: (username || '')
       .toString()
       .toLowerCase()
-      .replace(/[^a-z0-9-_.]/g, "-"),
-    name: m.name || m.full_name || u.email?.split("@")[0] || "User",
-    bio: m.bio || "",
-    avatar: m.avatar || m.picture || m.avatar_url || "/placeholder.svg",
+      .replace(/[^a-z0-9-_.]/g, '-'),
+    name: m.name || m.full_name || u.email?.split('@')[0] || 'User',
+    bio: m.bio || '',
+    avatar: m.avatar || m.picture || m.avatar_url || '/placeholder.svg',
     skills: (m.skills as string[]) || [],
     social_links: {
       github: m.github,
@@ -99,14 +99,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       data: { subscription },
     } = supabase.auth.onAuthStateChange(
       async (_event: AuthChangeEvent, session: Session | null) => {
+        setLoading(true);
+
         if (session?.user) {
           const u = session.user;
 
-          // Fetch profile from DB
+          // Try to fetch profile from DB
           const { data: profile } = await supabase
-            .from("profiles")
-            .select("id, email, name, username, avatar, bio, role, skills, social_links")
-            .eq("id", u.id)
+            .from('profiles')
+            .select('id, email, name, username, avatar, bio, role, skills, social_links')
+            .eq('id', u.id)
             .maybeSingle();
 
           // Fallback to user_metadata
@@ -114,18 +116,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
           setUser({
             id: u.id,
-            email: u.email ?? "",
+            email: u.email ?? '',
             name: profile?.name ?? fallback?.name,
             username: profile?.username ?? fallback?.username,
-            avatar: profile?.avatar ?? fallback?.avatar ?? "/placeholder.svg",
+            avatar: profile?.avatar ?? fallback?.avatar ?? '/placeholder.svg',
             bio: profile?.bio ?? fallback?.bio,
-            role: profile?.role ?? "user",
+            role: profile?.role ?? 'user',
             skills: (profile?.skills as string[]) ?? fallback?.skills ?? [],
             social_links: (profile?.social_links as SocialLinks) ?? fallback?.social_links ?? {},
           });
         } else {
           setUser(null);
         }
+
         setLoading(false);
       }
     );
@@ -137,50 +140,40 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
      Auth Actions
   --------------------------- */
   const login = async (email: string, password: string) => {
-    try {
-      setLoading(true);
-      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) return { status: "error", error: error.message };
-      if (data.session) return { status: "complete" };
-      return { status: "error", error: "Login failed" };
-    } finally {
-      setLoading(false);
-    }
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) return { status: 'error', error: error.message };
+    if (data.session) return { status: 'complete' };
+    return { status: 'error', error: 'Login failed' };
   };
 
   const register = async (data: RegisterData) => {
-    try {
-      setLoading(true);
-      const { data: res, error } = await supabase.auth.signUp({
+    const { data: res, error } = await supabase.auth.signUp({
+      email: data.email,
+      password: data.password,
+      options: {
+        emailRedirectTo: window.location.origin + '/dashboard',
+        data: { name: data.name, username: data.username },
+      },
+    });
+    if (error) return { status: 'error', error: error.message };
+
+    if (res.user) {
+      await supabase.from('profiles').upsert({
+        id: res.user.id,
         email: data.email,
-        password: data.password,
-        options: {
-          emailRedirectTo: window.location.origin + "/dashboard",
-          data: { name: data.name, username: data.username },
-        },
+        name: data.name,
+        username: data.username,
+        role: 'user',
       });
-      if (error) return { status: "error", error: error.message };
-
-      if (res.user) {
-        await supabase.from("profiles").upsert({
-          id: res.user.id,
-          email: data.email,
-          name: data.name,
-          username: data.username,
-          role: "user",
-        });
-      }
-
-      return { status: "complete" };
-    } finally {
-      setLoading(false);
     }
+
+    return { status: 'complete' };
   };
 
   const authWithProvider = async (provider: OAuthProvider) => {
     const { error } = await supabase.auth.signInWithOAuth({
       provider,
-      options: { redirectTo: window.location.origin + "/dashboard" },
+      options: { redirectTo: window.location.origin + '/dashboard' },
     });
     if (error) throw new Error(error.message);
   };
@@ -188,36 +181,33 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const logout = async () => {
     await supabase.auth.signOut();
     setUser(null);
-    navigate("/"); // Redirect to landing
   };
 
   const deleteAccount = async () => {
-    if (!user) return { status: "error", error: "No user logged in" };
+    if (!user) return { status: 'error', error: 'No user logged in' };
 
     const confirmDelete = window.confirm(
-      "⚠️ This will permanently delete your account and all related data. Are you sure?"
+      '⚠️ This will permanently delete your account and all related data. Are you sure?'
     );
-    if (!confirmDelete) return { status: "error", error: "Cancelled" };
+    if (!confirmDelete) return { status: 'error', error: 'Cancelled' };
 
     try {
-      const res = await fetch("/api/delete-account", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const res = await fetch('/api/delete-account', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId: user.id }),
       });
 
       if (!res.ok) {
         const msg = await res.text();
-        return { status: "error", error: msg };
+        return { status: 'error', error: msg };
       }
 
-      // After deletion → logout + redirect
       await supabase.auth.signOut();
       setUser(null);
-      navigate("/");
-      return { status: "complete" };
+      return { status: 'complete' };
     } catch (err) {
-      return { status: "error", error: (err as Error).message };
+      return { status: 'error', error: (err as Error).message };
     }
   };
 
@@ -246,6 +236,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 --------------------------- */
 export const useAuth = () => {
   const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error("useAuth must be used within AuthProvider");
+  if (!ctx) throw new Error('useAuth must be used within AuthProvider');
   return ctx;
 };

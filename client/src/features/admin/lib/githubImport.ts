@@ -10,7 +10,7 @@ export type GitHubRepo = {
   topics?: string[];
   owner: { login: string };
   has_pages?: boolean;
-  visibility?: "public" | "private" | "internal";
+  visibility?: 'public' | 'private' | 'internal';
 };
 
 export type FetchOptions = {
@@ -18,10 +18,10 @@ export type FetchOptions = {
   token?: string; // optional GitHub token for higher rate limits
 };
 
-const GH_API = "https://api.github.com";
+const GH_API = 'https://api.github.com';
 const STD_HEADERS: Record<string, string> = {
-  Accept: "application/vnd.github+json",
-  "X-GitHub-Api-Version": "2022-11-28",
+  Accept: 'application/vnd.github+json',
+  'X-GitHub-Api-Version': '2022-11-28',
 };
 
 export async function fetchPublicRepos(
@@ -48,10 +48,9 @@ export async function fetchPublicRepos(
       repos.map((r) =>
         limiter(async () => {
           try {
-            const tRes = await fetch(
-              `${GH_API}/repos/${r.owner.login}/${r.name}/topics`,
-              { headers }
-            );
+            const tRes = await fetch(`${GH_API}/repos/${r.owner.login}/${r.name}/topics`, {
+              headers,
+            });
             if (tRes.ok) {
               const tJson = (await tRes.json()) as { names?: string[] };
               (r as any).topics = tJson.names ?? [];
@@ -64,7 +63,7 @@ export async function fetchPublicRepos(
     );
   }
 
-  return repos.filter((r) => r.visibility !== "private");
+  return repos.filter((r) => r.visibility !== 'private');
 }
 
 // Lightweight concurrency limiter (no deps)
@@ -95,13 +94,12 @@ export const slugify = (s: string) =>
   s
     .toLowerCase()
     .trim()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
 
 // GitHub social preview image (public, cacheable)
 export const repoOgImage = (owner: string, name: string) =>
   `https://opengraph.githubassets.com/1/${owner}/${name}`;
 
 // Heuristic Pages URL if has_pages is true
-export const pagesUrl = (owner: string, name: string) =>
-  `https://${owner}.github.io/${name}`;
+export const pagesUrl = (owner: string, name: string) => `https://${owner}.github.io/${name}`;

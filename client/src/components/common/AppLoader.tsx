@@ -1,4 +1,4 @@
-import { Skeleton } from "@/components/ui/data-display/skeleton";
+import { Skeleton } from '@/components/ui/data-display/skeleton';
 
 export default function AppLoader() {
   return (

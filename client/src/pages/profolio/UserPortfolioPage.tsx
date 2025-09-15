@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { supabase } from "@/lib/supabase";
-import { useAuth } from "@/context/AuthContext";
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { supabase } from '@/lib/supabase';
+import { useAuth } from '@/context/AuthContext';
 
-import type { Project } from "@/types/models/Project";
-import { listProjects } from "@/api/project.api";
+import type { Project } from '@/types/models/Project';
+import { listProjects } from '@/api/project.api';
 
 export default function UserPortfolioPage() {
   const { handle, username } = useParams();
@@ -15,7 +15,7 @@ export default function UserPortfolioPage() {
 
   const [projects, setProjects] = useState<Project[]>([]);
   const [displayName, setDisplayName] = useState<string>(
-    slug ? slug[0].toUpperCase() + slug.slice(1) : "User"
+    slug ? slug[0].toUpperCase() + slug.slice(1) : 'User'
   );
   const [avatar, setAvatar] = useState<string | undefined>(undefined);
   const [loading, setLoading] = useState(true);
@@ -32,9 +32,9 @@ export default function UserPortfolioPage() {
       setLoading(true);
 
       const { data: prof } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("username", slug)
+        .from('profiles')
+        .select('*')
+        .eq('username', slug)
         .maybeSingle();
 
       if (prof) {
@@ -47,7 +47,7 @@ export default function UserPortfolioPage() {
           const projs = await listProjects(prof.id);
           if (mounted) setProjects(projs);
         } catch (error) {
-          console.error("Failed to load projects", error);
+          console.error('Failed to load projects', error);
           if (mounted) setProjects([]);
         }
       } else {
@@ -69,11 +69,7 @@ export default function UserPortfolioPage() {
       <header className="border-b">
         <div className="max-w-4xl mx-auto p-6 flex items-center gap-4">
           {avatar && (
-            <img
-              src={avatar}
-              alt="avatar"
-              className="w-16 h-16 rounded-full object-cover"
-            />
+            <img src={avatar} alt="avatar" className="w-16 h-16 rounded-full object-cover" />
           )}
           <div>
             <h1 className="text-3xl font-bold">{displayName}</h1>
@@ -91,8 +87,8 @@ export default function UserPortfolioPage() {
         <section>
           <h2 className="text-xl font-semibold mb-2">About</h2>
           <p className="text-muted-foreground">
-            This is your personal portfolio page. In future releases, you will
-            customize sections, colors, and layout.
+            This is your personal portfolio page. In future releases, you will customize sections,
+            colors, and layout.
           </p>
         </section>
 
@@ -121,12 +117,7 @@ export default function UserPortfolioPage() {
                   )}
                   <div className="mt-2 flex gap-3 text-sm">
                     {p.live_url && (
-                      <a
-                        className="underline"
-                        href={p.live_url}
-                        target="_blank"
-                        rel="noreferrer"
-                      >
+                      <a className="underline" href={p.live_url} target="_blank" rel="noreferrer">
                         Live
                       </a>
                     )}

@@ -1,4 +1,4 @@
-import { Github, ShieldCheck, Globe, Chrome, Linkedin, Facebook } from "lucide-react";
+import { Github, ShieldCheck, Globe, Chrome, Linkedin, Facebook } from 'lucide-react';
 
 export default function TrustBar() {
   return (
@@ -6,13 +6,17 @@ export default function TrustBar() {
       <div className="rounded-2xl border bg-white/70 p-3 backdrop-blur">
         <div className="no-scrollbar flex snap-x items-center gap-2 overflow-x-auto sm:justify-center sm:gap-3">
           {[
-            { icon: Chrome, label: "Google" },
-            { icon: Github, label: "GitHub" },
-            { icon: Facebook, label: "Facebook" },
-            { icon: Linkedin, label: "LinkedIn" },
-            { icon: ShieldCheck, label: "Privacy-first" },
-            { icon: Github, label: "Open source", link: "https://github.com/Yara-hneif/vitefolio-essence" },
-            { icon: Globe, label: "Shareable URL" },
+            { icon: Chrome, label: 'Google' },
+            { icon: Github, label: 'GitHub' },
+            { icon: Facebook, label: 'Facebook' },
+            { icon: Linkedin, label: 'LinkedIn' },
+            { icon: ShieldCheck, label: 'Privacy-first' },
+            {
+              icon: Github,
+              label: 'Open source',
+              link: 'https://github.com/Yara-hneif/vitefolio-essence',
+            },
+            { icon: Globe, label: 'Shareable URL' },
           ].map(({ icon: Icon, label, link }, i) => {
             const Comp = (
               <span className="inline-flex snap-start items-center gap-2 rounded-full border bg-white px-3 py-1 text-xs sm:text-sm">

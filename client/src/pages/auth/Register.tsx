@@ -1,24 +1,36 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "@/context/AuthContext";
-import { Button } from "@/components/ui/navigation/button";
-import { Input } from "@/components/ui/form/input";
-import { Label } from "@/components/ui/form/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/data-display/card";
-import { Separator } from "@/components/ui/data-display/separator";
-import ResendConfirmation from "@/components/auth/ResendConfirmation";
-import { Loader2, Mail, Lock, User, AtSign, ArrowLeft, Github, Linkedin } from "lucide-react";
-import { toast } from "sonner";
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '@/context/AuthContext';
+import { Button } from '@/components/ui/navigation/button';
+import { Input } from '@/components/ui/form/input';
+import { Label } from '@/components/ui/form/label';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/data-display/card';
+import { Separator } from '@/components/ui/data-display/separator';
+import { Loader2, Mail, Lock, ArrowLeft, Github, Eye, EyeOff, User, AtSign } from 'lucide-react';
+import ResendConfirmation from '@/components/auth/ResendConfirmation';
+import { toast } from 'sonner';
 
 const Register = () => {
   const [formData, setFormData] = useState({
-    username: "",
-    name: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
+    username: '',
+    name: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
   });
-  const { register, loading, authWithProvider } = useAuth();
+
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const { register, authWithProvider } = useAuth();
   const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -31,47 +43,48 @@ const Register = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (formData.password !== formData.confirmPassword) {
-      toast.error("Passwords do not match");
+      toast.error('Passwords do not match');
       return;
     }
     if (formData.password.length < 6) {
-      toast.error("Password must be at least 6 characters long.");
+      toast.error('Password must be at least 6 characters long.');
       return;
     }
     try {
+      setSubmitting(true);
       const res = await register({
         username: formData.username,
         name: formData.name,
         email: formData.email,
         password: formData.password,
       });
+      setSubmitting(false);
 
-      if (res?.status === "complete") {
-        toast.success("Account created successfully! Please check your email to verify your account.");
-        navigate("/login");
-      } else if (res?.error?.includes("already registered")) {
+      if (res?.status === 'complete') {
+        setShowConfirmation(true);
+      } else if (res?.error?.includes('already registered')) {
         toast.info(
           <div>
-            This email is already registered but not verified.
+            This email is already registered but not verified. <br />
             <ResendConfirmation email={formData.email} />
           </div>
         );
       } else {
-        toast.info("Please check your email to verify your account.");
+        toast.info('Please check your email to verify your account.');
       }
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Registration failed");
+      setSubmitting(false);
+      toast.error(err instanceof Error ? err.message : 'Registration failed');
     }
   };
 
-  const handleSocialLogin = async (provider: "google" | "github" | "facebook") => {
+  const handleSocialLogin = async (provider: 'google' | 'github' | 'facebook') => {
     try {
       await authWithProvider(provider);
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Registration failed");
+      toast.error(error instanceof Error ? error.message : 'Registration failed');
     }
   };
-
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-gradient-to-br from-background via-background to-secondary/20">
@@ -81,7 +94,7 @@ const Register = () => {
             variant="ghost"
             size="sm"
             className="mb-4 hover-lift"
-            onClick={() => navigate("/")}
+            onClick={() => navigate('/')}
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Home
@@ -107,163 +120,194 @@ const Register = () => {
             <CardDescription>Choose your preferred registration method</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
-            {/* Social Login Buttons */}
-            <div className="space-y-3">
-              {/* ----------- Google - Register ----------- */}
-              <Button
-                type="button"
-                variant="outline"
-                className="w-full h-12 hover-lift transition-all duration-300"
-                onClick={() => handleSocialLogin('google')}
-              >
-                <Mail className="h-5 w-5 mr-3 text-red-500" />
-                <span className="font-medium">Continue with Google</span>
-              </Button>
+            {!showConfirmation ? (
+              <>
+                {/* Social Login Buttons */}
+                <div className="space-y-3">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full h-12 hover-lift transition-all duration-300"
+                    onClick={() => handleSocialLogin('google')}
+                  >
+                    <Mail className="h-5 w-5 mr-3 text-red-500" />
+                    <span className="font-medium">Continue with Google</span>
+                  </Button>
 
-              {/* ----------- GitHub - Register ----------- */}
-              <Button
-                type="button"
-                variant="outline"
-                className="w-full h-12 hover-lift transition-all duration-300"
-                onClick={() => handleSocialLogin('github')}
-              >
-                <Github className="h-5 w-5 mr-3" />
-                <span className="font-medium">Continue with GitHub</span>
-              </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full h-12 hover-lift transition-all duration-300"
+                    onClick={() => handleSocialLogin('github')}
+                  >
+                    <Github className="h-5 w-5 mr-3" />
+                    <span className="font-medium">Continue with GitHub</span>
+                  </Button>
 
-              {/* ----------- FaceBook - Register ----------- */}
-              <Button
-                type="button"
-                variant="outline"
-                className="w-full h-12 hover-lift transition-all duration-300"
-                onClick={() => handleSocialLogin('facebook')}
-              >
-                <div className="w-5 h-5 mr-3 bg-blue-600 rounded text-white flex items-center justify-center text-sm font-bold">
-                  f
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full h-12 hover-lift transition-all duration-300"
+                    onClick={() => handleSocialLogin('facebook')}
+                  >
+                    <div className="w-5 h-5 mr-3 bg-blue-600 rounded text-white flex items-center justify-center text-sm font-bold">
+                      f
+                    </div>
+                    <span className="font-medium">Continue with Facebook</span>
+                  </Button>
                 </div>
-                <span className="font-medium">Continue with Facebook</span>
-              </Button>
-            </div>
 
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <Separator className="w-full" />
-              </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-card px-2 text-muted-foreground">Or</span>
-              </div>
-            </div>
-
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="username">Username</Label>
-                  <div className="relative">
-                    <AtSign className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      id="username"
-                      name="username"
-                      type="text"
-                      placeholder="johndoe"
-                      value={formData.username}
-                      onChange={handleChange}
-                      className="pl-10 h-12"
-                      required
-                    />
+                <div className="relative">
+                  <div className="absolute inset-0 flex items-center">
+                    <Separator className="w-full" />
+                  </div>
+                  <div className="relative flex justify-center text-xs uppercase">
+                    <span className="bg-card px-2 text-muted-foreground">Or</span>
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="name">Full Name</Label>
-                  <div className="relative">
-                    <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      id="name"
-                      name="name"
-                      type="text"
-                      placeholder="John Doe"
-                      value={formData.name}
-                      onChange={handleChange}
-                      className="pl-10 h-12"
-                      required
-                    />
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="username">Username</Label>
+                      <div className="relative">
+                        <AtSign className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          id="username"
+                          name="username"
+                          type="text"
+                          placeholder="johndoe"
+                          value={formData.username}
+                          onChange={handleChange}
+                          className="pl-10 h-12"
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="name">Full Name</Label>
+                      <div className="relative">
+                        <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          id="name"
+                          name="name"
+                          type="text"
+                          placeholder="John Doe"
+                          value={formData.name}
+                          onChange={handleChange}
+                          className="pl-10 h-12"
+                          required
+                        />
+                      </div>
+                    </div>
                   </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="email">Email</Label>
+                    <div className="relative">
+                      <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        id="email"
+                        name="email"
+                        type="email"
+                        placeholder="john@example.com"
+                        value={formData.email}
+                        onChange={handleChange}
+                        className="pl-10 h-12"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="password">Password</Label>
+                    <div className="relative">
+                      <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        id="password"
+                        name="password"
+                        type={showPassword ? 'text' : 'password'}
+                        placeholder="At least 6 characters"
+                        value={formData.password}
+                        onChange={handleChange}
+                        className="pl-10 pr-10 h-12"
+                        required
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword((prev) => !prev)}
+                        className="absolute right-3 top-3 text-muted-foreground hover:text-foreground"
+                      >
+                        {showPassword ? (
+                          <EyeOff className="h-4 w-4" />
+                        ) : (
+                          <Eye className="h-4 w-4" />
+                        )}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="confirmPassword">Confirm Password</Label>
+                    <div className="relative">
+                      <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        id="confirmPassword"
+                        name="confirmPassword"
+                        type={showConfirmPassword ? 'text' : 'password'}
+                        placeholder="Re-enter your password"
+                        value={formData.confirmPassword}
+                        onChange={handleChange}
+                        className="pl-10 pr-10 h-12"
+                        required
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowConfirmPassword((prev) => !prev)}
+                        className="absolute right-3 top-3 text-muted-foreground hover:text-foreground"
+                      >
+                        {showConfirmPassword ? (
+                          <EyeOff className="h-4 w-4" />
+                        ) : (
+                          <Eye className="h-4 w-4" />
+                        )}
+                      </button>
+                    </div>
+                  </div>
+
+                  <Button
+                    type="submit"
+                    className="w-full h-12 hover-lift transition-all duration-300"
+                    disabled={submitting}
+                  >
+                    {submitting ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Creating Account...
+                      </>
+                    ) : (
+                      'Create Account'
+                    )}
+                  </Button>
+                </form>
+
+                <div className="text-center text-sm">
+                  <span className="text-muted-foreground">Already have an account? </span>
+                  <Link to="/login" className="text-primary hover:underline font-medium">
+                    Sign In
+                  </Link>
                 </div>
+              </>
+            ) : (
+              <div className="p-4 bg-muted/50 rounded-lg border text-center space-y-3">
+                <p>
+                  ✅ Thank you for registering with Vitefolio. To complete your registration, please
+                  check your email inbox and confirm your account.
+                </p>
+                <ResendConfirmation email={formData.email} />
               </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    id="email"
-                    name="email"
-                    type="email"
-                    placeholder="john@example.com"
-                    value={formData.email}
-                    onChange={handleChange}
-                    className="pl-10 h-12"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    id="password"
-                    name="password"
-                    type="password"
-                    placeholder="At least 6 characters"
-                    value={formData.password}
-                    onChange={handleChange}
-                    className="pl-10 h-12"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Confirm Password</Label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    id="confirmPassword"
-                    name="confirmPassword"
-                    type="password"
-                    placeholder="Re-enter your password"
-                    value={formData.confirmPassword}
-                    onChange={handleChange}
-                    className="pl-10 h-12"
-                    required
-                  />
-                </div>
-              </div>
-
-              <Button
-                type="submit"
-                className="w-full h-12 hover-lift transition-all duration-300"
-                disabled={loading}
-              >
-                {loading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Creating Account...
-                  </>
-                ) : (
-                  "Create Account"
-                )}
-              </Button>
-            </form>
-
-            <div className="text-center text-sm">
-              <span className="text-muted-foreground">Already have an account? </span>
-              <Link to="/login" className="text-primary hover:underline font-medium">
-                Sign In
-              </Link>
-            </div>
+            )}
           </CardContent>
         </Card>
       </div>

@@ -1,5 +1,5 @@
-import { Card, CardContent } from "@/components/ui/data-display/card";
-import { Badge } from "@/components/ui/data-display/badge";
+import { Card, CardContent } from '@/components/ui/data-display/card';
+import { Badge } from '@/components/ui/data-display/badge';
 
 export default function TemplatePreview() {
   // Pure UI mockup to showcase what a portfolio could look like
@@ -24,11 +24,13 @@ export default function TemplatePreview() {
             </div>
 
             <div className="mt-8 grid gap-4 md:grid-cols-3">
-              {[1,2,3].map((i) => (
+              {[1, 2, 3].map((i) => (
                 <div key={i} className="rounded-xl border bg-white/70 p-4 backdrop-blur">
                   <div className="h-28 rounded-lg bg-gradient-to-br from-indigo-200 to-violet-200" />
                   <div className="mt-3 font-semibold">Project {i}</div>
-                  <p className="text-sm text-muted-foreground">Short description of the project goes here.</p>
+                  <p className="text-sm text-muted-foreground">
+                    Short description of the project goes here.
+                  </p>
                 </div>
               ))}
             </div>

@@ -1,16 +1,16 @@
-import { useId, useState } from "react";
+import { useId, useState } from 'react';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogDescription,
-} from "@/components/ui/overlay/dialog";
-import { Label } from "@/components/ui/form/label";
-import { Input } from "@/components/ui/form/input";
-import { Button } from "@/components/ui/navigation/button";
-import { Checkbox } from "@/components/ui/form/checkbox";
-import { Github } from "lucide-react";
+} from '@/components/ui/overlay/dialog';
+import { Label } from '@/components/ui/form/label';
+import { Input } from '@/components/ui/form/input';
+import { Button } from '@/components/ui/navigation/button';
+import { Checkbox } from '@/components/ui/form/checkbox';
+import { Github } from 'lucide-react';
 
 type Props = {
   open: boolean;
@@ -20,17 +20,11 @@ type Props = {
   onClear?: () => void;
 };
 
-const ImportFromGitHub = ({
-  open,
-  onOpenChange,
-  onPreview,
-  onImportSelected,
-  onClear,
-}: Props) => {
+const ImportFromGitHub = ({ open, onOpenChange, onPreview, onImportSelected, onClear }: Props) => {
   const descId = useId();
 
-  const [username, setUsername] = useState("");
-  const [token, setToken] = useState("");
+  const [username, setUsername] = useState('');
+  const [token, setToken] = useState('');
   const [includeTopics, setIncludeTopics] = useState(true);
   const [isPreviewing, setIsPreviewing] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
@@ -56,8 +50,8 @@ const ImportFromGitHub = ({
   };
 
   const handleClear = () => {
-    setUsername("");
-    setToken("");
+    setUsername('');
+    setToken('');
     setIncludeTopics(true);
     setHasSelection(false);
     onClear?.();
@@ -133,7 +127,7 @@ const ImportFromGitHub = ({
               disabled={!username.trim() || isPreviewing}
               className="w-full sm:w-auto"
             >
-              {isPreviewing ? "Loading…" : "Preview Repositories"}
+              {isPreviewing ? 'Loading…' : 'Preview Repositories'}
             </Button>
             <Button
               type="button"
@@ -151,7 +145,7 @@ const ImportFromGitHub = ({
             disabled={!hasSelection || isImporting}
             className="w-full sm:w-auto"
           >
-            {isImporting ? "Importing…" : "Import Selected"}
+            {isImporting ? 'Importing…' : 'Import Selected'}
           </Button>
         </div>
       </DialogContent>

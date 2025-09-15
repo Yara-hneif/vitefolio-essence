@@ -1,24 +1,24 @@
-import { useAuth } from "@/context/AuthContext";
-import { useNavigate, useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { createProject, updateProject, getProject } from "@/api/project.api";
-import { Button } from "@/components/ui/navigation/button";
-import { Input } from "@/components/ui/form/input";
-import { Label } from "@/components/ui/form/label";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/data-display/card";
-import { Textarea } from "@/components/ui/form/textarea";
+import { useAuth } from '@/context/AuthContext';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { createProject, updateProject, getProject } from '@/api/project.api';
+import { Button } from '@/components/ui/navigation/button';
+import { Input } from '@/components/ui/form/input';
+import { Label } from '@/components/ui/form/label';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/data-display/card';
+import { Textarea } from '@/components/ui/form/textarea';
 
 export default function ProjectForm() {
   const { user } = useAuth();
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [status, setStatus] = useState("planning");
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [status, setStatus] = useState('planning');
   const [collaborators, setCollaborators] = useState(0);
-  const [coverImage, setCoverImage] = useState("");
-  const [gallery, setGallery] = useState<string>("");
+  const [coverImage, setCoverImage] = useState('');
+  const [gallery, setGallery] = useState<string>('');
 
   useEffect(() => {
     if (id) {
@@ -26,11 +26,11 @@ export default function ProjectForm() {
         const project = await getProject(id);
         if (project) {
           setTitle(project.title);
-          setDescription(project.description || "");
-          setStatus(project.status ?? "draft");
+          setDescription(project.description || '');
+          setStatus(project.status ?? 'draft');
           setCollaborators(project.collaborators);
-          setCoverImage(project.cover_image || "");
-          setGallery(project.gallery?.join(", ") || "");
+          setCoverImage(project.cover_image || '');
+          setGallery(project.gallery?.join(', ') || '');
         }
       })();
     }
@@ -48,7 +48,7 @@ export default function ProjectForm() {
       collaborators,
       cover_image: coverImage || null,
       gallery: gallery
-        .split(",")
+        .split(',')
         .map((s) => s.trim())
         .filter(Boolean),
     };
@@ -58,14 +58,14 @@ export default function ProjectForm() {
     } else {
       await createProject(values);
     }
-    navigate("/dashboard/projects");
+    navigate('/dashboard/projects');
   };
 
   return (
     <div className="max-w-2xl mx-auto p-6">
       <Card>
         <CardHeader>
-          <CardTitle>{id ? "Edit Project" : "New Project"}</CardTitle>
+          <CardTitle>{id ? 'Edit Project' : 'New Project'}</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -114,7 +114,7 @@ export default function ProjectForm() {
                 placeholder="https://img1.jpg, https://img2.png, ..."
               />
             </div>
-            <Button type="submit">{id ? "Update Project" : "Create Project"}</Button>
+            <Button type="submit">{id ? 'Update Project' : 'Create Project'}</Button>
           </form>
         </CardContent>
       </Card>

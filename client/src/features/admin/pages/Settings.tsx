@@ -1,11 +1,11 @@
-import { Input } from "@/components/ui/form/input";
-import { Label } from "@/components/ui/form/label";
-import { Button } from "@/components/ui/navigation/button";
-import { useState } from "react";
+import { Input } from '@/components/ui/form/input';
+import { Label } from '@/components/ui/form/label';
+import { Button } from '@/components/ui/navigation/button';
+import { useState } from 'react';
 
 export default function AdminSettingsPage() {
-  const [profileName, setProfileName] = useState<string>(import.meta.env.VITE_PROFILE_NAME || "");
-  const [avatarUrl, setAvatarUrl] = useState<string>(import.meta.env.VITE_PROFILE_AVATAR || "");
+  const [profileName, setProfileName] = useState<string>(import.meta.env.VITE_PROFILE_NAME || '');
+  const [avatarUrl, setAvatarUrl] = useState<string>(import.meta.env.VITE_PROFILE_AVATAR || '');
 
   return (
     <div className="mx-auto max-w-2xl p-6 space-y-6">
@@ -33,8 +33,20 @@ export default function AdminSettingsPage() {
         </div>
 
         <div className="flex gap-2">
-          <Button onClick={() => {/* persist to server/db */}}>Save</Button>
-          <Button variant="outline" onClick={() => { setProfileName(""); setAvatarUrl(""); }}>
+          <Button
+            onClick={() => {
+              /* persist to server/db */
+            }}
+          >
+            Save
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => {
+              setProfileName('');
+              setAvatarUrl('');
+            }}
+          >
             Reset
           </Button>
         </div>

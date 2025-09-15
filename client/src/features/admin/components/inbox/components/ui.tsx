@@ -1,9 +1,15 @@
-import React from "react";
-import { cn } from "@/lib/utils";
+import React from 'react';
+import { cn } from '@/lib/utils';
 
 export function IconButton({
-  children, onClick, label,
-}: { children: React.ReactNode; onClick: () => void; label: string }) {
+  children,
+  onClick,
+  label,
+}: {
+  children: React.ReactNode;
+  onClick: () => void;
+  label: string;
+}) {
   return (
     <button
       type="button"
@@ -18,16 +24,22 @@ export function IconButton({
 }
 
 export function ToolbarSm({
-  children, onClick, title, disabled,
+  children,
+  onClick,
+  title,
+  disabled,
 }: {
-  children: React.ReactNode; onClick: () => void; title: string; disabled?: boolean;
+  children: React.ReactNode;
+  onClick: () => void;
+  title: string;
+  disabled?: boolean;
 }) {
   return (
     <button
       type="button"
       className={cn(
-        "h-9 px-3 rounded-lg border hover:bg-black/5 inline-flex items-center gap-2 text-[13px] disabled:opacity-50",
-        disabled && "pointer-events-none"
+        'h-9 px-3 rounded-lg border hover:bg-black/5 inline-flex items-center gap-2 text-[13px] disabled:opacity-50',
+        disabled && 'pointer-events-none'
       )}
       onClick={onClick}
       title={title}
@@ -40,18 +52,24 @@ export function ToolbarSm({
 }
 
 export function FilterButton({
-  active, onClick, children,
-}: { active: boolean; onClick: () => void; children: React.ReactNode }) {
+  active,
+  onClick,
+  children,
+}: {
+  active: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
   return (
     <button
       type="button"
       onClick={onClick}
       aria-pressed={active}
       className={cn(
-        "h-8 px-3 rounded-full text-[13px] border",
+        'h-8 px-3 rounded-full text-[13px] border',
         active
-          ? "bg-violet-50 border-violet-200 text-violet-700 dark:bg-violet-900/30 dark:text-violet-200 dark:border-violet-800"
-          : "hover:bg-black/5"
+          ? 'bg-violet-50 border-violet-200 text-violet-700 dark:bg-violet-900/30 dark:text-violet-200 dark:border-violet-800'
+          : 'hover:bg-black/5'
       )}
     >
       {children}
@@ -60,7 +78,9 @@ export function FilterButton({
 }
 
 export function SegmentedSm<T extends string>({
-  options, value, onChange,
+  options,
+  value,
+  onChange,
 }: {
   options: { key: string; label: string; value: T }[];
   value: T;
@@ -73,9 +93,9 @@ export function SegmentedSm<T extends string>({
           key={o.key}
           type="button"
           className={cn(
-            "h-8 px-3 text-[13px]",
-            o.value === value ? "bg-black/5 dark:bg-white/10" : "hover:bg-black/5",
-            i !== options.length - 1 && "border-r"
+            'h-8 px-3 text-[13px]',
+            o.value === value ? 'bg-black/5 dark:bg-white/10' : 'hover:bg-black/5',
+            i !== options.length - 1 && 'border-r'
           )}
           onClick={() => onChange(o.value)}
         >

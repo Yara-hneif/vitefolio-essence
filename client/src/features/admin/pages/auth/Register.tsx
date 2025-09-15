@@ -4,7 +4,13 @@ import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/navigation/button';
 import { Input } from '@/components/ui/form/input';
 import { Label } from '@/components/ui/form/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/data-display/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/data-display/card';
 import { Loader2, Mail, Lock, User, AtSign, ArrowLeft } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -14,21 +20,21 @@ const Register = () => {
     name: '',
     email: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
   });
   const { register, loading } = useAuth();
   const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (formData.password !== formData.confirmPassword) {
       toast.error('Passwords do not match');
       return;
@@ -38,13 +44,13 @@ const Register = () => {
       toast.error('Password must be at least 6 characters');
       return;
     }
-    
+
     try {
       await register({
         username: formData.username,
         name: formData.name,
         email: formData.email,
-        password: formData.password
+        password: formData.password,
       });
       toast.success('Account created successfully!');
       navigate('/dashboard');
@@ -57,27 +63,18 @@ const Register = () => {
     <div className="min-h-screen flex items-center justify-center px-4 py-12 sparkle-bg">
       <div className="w-full max-w-md space-y-6">
         <div className="text-center">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="mb-4"
-            onClick={() => navigate('/')}
-          >
+          <Button variant="ghost" size="sm" className="mb-4" onClick={() => navigate('/')}>
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Home
           </Button>
           <h1 className="text-3xl font-bold">Create Account</h1>
-          <p className="text-muted-foreground mt-2">
-            Join the portfolio platform
-          </p>
+          <p className="text-muted-foreground mt-2">Join the portfolio platform</p>
         </div>
 
         <Card className="glass">
           <CardHeader>
             <CardTitle>Sign Up</CardTitle>
-            <CardDescription>
-              Create your account to start building your portfolio
-            </CardDescription>
+            <CardDescription>Create your account to start building your portfolio</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -168,11 +165,7 @@ const Register = () => {
                 </div>
               </div>
 
-              <Button 
-                type="submit" 
-                className="w-full rounded-full" 
-                disabled={loading}
-              >
+              <Button type="submit" className="w-full rounded-full" disabled={loading}>
                 {loading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -186,10 +179,7 @@ const Register = () => {
 
             <div className="mt-6 text-center text-sm">
               <span className="text-muted-foreground">Already have an account? </span>
-              <Link 
-                to="/login" 
-                className="text-primary hover:underline font-medium"
-              >
+              <Link to="/login" className="text-primary hover:underline font-medium">
                 Sign in
               </Link>
             </div>

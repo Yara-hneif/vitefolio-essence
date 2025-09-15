@@ -1,9 +1,9 @@
-import { useState } from "react";
-import { supabase } from "@/lib/supabase";
-import { Button } from "@/components/ui/navigation/button";
-import { Input } from "@/components/ui/form/input";
-import { Textarea } from "@/components/ui/form/textarea";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/overlay/dialog";
+import { useState } from 'react';
+import { supabase } from '@/lib/supabase';
+import { Button } from '@/components/ui/navigation/button';
+import { Input } from '@/components/ui/form/input';
+import { Textarea } from '@/components/ui/form/textarea';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/overlay/dialog';
 
 export default function ContactDialog({
   open,
@@ -12,14 +12,14 @@ export default function ContactDialog({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
-  const [form, setForm] = useState({ name: "", email: "", subject: "", message: "" });
+  const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' });
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
-    const { error } = await supabase.from("contact").insert({
+    const { error } = await supabase.from('contact').insert({
       name: form.name,
       email: form.email,
       subject: form.subject,
@@ -28,10 +28,10 @@ export default function ContactDialog({
 
     setLoading(false);
     if (error) {
-      alert("❌ Failed: " + error.message);
+      alert('❌ Failed: ' + error.message);
     } else {
-      alert("✅ Message sent successfully!");
-      setForm({ name: "", email: "", subject: "", message: "" });
+      alert('✅ Message sent successfully!');
+      setForm({ name: '', email: '', subject: '', message: '' });
       onOpenChange(false);
     }
   };
@@ -69,7 +69,7 @@ export default function ContactDialog({
             required
           />
           <Button type="submit" disabled={loading} className="w-full">
-            {loading ? "Sending..." : "Send Message"}
+            {loading ? 'Sending...' : 'Send Message'}
           </Button>
         </form>
       </DialogContent>

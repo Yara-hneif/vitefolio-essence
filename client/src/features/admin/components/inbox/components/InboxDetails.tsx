@@ -1,9 +1,9 @@
-import { MailOpen, Mail, Star, Trash2 } from "lucide-react";
-import { IconButton } from "./ui";
-import { textScale } from "../utils";
-import { ContactMessage } from "@/features/admin/hooks/useAdminMessages";
-import ReplyForm from "./ReplyForm";
-import { cn } from "@/lib/utils";
+import { MailOpen, Mail, Star, Trash2 } from 'lucide-react';
+import { IconButton } from './ui';
+import { textScale } from '../utils';
+import { ContactMessage } from '@/features/admin/hooks/useAdminMessages';
+import ReplyForm from './ReplyForm';
+import { cn } from '@/lib/utils';
 
 export default function InboxDetails({
   className,
@@ -23,22 +23,17 @@ export default function InboxDetails({
   onReplied: (subject: string, body: string) => Promise<void>;
 }) {
   return (
-    <div className={cn("min-h-0 flex flex-col", className)}>
+    <div className={cn('min-h-0 flex flex-col', className)}>
       <div className="px-4 md:px-6 py-3.5 border-b">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <div className={cn("leading-tight truncate", textScale.head)}>
-              {active.subject || "(No subject)"}
+            <div className={cn('leading-tight truncate', textScale.head)}>
+              {active.subject || '(No subject)'}
             </div>
-            <div
-              className={cn(
-                "mt-1 flex flex-wrap items-center gap-x-2 gap-y-1",
-                textScale.sub
-              )}
-            >
+            <div className={cn('mt-1 flex flex-wrap items-center gap-x-2 gap-y-1', textScale.sub)}>
               <span className="truncate">
-                From: <b className="text-foreground">{active.name || "Unknown"}</b>{" "}
-                &lt;{active.email}&gt;
+                From: <b className="text-foreground">{active.name || 'Unknown'}</b> &lt;
+                {active.email}&gt;
               </span>
               <span>• {new Date(active.created_at).toLocaleString()}</span>
               {active.auto_reply_sent_at && <span>• Auto-replied</span>}
@@ -48,23 +43,19 @@ export default function InboxDetails({
 
           <div className="flex items-center gap-1 shrink-0">
             <IconButton
-              label={active.is_read ? "Mark as unread" : "Mark as read"}
+              label={active.is_read ? 'Mark as unread' : 'Mark as read'}
               onClick={() => toggleRead(active)}
             >
-              {active.is_read ? (
-                <MailOpen className="w-5 h-5" />
-              ) : (
-                <Mail className="w-5 h-5" />
-              )}
+              {active.is_read ? <MailOpen className="w-5 h-5" /> : <Mail className="w-5 h-5" />}
             </IconButton>
             <IconButton
-              label={active.is_starred ? "Unstar" : "Star"}
+              label={active.is_starred ? 'Unstar' : 'Star'}
               onClick={() => toggleStar(active)}
             >
               <Star
                 className={cn(
-                  "w-5 h-5",
-                  active.is_starred ? "text-amber-500" : "text-muted-foreground"
+                  'w-5 h-5',
+                  active.is_starred ? 'text-amber-500' : 'text-muted-foreground'
                 )}
               />
             </IconButton>
@@ -82,9 +73,7 @@ export default function InboxDetails({
 
         <ReplyForm
           toEmail={active.email}
-          defaultSubject={
-            active.subject ? `Re: ${active.subject}` : "Your message"
-          }
+          defaultSubject={active.subject ? `Re: ${active.subject}` : 'Your message'}
           onSend={onReplied}
         />
       </div>

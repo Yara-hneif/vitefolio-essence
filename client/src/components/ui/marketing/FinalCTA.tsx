@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/navigation/button";
+import { Button } from '@/components/ui/navigation/button';
 
 export default function FinalCTA({
   onPrimary,

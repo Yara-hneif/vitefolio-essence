@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 type Props = {
   html?: string;
@@ -23,10 +23,10 @@ export default function AboutSection({ html }: Props) {
   return (
     <section className="w-full py-16 bg-muted/30">
       <div className="max-w-4xl mx-auto px-4">
-        <div 
-          dangerouslySetInnerHTML={{ 
-            __html: html || defaultContent 
-          }} 
+        <div
+          dangerouslySetInnerHTML={{
+            __html: html || defaultContent,
+          }}
         />
       </div>
     </section>

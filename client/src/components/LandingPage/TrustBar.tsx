@@ -1,4 +1,4 @@
-import { Github, ShieldCheck, Globe, Chrome, Linkedin, Facebook } from "lucide-react";
+import { Github, ShieldCheck, Globe, Chrome, Linkedin, Facebook } from 'lucide-react';
 
 export default function TrustBar() {
   return (

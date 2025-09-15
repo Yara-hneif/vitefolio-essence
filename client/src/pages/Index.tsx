@@ -1,6 +1,6 @@
-import { Suspense, lazy } from "react";
+import { Suspense, lazy } from 'react';
 
-const Home = lazy(() => import("@/pages/demo/Home"));
+const Home = lazy(() => import('@/pages/demo/Home'));
 
 const Index = () => {
   return (

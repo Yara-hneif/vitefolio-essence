@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, Suspense, lazy } from "react";
+import { useEffect, useMemo, useRef, useState, Suspense, lazy } from 'react';
 
 import {
   useAdminMessages,
@@ -7,16 +7,20 @@ import {
   useAdminBulkDelete,
   useAdminReply,
   ContactMessage,
-} from "@/features/admin/hooks/useAdminMessages";
-import { cn } from "@/lib/utils";
+} from '@/features/admin/hooks/useAdminMessages';
+import { cn } from '@/lib/utils';
 
-const InboxHeader = lazy(() => import("@/features/admin/components/inbox/components/InboxHeader"));
-const InboxToolbar = lazy(() => import("@/features/admin/components/inbox/components/InboxToolbar"));
-const InboxList = lazy(() => import("@/features/admin/components/inbox/components/InboxList"));
-const InboxDetails = lazy(() => import("@/features/admin/components/inbox/components/InboxDetails"));
+const InboxHeader = lazy(() => import('@/features/admin/components/inbox/components/InboxHeader'));
+const InboxToolbar = lazy(
+  () => import('@/features/admin/components/inbox/components/InboxToolbar')
+);
+const InboxList = lazy(() => import('@/features/admin/components/inbox/components/InboxList'));
+const InboxDetails = lazy(
+  () => import('@/features/admin/components/inbox/components/InboxDetails')
+);
 
-import { exportSelectedCSV, densityMap } from "@/features/admin/components/inbox/utils";
-import { Density, FilterMode } from "@/features/admin/components/inbox/types";
+import { exportSelectedCSV, densityMap } from '@/features/admin/components/inbox/utils';
+import { Density, FilterMode } from '@/features/admin/components/inbox/types';
 
 function PanelSkeleton() {
   return (
@@ -44,16 +48,16 @@ type AdminInboxPanelProps = {
 
 export default function AdminInboxPanel({ open, onClose, triggerRef }: AdminInboxPanelProps) {
   // ------------------- State & Hooks -------------------
-  const [q, setQ] = useState("");
+  const [q, setQ] = useState('');
   const [selected, setSelected] = useState<Record<string, boolean>>({});
   const [active, setActive] = useState<ContactMessage | null>(null);
-  const [mode, setMode] = useState<FilterMode>("all");
-  const [density, setDensity] = useState<Density>("cozy");
+  const [mode, setMode] = useState<FilterMode>('all');
+  const [density, setDensity] = useState<Density>('cozy');
   const [listWide, setListWide] = useState(false);
   const [pageSize, setPageSize] = useState(30);
   const [splitPct, setSplitPct] = useState<number>(() => {
     try {
-      const v = localStorage.getItem("admin_inbox_split");
+      const v = localStorage.getItem('admin_inbox_split');
       if (v) {
         const num = parseFloat(v);
         if (!Number.isNaN(num)) return Math.min(0.75, Math.max(0.3, num));
@@ -69,7 +73,7 @@ export default function AdminInboxPanel({ open, onClose, triggerRef }: AdminInbo
     q,
     page: 1,
     pageSize,
-    sort: "created_at:desc",
+    sort: 'created_at:desc',
   });
   const items = data?.items ?? [];
 
@@ -81,9 +85,9 @@ export default function AdminInboxPanel({ open, onClose, triggerRef }: AdminInbo
   // ------------------- Derived Values -------------------
   const filtered = useMemo(() => {
     switch (mode) {
-      case "unread":
+      case 'unread':
         return items.filter((m) => !m.is_read);
-      case "starred":
+      case 'starred':
         return items.filter((m) => m.is_starred);
       default:
         return items;
@@ -96,12 +100,14 @@ export default function AdminInboxPanel({ open, onClose, triggerRef }: AdminInbo
   );
 
   const selectedIds = useMemo(
-    () => Object.entries(selected).filter(([, v]) => v).map(([k]) => k),
+    () =>
+      Object.entries(selected)
+        .filter(([, v]) => v)
+        .map(([k]) => k),
     [selected]
   );
   const allSelectableIds = useMemo(() => filtered.map((m) => m.id), [filtered]);
-  const allSelected =
-    allSelectableIds.length > 0 && allSelectableIds.every((id) => selected[id]);
+  const allSelected = allSelectableIds.length > 0 && allSelectableIds.every((id) => selected[id]);
   const canBulk = selectedIds.length > 0;
 
   const d = densityMap[density];
@@ -155,8 +161,8 @@ export default function AdminInboxPanel({ open, onClose, triggerRef }: AdminInbo
         {/* Backdrop */}
         <div
           className={cn(
-            "fixed inset-0 z-[69] bg-black/40 transition-opacity",
-            open ? "opacity-100" : "opacity-0 pointer-events-none"
+            'fixed inset-0 z-[69] bg-black/40 transition-opacity',
+            open ? 'opacity-100' : 'opacity-0 pointer-events-none'
           )}
           onClick={handleClose}
         />
@@ -166,10 +172,10 @@ export default function AdminInboxPanel({ open, onClose, triggerRef }: AdminInbo
           role="dialog"
           aria-modal={open ? true : undefined}
           className={cn(
-            "fixed right-0 top-0 z-[70] h-screen w-full sm:w-[720px] md:w-[980px] lg:w-[1160px] bg-white dark:bg-zinc-950 border-l shadow-2xl",
-            "transition-transform",
-            open ? "translate-x-0" : "translate-x-full",
-            "flex flex-col"
+            'fixed right-0 top-0 z-[70] h-screen w-full sm:w-[720px] md:w-[980px] lg:w-[1160px] bg-white dark:bg-zinc-950 border-l shadow-2xl',
+            'transition-transform',
+            open ? 'translate-x-0' : 'translate-x-full',
+            'flex flex-col'
           )}
           aria-hidden={!open}
         >

@@ -1,17 +1,14 @@
 import React from 'react';
 import { Button } from '@/components/ui/navigation/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/data-display/card';
-import { Badge } from '@/components/ui/data-display/badge';
 import {
-  Globe,
-  User,
-  Briefcase,
-  Mail,
-  Image,
-  Eye,
-  Sparkles,
-  ArrowRight
-} from 'lucide-react';
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/data-display/card';
+import { Badge } from '@/components/ui/data-display/badge';
+import { Globe, User, Briefcase, Mail, Image, Eye, Sparkles, ArrowRight } from 'lucide-react';
 
 const placeholder = '/placeholder.svg';
 
@@ -55,10 +52,10 @@ const templates: Template[] = [
               { label: 'Home', href: '#home' },
               { label: 'About', href: '#about' },
               { label: 'Projects', href: '#projects' },
-              { label: 'Contact', href: '#contact' }
-            ]
-          }
-        }
+              { label: 'Contact', href: '#contact' },
+            ],
+          },
+        },
       },
       {
         '@type': '@builder.io/sdk:Element',
@@ -70,9 +67,9 @@ const templates: Template[] = [
             title: 'Welcome to My Portfolio',
             subtitle: 'I create beautiful digital experiences with modern technologies',
             ctaLabel: 'View My Work',
-            ctaHref: '#projects'
-          }
-        }
+            ctaHref: '#projects',
+          },
+        },
       },
       {
         '@type': '@builder.io/sdk:Element',
@@ -81,9 +78,9 @@ const templates: Template[] = [
         component: {
           name: 'AboutSection',
           options: {
-            html: '<h2>About Me</h2><p>I am a passionate developer with expertise in modern web technologies...</p>'
-          }
-        }
+            html: '<h2>About Me</h2><p>I am a passionate developer with expertise in modern web technologies...</p>',
+          },
+        },
       },
       {
         '@type': '@builder.io/sdk:Element',
@@ -97,17 +94,17 @@ const templates: Template[] = [
                 title: 'Project 1',
                 subtitle: 'Web Application',
                 href: '#',
-                cover_image: placeholder
+                cover_image: placeholder,
               },
               {
                 title: 'Project 2',
                 subtitle: 'Mobile App',
                 href: '#',
-                cover_image: placeholder
-              }
-            ]
-          }
-        }
+                cover_image: placeholder,
+              },
+            ],
+          },
+        },
       },
       {
         '@type': '@builder.io/sdk:Element',
@@ -116,9 +113,9 @@ const templates: Template[] = [
         component: {
           name: 'ContactSection',
           options: {
-            mailto: 'hello@example.com'
-          }
-        }
+            mailto: 'hello@example.com',
+          },
+        },
       },
       {
         '@type': '@builder.io/sdk:Element',
@@ -127,11 +124,11 @@ const templates: Template[] = [
         component: {
           name: 'Footer',
           options: {
-            copyright: '© 2024 Your Name. All rights reserved.'
-          }
-        }
-      }
-    ]
+            copyright: '© 2024 Your Name. All rights reserved.',
+          },
+        },
+      },
+    ],
   },
   {
     id: 'portfolio-creative',
@@ -142,7 +139,7 @@ const templates: Template[] = [
     features: ['Artistic Layout', 'Gallery Grid', 'Creative Animations', 'Bold Typography'],
     blocks: [
       // Similar structure but with different styling options
-    ]
+    ],
   },
   {
     id: 'business-landing',
@@ -153,8 +150,8 @@ const templates: Template[] = [
     features: ['Landing Hero', 'Features Section', 'Testimonials', 'CTA Buttons'],
     blocks: [
       // Business-focused blocks
-    ]
-  }
+    ],
+  },
 ];
 
 const TemplateSelector: React.FC<TemplateSelectorProps> = ({ onSelectTemplate, onClose }) => {
@@ -162,9 +159,10 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({ onSelectTemplate, o
 
   const categories = ['All', 'Portfolio', 'Business', 'Personal'];
 
-  const filteredTemplates = selectedCategory === 'All'
-    ? templates
-    : templates.filter(t => t.category === selectedCategory);
+  const filteredTemplates =
+    selectedCategory === 'All'
+      ? templates
+      : templates.filter((t) => t.category === selectedCategory);
 
   return (
     <div className="space-y-6">
@@ -180,7 +178,7 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({ onSelectTemplate, o
         {categories.map((category) => (
           <Button
             key={category}
-            variant={selectedCategory === category ? "default" : "outline"}
+            variant={selectedCategory === category ? 'default' : 'outline'}
             size="sm"
             onClick={() => setSelectedCategory(category)}
             className="rounded-full"
@@ -211,7 +209,6 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({ onSelectTemplate, o
               />
             </div>
 
-
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-lg">{template.name}</CardTitle>
@@ -219,9 +216,7 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({ onSelectTemplate, o
                   {template.category}
                 </Badge>
               </div>
-              <CardDescription className="text-sm">
-                {template.description}
-              </CardDescription>
+              <CardDescription className="text-sm">{template.description}</CardDescription>
             </CardHeader>
 
             <CardContent className="space-y-4">
@@ -238,14 +233,9 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({ onSelectTemplate, o
                 )}
               </div>
 
-              <div className="flex flex-wrap gap-2 w-full" >
+              <div className="flex flex-wrap gap-2 w-full">
                 {template.demoUrl && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="flex-1 min-w-[120px]"
-                    asChild
-                  >
+                  <Button variant="outline" size="sm" className="flex-1 min-w-[120px]" asChild>
                     <a href={template.demoUrl} target="_blank" rel="noopener noreferrer">
                       <Eye className="h-4 w-4 mr-1" />
                       Preview

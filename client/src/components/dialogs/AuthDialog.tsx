@@ -1,18 +1,18 @@
-import * as React from "react";
+import * as React from 'react';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogDescription,
-} from "@/components/ui/overlay/dialog";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/navigation/tabs";
-import { Input } from "@/components/ui/form/input";
-import { Label } from "@/components/ui/form/label";
-import { Button } from "@/components/ui/navigation/button";
-import { Loader2, Github, Linkedin, Mail } from "lucide-react";
-import { useAuth } from "@/context/AuthContext";
-import { toast } from "sonner";
+} from '@/components/ui/overlay/dialog';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/navigation/tabs';
+import { Input } from '@/components/ui/form/input';
+import { Label } from '@/components/ui/form/label';
+import { Button } from '@/components/ui/navigation/button';
+import { Loader2, Github, Linkedin, Mail } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
+import { toast } from 'sonner';
 
 interface AuthDialogProps {
   open: boolean;
@@ -22,17 +22,17 @@ interface AuthDialogProps {
 export default function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
   const { login, register, authWithProvider, loading } = useAuth();
 
-  const [email, setEmail] = React.useState("");
-  const [password, setPassword] = React.useState("");
+  const [email, setEmail] = React.useState('');
+  const [password, setPassword] = React.useState('');
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       await login(email, password);
-      toast.success("Welcome back!");
+      toast.success('Welcome back!');
       onOpenChange(false);
     } catch (err: any) {
-      toast.error(err.message || "Login failed");
+      toast.error(err.message || 'Login failed');
     }
   };
 
@@ -42,13 +42,13 @@ export default function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
       await register({
         email,
         password,
-        username: email.split("@")[0],
-        name: email.split("@")[0],
+        username: email.split('@')[0],
+        name: email.split('@')[0],
       });
-      toast.success("Account created successfully");
+      toast.success('Account created successfully');
       onOpenChange(false);
     } catch (err: any) {
-      toast.error(err.message || "Registration failed");
+      toast.error(err.message || 'Registration failed');
     }
   };
 
@@ -57,9 +57,7 @@ export default function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Welcome</DialogTitle>
-          <DialogDescription>
-            Sign in or create an account to continue
-          </DialogDescription>
+          <DialogDescription>Sign in or create an account to continue</DialogDescription>
         </DialogHeader>
 
         <Tabs defaultValue="login" className="mt-4">
@@ -98,7 +96,7 @@ export default function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
                     Logging in...
                   </>
                 ) : (
-                  "Login"
+                  'Login'
                 )}
               </Button>
             </form>
@@ -134,7 +132,7 @@ export default function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
                     Creating account...
                   </>
                 ) : (
-                  "Register"
+                  'Register'
                 )}
               </Button>
             </form>
@@ -143,18 +141,10 @@ export default function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
 
         {/* Social Login */}
         <div className="mt-6 space-y-3">
-          <Button
-            variant="outline"
-            className="w-full"
-            onClick={() => authWithProvider("google")}
-          >
+          <Button variant="outline" className="w-full" onClick={() => authWithProvider('google')}>
             <Mail className="mr-2 h-4 w-4 text-red-500" /> Continue with Google
           </Button>
-          <Button
-            variant="outline"
-            className="w-full"
-            onClick={() => authWithProvider("github")}
-          >
+          <Button variant="outline" className="w-full" onClick={() => authWithProvider('github')}>
             <Github className="mr-2 h-4 w-4" /> Continue with GitHub
           </Button>
         </div>

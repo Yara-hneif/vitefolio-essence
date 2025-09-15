@@ -1,38 +1,27 @@
-import { useEffect, useMemo, useState } from "react";
-import { useProjects } from "@/hooks/useProjects";
-import { Project } from "@/types/models/Project";
-import { toast } from "sonner";
+import { useEffect, useMemo, useState } from 'react';
+import { useProjects } from '@/hooks/useProjects';
+import { Project } from '@/types/models/Project';
+import { toast } from 'sonner';
 
-import { Button } from "@/components/ui/navigation/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/data-display/card";
-import { Input } from "@/components/ui/form/input";
-import { Label } from "@/components/ui/form/label";
-import { Switch } from "@/components/ui/effects/switch";
-import { Badge } from "@/components/ui/data-display/badge";
+import { Button } from '@/components/ui/navigation/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/data-display/card';
+import { Input } from '@/components/ui/form/input';
+import { Label } from '@/components/ui/form/label';
+import { Switch } from '@/components/ui/effects/switch';
+import { Badge } from '@/components/ui/data-display/badge';
 
-import ProjectForm from "@/features/admin/components/projects/AdminProjectForm";
-import ImportFromGitHub from "@/features/admin/components/projects/ImportFromGitHub";
+import ProjectForm from '@/features/admin/components/projects/AdminProjectForm';
+import ImportFromGitHub from '@/features/admin/components/projects/ImportFromGitHub';
 
-import {
-  getSyncConfig,
-  runSyncNow,
-  updateSyncConfig,
-  type SyncConfig,
-} from "@/lib/syncApi";
+import { getSyncConfig, runSyncNow, updateSyncConfig, type SyncConfig } from '@/lib/syncApi';
 
 export default function AdminProjectsPage() {
-  const {
-    projects,
-    isLoading,
-    isError,
-    createProject,
-    updateProject,
-    deleteProject,
-  } = useProjects();
+  const { projects, isLoading, isError, createProject, updateProject, deleteProject } =
+    useProjects();
 
   // Create/Edit modal state
   const [formOpen, setFormOpen] = useState(false);
-  const [formMode, setFormMode] = useState<"create" | "edit">("create");
+  const [formMode, setFormMode] = useState<'create' | 'edit'>('create');
   const [currentProject, setCurrentProject] = useState<Project | undefined>(undefined);
   const [submitting, setSubmitting] = useState(false);
 
@@ -51,7 +40,7 @@ export default function AdminProjectsPage() {
       const c = await getSyncConfig();
       setCfg(c);
     } catch (e: any) {
-      toast.error(e?.message ?? "Failed to load sync config");
+      toast.error(e?.message ?? 'Failed to load sync config');
     } finally {
       setCfgLoading(false);
     }
@@ -68,9 +57,9 @@ export default function AdminProjectsPage() {
       setCfgSaving(true);
       const next = await updateSyncConfig({ ...(cfg ?? {}), ...patch });
       setCfg(next);
-      toast.success("Sync config saved");
+      toast.success('Sync config saved');
     } catch (e: any) {
-      toast.error(e?.message ?? "Failed to save config");
+      toast.error(e?.message ?? 'Failed to save config');
     } finally {
       setCfgSaving(false);
     }
@@ -83,7 +72,7 @@ export default function AdminProjectsPage() {
       toast.success(`Sync completed: created ${res.created}, failed ${res.failed}`);
       // TODO: optionally invalidate projects query
     } catch (e: any) {
-      toast.error(e?.message ?? "Sync failed");
+      toast.error(e?.message ?? 'Sync failed');
     } finally {
       setSyncingNow(false);
       void fetchConfig();
@@ -92,61 +81,61 @@ export default function AdminProjectsPage() {
 
   const openCreate = () => {
     setCurrentProject(undefined);
-    setFormMode("create");
+    setFormMode('create');
     setFormOpen(true);
   };
 
   const openEdit = (project: Project) => {
     setCurrentProject(project);
-    setFormMode("edit");
+    setFormMode('edit');
     setFormOpen(true);
   };
 
   const handleDelete = async (id: string) => {
-    const ok = window.confirm("Are you sure you want to delete this project?");
+    const ok = window.confirm('Are you sure you want to delete this project?');
     if (!ok) return;
     try {
       await deleteProject.mutateAsync(id);
-      toast.success("Project deleted successfully");
+      toast.success('Project deleted successfully');
     } catch {
-      toast.error("Failed to delete project");
+      toast.error('Failed to delete project');
     }
   };
 
   const handleSubmitForm = async (payload: Partial<Project>) => {
     try {
       setSubmitting(true);
-      if (formMode === "edit" && currentProject?.id) {
+      if (formMode === 'edit' && currentProject?.id) {
         await updateProject.mutateAsync({ id: currentProject.id, updates: payload });
-        toast.success("Project updated");
+        toast.success('Project updated');
       } else {
         await createProject.mutateAsync(payload);
-        toast.success("Project created");
+        toast.success('Project created');
       }
       setFormOpen(false);
       setCurrentProject(undefined);
     } catch {
-      toast.error("Save failed");
+      toast.error('Save failed');
     } finally {
       setSubmitting(false);
     }
   };
 
   const draftQueue = useMemo(
-    () => (Array.isArray(projects) ? projects.filter((p) => p.status === "draft") : []),
+    () => (Array.isArray(projects) ? projects.filter((p) => p.status === 'draft') : []),
     [projects]
   );
 
   const publishQuick = async (p: Project) => {
     try {
-      await updateProject.mutateAsync({ id: p.id, updates: { status: "published" } });
+      await updateProject.mutateAsync({ id: p.id, updates: { status: 'published' } });
       toast.success(`Published "${p.title}"`);
     } catch {
-      toast.error("Publish failed");
+      toast.error('Publish failed');
     }
   };
 
-  const lastRunLabel = cfg?.lastRunAt ? new Date(cfg.lastRunAt).toLocaleString() : "Never";
+  const lastRunLabel = cfg?.lastRunAt ? new Date(cfg.lastRunAt).toLocaleString() : 'Never';
 
   return (
     <div className="mx-auto max-w-5xl p-6 space-y-8">
@@ -155,7 +144,8 @@ export default function AdminProjectsPage() {
         <div>
           <h2 className="text-2xl font-bold">Projects Management</h2>
           <p className="text-sm text-muted-foreground">
-            Manage, import, and review your projects. GitHub sync adds new repos as drafts for admin approval.
+            Manage, import, and review your projects. GitHub sync adds new repos as drafts for admin
+            approval.
           </p>
         </div>
         <div className="flex gap-2">
@@ -187,9 +177,9 @@ export default function AdminProjectsPage() {
             <Input
               id="gh-username"
               placeholder="e.g. octocat"
-              value={cfg?.username ?? ""}
+              value={cfg?.username ?? ''}
               onChange={(e) => setCfg((c) => (c ? { ...c, username: e.target.value } : c))}
-              onBlur={() => saveConfig({ username: cfg?.username ?? "" })}
+              onBlur={() => saveConfig({ username: cfg?.username ?? '' })}
               disabled={cfgLoading || cfgSaving}
             />
           </div>
@@ -201,7 +191,9 @@ export default function AdminProjectsPage() {
               min={1}
               value={cfg?.intervalMin ?? 30}
               onChange={(e) =>
-                setCfg((c) => (c ? { ...c, intervalMin: Math.max(1, Number(e.target.value || 1)) } : c))
+                setCfg((c) =>
+                  c ? { ...c, intervalMin: Math.max(1, Number(e.target.value || 1)) } : c
+                )
               }
               onBlur={() => saveConfig({ intervalMin: cfg?.intervalMin ?? 30 })}
               disabled={cfgLoading || cfgSaving}
@@ -219,10 +211,10 @@ export default function AdminProjectsPage() {
           </div>
           <div className="md:col-span-1 flex items-end justify-end gap-2">
             <Button variant="secondary" onClick={() => void fetchConfig()} disabled={cfgLoading}>
-              {cfgLoading ? "Refreshing..." : "Refresh"}
+              {cfgLoading ? 'Refreshing...' : 'Refresh'}
             </Button>
             <Button onClick={() => void triggerSync()} disabled={syncingNow}>
-              {syncingNow ? "Syncing..." : "Sync Now"}
+              {syncingNow ? 'Syncing...' : 'Sync Now'}
             </Button>
           </div>
 
@@ -231,9 +223,11 @@ export default function AdminProjectsPage() {
               Last run: <span className="font-medium">{lastRunLabel}</span>
               {cfg?.lastResult ? (
                 <>
-                  {" "}·{" "}
+                  {' '}
+                  ·{' '}
                   <Badge variant="secondary" className="align-middle">
-                    created {cfg.lastResult?.created ?? "-"} / failed {cfg.lastResult?.failed ?? "-"}
+                    created {cfg.lastResult?.created ?? '-'} / failed{' '}
+                    {cfg.lastResult?.failed ?? '-'}
                   </Badge>
                 </>
               ) : null}
@@ -264,13 +258,13 @@ export default function AdminProjectsPage() {
                   <div className="text-xs text-muted-foreground">
                     {p.repo_url ? (
                       <>
-                        Source:{" "}
+                        Source:{' '}
                         <a className="underline" href={p.repo_url} target="_blank" rel="noreferrer">
                           {p.repo_url}
                         </a>
                       </>
                     ) : (
-                      "No repository URL"
+                      'No repository URL'
                     )}
                   </div>
                 </div>
@@ -301,7 +295,7 @@ export default function AdminProjectsPage() {
                 <CardHeader className="pb-3">
                   <div className="flex justify-between items-start">
                     <CardTitle>
-                      {project.title}{" "}
+                      {project.title}{' '}
                       <span className="text-xs font-normal text-muted-foreground">
                         ({project.status})
                       </span>
@@ -310,7 +304,11 @@ export default function AdminProjectsPage() {
                       <Button variant="outline" size="sm" onClick={() => openEdit(project)}>
                         Edit
                       </Button>
-                      <Button variant="destructive" size="sm" onClick={() => handleDelete(project.id)}>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => handleDelete(project.id)}
+                      >
                         Delete
                       </Button>
                     </div>
@@ -325,7 +323,6 @@ export default function AdminProjectsPage() {
                         className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-secondary text-secondary-foreground"
                       >
                         #{tag.name}
-
                       </span>
                     ))}
                   </div>

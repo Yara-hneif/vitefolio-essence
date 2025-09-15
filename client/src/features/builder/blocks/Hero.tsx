@@ -1,17 +1,17 @@
-import React from "react";
+import React from 'react';
 
-type Props = { 
-  title?: string; 
-  subtitle?: string; 
-  ctaLabel?: string; 
-  ctaHref?: string; 
+type Props = {
+  title?: string;
+  subtitle?: string;
+  ctaLabel?: string;
+  ctaHref?: string;
 };
 
-export default function Hero({ 
-  title = "Creating Beautiful Digital Experiences", 
-  subtitle = "I'm a passionate developer building modern web applications", 
-  ctaLabel = "View My Work", 
-  ctaHref = "#projects" 
+export default function Hero({
+  title = 'Creating Beautiful Digital Experiences',
+  subtitle = "I'm a passionate developer building modern web applications",
+  ctaLabel = 'View My Work',
+  ctaHref = '#projects',
 }: Props) {
   return (
     <section className="w-full py-16 md:py-24 bg-gradient-to-b from-background to-muted/20">
@@ -25,8 +25,8 @@ export default function Hero({
           </p>
         )}
         {ctaLabel && (
-          <a 
-            href={ctaHref || "#"} 
+          <a
+            href={ctaHref || '#'}
             className="inline-block mt-8 px-8 py-4 bg-primary text-primary-foreground rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 font-semibold"
           >
             {ctaLabel}

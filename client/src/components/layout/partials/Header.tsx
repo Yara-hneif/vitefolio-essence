@@ -1,19 +1,14 @@
-
-import { useState, Suspense, lazy } from "react";
-import { Link, useLocation} from "react-router-dom";
+import { useState, Suspense, lazy } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 //import { useNavigate } from "react-router-dom";
-import { Menu, X, LogOut } from "lucide-react";
-import { Button } from "@/components/ui/navigation/button";
-import { useAuth } from "@/context/AuthContext";
-const UserAvatar   = lazy(() => import( "@/components/common/UserAvatar"));
-const MainNav  = lazy(() => import( "@/components/navigation/MainNav"));
-const LandingNav  = lazy(() => import("@/components/navigation/LandingNav"));
+import { Menu, X, LogOut } from 'lucide-react';
+import { Button } from '@/components/ui/navigation/button';
+import { useAuth } from '@/context/AuthContext';
+const UserAvatar = lazy(() => import('@/components/common/UserAvatar'));
+const MainNav = lazy(() => import('@/components/navigation/MainNav'));
+const LandingNav = lazy(() => import('@/components/navigation/LandingNav'));
 
-export default function Header({
-  onContactClick,
-}: {
-  onContactClick?: () => void;
-}) {
+export default function Header({ onContactClick }: { onContactClick?: () => void }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { user, isAuthenticated, logout } = useAuth();
   const location = useLocation();
@@ -22,10 +17,10 @@ export default function Header({
   const handleLogout = async () => {
     //await logout();
     //navigate("/", { replace: true });
-    await logout(); 
+    await logout();
   };
 
-  const isLanding = location.pathname === "/";
+  const isLanding = location.pathname === '/';
 
   return (
     <header className="sticky top-0 w-full z-50">
@@ -51,25 +46,34 @@ export default function Header({
 
           {/* Desktop Nav */}
           <div className="hidden md:flex md:items-center md:space-x-4">
-            {isLanding ? <LandingNav mobile={false} onContactClick={onContactClick} /> : <MainNav mobile={false} />}
+            {isLanding ? (
+              <LandingNav mobile={false} onContactClick={onContactClick} />
+            ) : (
+              <MainNav mobile={false} />
+            )}
 
             <div className="flex items-center gap-4">
               {isAuthenticated && user ? (
                 <>
                   <Link to="/dashboard">
-                    <Button variant="ghost" size="sm">Dashboard</Button>
+                    <Button variant="ghost" size="sm">
+                      Dashboard
+                    </Button>
                   </Link>
-                  <Link to={`/profile/${user.username ?? "user"}`} className="flex items-center gap-2">
+                  <Link
+                    to={`/profile/${user.username ?? 'user'}`}
+                    className="flex items-center gap-2"
+                  >
                     <UserAvatar
                       user={{
-                        name: user.name ?? user.username ?? "User",
-                        username: user.username ?? "user",
+                        name: user.name ?? user.username ?? 'User',
+                        username: user.username ?? 'user',
                         avatar: user.avatar,
                       }}
                       size="sm"
                     />
                     <span className="text-sm font-medium hidden lg:inline">
-                      {user.name ?? user.username ?? "User"}
+                      {user.name ?? user.username ?? 'User'}
                     </span>
                   </Link>
                   <Button
@@ -103,7 +107,11 @@ export default function Header({
           <div className="fixed inset-y-0 right-0 w-full max-w-sm glass border-l p-6 animate-slide-in-right">
             {/* Mobile Navigationbar */}
             <div className="flex items-center justify-between mb-8">
-              <Link to="/" className="flex items-center space-x-2" onClick={() => setIsMenuOpen(false)}>
+              <Link
+                to="/"
+                className="flex items-center space-x-2"
+                onClick={() => setIsMenuOpen(false)}
+              >
                 <span className="text-xl font-bold tracking-tight bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
                   Vitefolio
                 </span>
@@ -125,7 +133,7 @@ export default function Header({
                 mobile
                 onItemClick={() => setIsMenuOpen(false)}
                 onContactClick={() => {
-                  onContactClick?.();          
+                  onContactClick?.();
                   setIsMenuOpen(false);
                 }}
               />
@@ -137,19 +145,19 @@ export default function Header({
               {isAuthenticated && user ? (
                 <>
                   <Link
-                    to={`/profile/${user.username ?? "user"}`}
+                    to={`/profile/${user.username ?? 'user'}`}
                     className="flex items-center gap-2"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     <UserAvatar
                       user={{
-                        name: user.name ?? user.username ?? "User",
-                        username: user.username ?? "user",
+                        name: user.name ?? user.username ?? 'User',
+                        username: user.username ?? 'user',
                         avatar: user.avatar,
                       }}
                       size="sm"
                     />
-                    <span>{user.name ?? user.username ?? "User"}</span>
+                    <span>{user.name ?? user.username ?? 'User'}</span>
                   </Link>
                   <Link to="/dashboard" onClick={() => setIsMenuOpen(false)}>
                     <Button className="w-full">Dashboard</Button>

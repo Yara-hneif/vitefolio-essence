@@ -1,7 +1,7 @@
-import Tilt3D from "@/components/ui/3d/Tilt3D";
-import { useIsMobile } from "@/hooks/use-mobile";
+import Tilt3D from '@/components/ui/3d/Tilt3D';
+import { useIsMobile } from '@/hooks/use-mobile';
 
-export default function StackPreview3D({ className = "" }: { className?: string }) {
+export default function StackPreview3D({ className = '' }: { className?: string }) {
   const isMobile = useIsMobile();
 
   return (
@@ -16,9 +16,9 @@ export default function StackPreview3D({ className = "" }: { className?: string 
         <div
           className="absolute left-1/2 top-1/2 rounded-2xl border bg-white shadow-xl p-[clamp(12px,2vw,20px)] gpu-text-fix"
           style={{
-            height: "clamp(200px,36vw,260px)",
-            width: "min(92vw, 420px)",
-            transform: "translate(-50%, -50%)",
+            height: 'clamp(200px,36vw,260px)',
+            width: 'min(92vw, 420px)',
+            transform: 'translate(-50%, -50%)',
           }}
         >
           {/* User info */}

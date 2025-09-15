@@ -16,18 +16,18 @@ interface CollaboratorTagProps {
   className?: string;
 }
 
-const CollaboratorTag: React.FC<CollaboratorTagProps> = ({ 
-  collaborator, 
+const CollaboratorTag: React.FC<CollaboratorTagProps> = ({
+  collaborator,
   variant = 'default',
-  className 
+  className,
 }) => {
   if (variant === 'minimal') {
     return (
-      <Link to={`/u/${collaborator.username}`}>
-        <Badge 
-          variant="secondary" 
+      <Link to={`/${collaborator.username}`}>
+        <Badge
+          variant="secondary"
           className={cn(
-            "hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer",
+            'hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer',
             className
           )}
         >
@@ -38,10 +38,10 @@ const CollaboratorTag: React.FC<CollaboratorTagProps> = ({
   }
 
   return (
-    <Link 
-      to={`/u/${collaborator.username}`}
+    <Link
+      to={`/${collaborator.username}`}
       className={cn(
-        "flex items-center gap-2 p-2 rounded-lg hover:bg-muted/50 transition-colors",
+        'flex items-center gap-2 p-2 rounded-lg hover:bg-muted/50 transition-colors',
         className
       )}
     >

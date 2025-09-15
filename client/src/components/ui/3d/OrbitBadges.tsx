@@ -1,5 +1,5 @@
-import { motion } from "framer-motion";
-import { Chrome, Github, Linkedin, Facebook } from "lucide-react";
+import { motion } from 'framer-motion';
+import { Chrome, Github, Linkedin, Facebook } from 'lucide-react';
 
 const Item = ({ angle, text, Icon }: { angle: number; text: string; Icon: any }) => {
   const r = 200; // radius
@@ -22,7 +22,7 @@ export default function OrbitBadges() {
     <motion.div
       className="pointer-events-none absolute inset-0"
       animate={{ rotate: 360 }}
-      transition={{ repeat: Infinity, duration: 26, ease: "linear" }}
+      transition={{ repeat: Infinity, duration: 26, ease: 'linear' }}
     >
       <Item angle={15} text="Google" Icon={Chrome} />
       <Item angle={100} text="GitHub" Icon={Github} />

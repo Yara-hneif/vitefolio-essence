@@ -1,51 +1,57 @@
-import { Routes, Route , Navigate } from "react-router-dom";
-import { lazy, Suspense } from "react";
-import AppLoader from "@/components/common/AppLoader";
-import MainLayout from "@/components/layout/MainLayout";
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { lazy, Suspense } from 'react';
+import AppLoader from '@/components/common/AppLoader';
+import MainLayout from '@/components/layout/MainLayout';
+import AuthCallback from '@/pages/auth/AuthCallback';
+import AuthGuard from '@/components/auth/AuthGuard';
 
 // Public pages
-const Home = lazy(() => import("@/pages/demo/Home"));
-const Projects = lazy(() => import("@/pages/demo/Projects"));
-const ProjectDetails = lazy(() => import("@/pages/demo/ProjectDetails"));
-const Contact = lazy(() => import("@/pages/demo/Contact"));
-const Login = lazy(() => import("@/pages/auth/Login"));
-const Register = lazy(() => import("@/pages/auth/Register"));
-const NotFound = lazy(() => import("@/pages/NotFound"));
-const Landing = lazy(() => import("@/pages/Landing"));
+const Home = lazy(() => import('@/pages/demo/Home'));
+const Projects = lazy(() => import('@/pages/demo/Projects'));
+const ProjectDetails = lazy(() => import('@/pages/demo/ProjectDetails'));
+const Contact = lazy(() => import('@/pages/demo/Contact'));
+const About = lazy(() => import('@/pages/demo/About'));
+const Login = lazy(() => import('@/pages/auth/Login'));
+const Register = lazy(() => import('@/pages/auth/Register'));
+const NotFound = lazy(() => import('@/pages/NotFound'));
+const Landing = lazy(() => import('@/pages/Landing'));
 
 // User profile & public sites
-const UserPortfolioPage = lazy(() => import("@/pages/profolio/UserPortfolioPage"));
-const PublicProfile = lazy(() => import("@/pages/profolio/PublicProfile"));
-const PublicSite = lazy(() => import("@/pages/profolio/PublicSite"));
+const UserPortfolioPage = lazy(() => import('@/pages/profolio/UserPortfolioPage'));
+const PublicProfile = lazy(() => import('@/pages/profolio/PublicProfile'));
+const PublicSite = lazy(() => import('@/pages/profolio/PublicSite'));
 
 // Admin
-const Admin = lazy(() => import("@/features/admin/pages/Admin"));
-const AdminMessages = lazy(() => import("@/features/admin/pages/AdminMessages"));
-const ProtectedAdmin  = lazy(() => import("@/features/admin/guards/ProtectedAdmin"));
-const About  = lazy(() => import( "@/pages/demo/About"));
+const Admin = lazy(() => import('@/features/admin/pages/Admin'));
+const AdminMessages = lazy(() => import('@/features/admin/pages/AdminMessages'));
+const ProtectedAdmin = lazy(() => import('@/features/admin/guards/ProtectedAdmin'));
 
 // Dashboard
-const DashboardLayout = lazy(() => import("@/components/layout/DashboardLayout"));
-const Dashboard = lazy(() => import("@/pages/dashboard/Dashboard"));
-const Sites = lazy(() => import("@/pages/dashboard/Sites"));
-const NewSite = lazy(() => import("@/pages/dashboard/NewSite"));
-const ProjectsList = lazy(() => import("@/pages/dashboard/ProjectsList"));
-const ProjectForm = lazy(() => import("@/pages/dashboard/ProjectForm"));
-const Editor = lazy(() => import("@/pages/dashboard/Editor"));
-const DashboardTemplates = lazy(() => import("@/pages/dashboard/DashboardTemplates"));
-const DashboardAnalytics = lazy(() => import("@/pages/dashboard/DashboardAnalytics"));
-const DashboardSettings = lazy(() => import("@/pages/dashboard/DashboardSettings"));
+const DashboardLayout = lazy(() => import('@/components/layout/DashboardLayout'));
+const Dashboard = lazy(() => import('@/pages/dashboard/Dashboard'));
+const Sites = lazy(() => import('@/pages/dashboard/Sites'));
+const NewSite = lazy(() => import('@/pages/dashboard/NewSite'));
+const ProjectsList = lazy(() => import('@/pages/dashboard/ProjectsList'));
+const ProjectForm = lazy(() => import('@/pages/dashboard/ProjectForm'));
+const Editor = lazy(() => import('@/pages/dashboard/Editor'));
+const DashboardTemplates = lazy(() => import('@/pages/dashboard/DashboardTemplates'));
+const DashboardAnalytics = lazy(() => import('@/pages/dashboard/DashboardAnalytics'));
+const DashboardSettings = lazy(() => import('@/pages/dashboard/settings/DashboardSettings'));
 
 export default function AppRoutes() {
   return (
     <Suspense fallback={<AppLoader />}>
       <Routes>
-
-        {/* Public */}
+        {/* Landing */}
         <Route index element={<Landing />} />
 
+        {/* Auth  */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/auth/callback" element={<AuthCallback />} />
+
+        {/* Public layout */}
         <Route element={<MainLayout />}>
-          {/* Demo */}
           <Route path="/demo" element={<Home />} />
           <Route path="/demo/projects" element={<Projects />} />
           <Route path="/demo/projects/:slug" element={<ProjectDetails />} />
@@ -53,20 +59,15 @@ export default function AppRoutes() {
           <Route path="/demo/about" element={<About />} />
         </Route>
 
-    
-          {/* Public profiles and sites */}
-          <Route path="/profile/:username" element={<PublicProfile />} />
-          <Route path="/:username" element={<UserPortfolioPage />} />
-          <Route path="/:username/:pageSlug" element={<PublicSite />} />
-
-
-        {/* Auth */}
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-
-
         {/* Dashboard */}
-        <Route path="/dashboard" element={<DashboardLayout />}>
+        <Route
+          path="/dashboard"
+          element={
+            <AuthGuard>
+              <DashboardLayout />
+            </AuthGuard>
+          }
+        >
           <Route index element={<Dashboard />} />
           <Route path="sites" element={<Sites />} />
           <Route path="sites/new" element={<NewSite />} />
@@ -96,6 +97,11 @@ export default function AppRoutes() {
             </ProtectedAdmin>
           }
         />
+
+        {/* Public profiles and sites */}
+        <Route path="/profile/:username" element={<PublicProfile />} />
+        <Route path="/u/:username" element={<UserPortfolioPage />} />
+        <Route path="/u/:username/:pageSlug" element={<PublicSite />} />
 
         {/* 404 */}
         <Route path="*" element={<NotFound />} />

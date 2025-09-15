@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 type ProjectItem = {
   title: string;
@@ -14,23 +14,25 @@ type Props = {
 export default function ProjectsGrid({ items = [] }: Props) {
   const defaultItems: ProjectItem[] = [
     {
-      title: "E-commerce Platform",
-      subtitle: "Modern shopping experience with React and Node.js",
-      href: "#project1",
-      cover_image: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=400&h=300&fit=crop"
+      title: 'E-commerce Platform',
+      subtitle: 'Modern shopping experience with React and Node.js',
+      href: '#project1',
+      cover_image: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=400&h=300&fit=crop',
     },
     {
-      title: "Portfolio Website",
-      subtitle: "Clean and responsive design with smooth animations",
-      href: "#project2", 
-      cover_image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=300&fit=crop"
+      title: 'Portfolio Website',
+      subtitle: 'Clean and responsive design with smooth animations',
+      href: '#project2',
+      cover_image:
+        'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=300&fit=crop',
     },
     {
-      title: "Task Management App",
-      subtitle: "Collaborative workspace with real-time updates",
-      href: "#project3",
-      cover_image: "https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=400&h=300&fit=crop"
-    }
+      title: 'Task Management App',
+      subtitle: 'Collaborative workspace with real-time updates',
+      href: '#project3',
+      cover_image:
+        'https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=400&h=300&fit=crop',
+    },
   ];
 
   const projectItems = items.length > 0 ? items : defaultItems;
@@ -43,25 +45,21 @@ export default function ProjectsGrid({ items = [] }: Props) {
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {projectItems.map((item, index) => (
-            <a 
+            <a
               key={index}
               href={item.href}
               className="group block bg-card rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 border"
             >
               <div className="aspect-video overflow-hidden">
-                <img 
-                  src={item.cover_image} 
+                <img
+                  src={item.cover_image}
                   alt={item.title}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />
               </div>
               <div className="p-6">
-                <h3 className="text-xl font-semibold text-card-foreground mb-2">
-                  {item.title}
-                </h3>
-                <p className="text-muted-foreground">
-                  {item.subtitle}
-                </p>
+                <h3 className="text-xl font-semibold text-card-foreground mb-2">{item.title}</h3>
+                <p className="text-muted-foreground">{item.subtitle}</p>
               </div>
             </a>
           ))}

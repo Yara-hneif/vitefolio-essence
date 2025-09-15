@@ -1,14 +1,7 @@
-import React, {
-  createContext,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-  useCallback,
-} from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import { api } from"@/api/client.api";
-import { SidebarClose } from "lucide-react";
+import React, { createContext, useContext, useEffect, useMemo, useState, useCallback } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { api } from '@/api/client.api';
+import { SidebarClose } from 'lucide-react';
 
 // ===== Types =====
 type AdminCtx = {
@@ -55,7 +48,7 @@ type AdminMessagesResponse = {
 // ===== Context =====
 const Ctx = createContext<AdminCtx | null>(null);
 
-const SESSION_KEY = "admin.session.v1";
+const SESSION_KEY = 'admin.session.v1';
 const TTL_MIN = 480;
 
 export function AdminProvider({ children }: { children: React.ReactNode }) {
@@ -79,7 +72,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
       const { secret, expiresAt } = JSON.parse(raw);
       if (secret && (!expiresAt || Date.now() < expiresAt)) {
         setIsAdmin(true);
-        api.defaults.headers.common["x-admin-secret"] = secret;
+        api.defaults.headers.common['x-admin-secret'] = secret;
       } else {
         sessionStorage.removeItem(SESSION_KEY);
       }
@@ -91,7 +84,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
   // Read ?key= and activate admin
   useEffect(() => {
     const sp = new URLSearchParams(location.search);
-    const key = sp.get("key");
+    const key = sp.get('key');
     if (!key) return;
 
     const expected = import.meta.env.VITE_ADMIN_SECRET;
@@ -101,17 +94,17 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
         SESSION_KEY,
         JSON.stringify({ secret: key, expiresAt: Date.now() + TTL_MIN * 60 * 1000 })
       );
-      api.defaults.headers.common["x-admin-secret"] = key;
+      api.defaults.headers.common['x-admin-secret'] = key;
 
       // clean URL + open sidebar
-      sp.delete("key");
-      const next = location.pathname + (sp.toString() ? `?${sp}` : "");
+      sp.delete('key');
+      const next = location.pathname + (sp.toString() ? `?${sp}` : '');
       navigate(next, { replace: true });
       setOpen(true);
     } else {
       setIsAdmin(false);
       sessionStorage.removeItem(SESSION_KEY);
-      delete api.defaults.headers.common["x-admin-secret"];
+      delete api.defaults.headers.common['x-admin-secret'];
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.key]);
@@ -124,7 +117,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
     async function poll() {
       try {
         if (!isAdmin || stop) return;
-        const resp = await api.get<AdminMessagesResponse>("/api/admin/messages", {
+        const resp = await api.get<AdminMessagesResponse>('/api/admin/messages', {
           params: { page: 1, pageSize: 50 },
         });
         const items = Array.isArray(resp.data?.items) ? resp.data.items : [];
@@ -133,8 +126,8 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
       } catch (e: any) {
         if (e?.response?.status === 404) {
           stop = true; // API not ready → stop polling
-          // eslint-disable-next-line no-console
-          console.warn("[ADMIN] messages API not found, stopping poll");
+           
+          console.warn('[ADMIN] messages API not found, stopping poll');
         }
       } finally {
         if (!stop && POLL_MS > 0) t = window.setTimeout(poll, POLL_MS);
@@ -165,7 +158,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
     setProjectsOpen(false);
     setSettingsOpen(false);
   }, []);
-  
+
   const closeInbox = useCallback(() => setInboxOpen(false), []);
   const openInbox = useCallback(() => {
     closePanelsOnly();
@@ -178,20 +171,19 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
   }, [closePanelsOnly]);
   const closeProjects = useCallback(() => setProjectsOpen(false), []);
 
-
   const openSettings = useCallback(() => {
     closePanelsOnly();
     setSettingsOpen(true);
   }, [closePanelsOnly]);
   const closeSettings = useCallback(() => setSettingsOpen(false), []);
 
-
   const closeAllPanels = useCallback(() => {
     closePanelsOnly();
     setInboxOpen(false);
     setProjectsOpen(false);
     setSettingsOpen(false);
-    setOpen(false); closePanelsOnly
+    setOpen(false);
+    closePanelsOnly;
   }, [closePanelsOnly]);
 
   const logout = useCallback(() => {
@@ -199,10 +191,8 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
     setIsEditMode(false);
     closeAllPanels();
     sessionStorage.removeItem(SESSION_KEY);
-    delete api.defaults.headers.common["x-admin-secret"];
+    delete api.defaults.headers.common['x-admin-secret'];
   }, [closeAllPanels]);
-
-
 
   const value = useMemo<AdminCtx>(
     () => ({
@@ -263,12 +253,11 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
     ]
   );
 
-
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }
 
 export function useAdmin() {
   const ctx = useContext(Ctx);
-  if (!ctx) throw new Error("useAdmin must be used within AdminProvider");
+  if (!ctx) throw new Error('useAdmin must be used within AdminProvider');
   return ctx;
 }

@@ -1,16 +1,13 @@
-import { Suspense, lazy } from "react";
-const Outlet = lazy(() =>
-  import("react-router-dom").then((m) => ({ default: m.Outlet }))
-);
+import { Suspense, lazy } from 'react';
+const Outlet = lazy(() => import('react-router-dom').then((m) => ({ default: m.Outlet })));
 const SidebarProvider = lazy(() =>
-  import("@/components/ui/navigation/sidebar").then((m) => ({ default: m.SidebarProvider }))
+  import('@/components/ui/navigation/sidebar').then((m) => ({ default: m.SidebarProvider }))
 );
 const SidebarTrigger = lazy(() =>
-  import("@/components/ui/navigation/sidebar").then((m) => ({ default: m.SidebarTrigger }))
+  import('@/components/ui/navigation/sidebar').then((m) => ({ default: m.SidebarTrigger }))
 );
-const AppSidebar = lazy(() => import("@/components/layout/partials/sidebar/AppSidebar"));
-const AdminUI = lazy(() => import("@/components/layout/partials/AdminUI"));
-
+const AppSidebar = lazy(() => import('@/components/layout/partials/sidebar/AppSidebar'));
+const AdminUI = lazy(() => import('@/components/layout/partials/AdminUI'));
 
 const DashboardLayout = () => {
   return (
@@ -34,7 +31,6 @@ const DashboardLayout = () => {
               <Outlet />
             </main>
             <AdminUI />
-
           </div>
         </div>
       </SidebarProvider>

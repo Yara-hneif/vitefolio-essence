@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 type Props = {
   copyright?: string;
@@ -13,9 +13,7 @@ export default function Footer({ copyright }: Props) {
       <div className="max-w-6xl mx-auto px-4">
         <div className="flex flex-col md:flex-row justify-between items-center">
           <div className="mb-4 md:mb-0">
-            <p className="text-muted-foreground">
-              {copyright || defaultCopyright}
-            </p>
+            <p className="text-muted-foreground">{copyright || defaultCopyright}</p>
           </div>
           <div className="flex space-x-6">
             <a href="#" className="text-muted-foreground hover:text-primary transition-colors">

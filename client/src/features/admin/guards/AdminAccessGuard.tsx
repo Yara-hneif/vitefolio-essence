@@ -1,5 +1,5 @@
-import React from "react";
-import ProtectedAdmin from "@/features/admin/guards/ProtectedAdmin";
+import React from 'react';
+import ProtectedAdmin from '@/features/admin/guards/ProtectedAdmin';
 
 interface AdminAccessGuardProps {
   children: React.ReactNode;

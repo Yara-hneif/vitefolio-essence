@@ -1,15 +1,20 @@
-import React, { useState, useEffect } from "react";
-import { useAuth } from "@/context/AuthContext";
-import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/navigation/button";
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '@/context/AuthContext';
+import { Link } from 'react-router-dom';
+import { Button } from '@/components/ui/navigation/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/data-display/card";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/navigation/dropdown-menu";
+} from '@/components/ui/data-display/card';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/navigation/dropdown-menu';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -20,20 +25,10 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/feedback/alert-dialog";
-import {
-  Plus,
-  Globe,
-  Edit,
-  Eye,
-  MoreVertical,
-  Trash2,
-  ExternalLink,
-  Calendar,
-} from "lucide-react";
-import { toast } from "sonner";
-import { supabase } from "@/lib/supabase";
-
+} from '@/components/ui/feedback/alert-dialog';
+import { Plus, Globe, Edit, Eye, MoreVertical, Trash2, ExternalLink, Calendar } from 'lucide-react';
+import { toast } from 'sonner';
+import { supabase } from '@/lib/supabase';
 
 /* ------- Types ------- */
 export type Site = {
@@ -51,31 +46,31 @@ export type Site = {
 /* ------- API Helpers ------- */
 export async function listSites(userId: string): Promise<Site[]> {
   const { data, error } = await supabase
-    .from("sites")
-    .select("*")
-    .eq("profile_id", userId)
-    .order("created_at", { ascending: false });
+    .from('sites')
+    .select('*')
+    .eq('profile_id', userId)
+    .order('created_at', { ascending: false });
 
   if (error) {
-    console.error("Error fetching sites:", error);
+    console.error('Error fetching sites:', error);
     throw error;
   }
 
   return (data || []).map((site: any) => ({
     ...site,
-    name: site.name ?? "",
-    status: site.status ?? "draft",
+    name: site.name ?? '',
+    status: site.status ?? 'draft',
   })) as Site[];
 }
 
 export async function deleteSite(siteId: string) {
-  const { error } = await supabase.from("sites").delete().eq("id", siteId);
+  const { error } = await supabase.from('sites').delete().eq('id', siteId);
   if (error) throw error;
 }
 
 /* ------- Component ------- */
 function Sites() {
-  const { user } = useAuth(); 
+  const { user } = useAuth();
   const [sites, setSites] = useState<Site[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -88,7 +83,7 @@ function Sites() {
         setSites(data);
       } catch (err) {
         console.error(err);
-        toast.error("Failed to load sites");
+        toast.error('Failed to load sites');
       } finally {
         setLoading(false);
       }
@@ -98,9 +93,9 @@ function Sites() {
   const handleDelete = async (id: string) => {
     try {
       toast.promise(deleteSite(id), {
-        loading: "Deleting site…",
-        success: "Site deleted successfully",
-        error: "Failed to delete site",
+        loading: 'Deleting site…',
+        success: 'Site deleted successfully',
+        error: 'Failed to delete site',
       });
       setSites((prev) => prev.filter((s) => s.id !== id));
     } catch (err) {
@@ -126,7 +121,7 @@ function Sites() {
       ) : sites.length === 0 ? (
         <Card>
           <CardContent className="py-10 text-center text-muted-foreground">
-            No sites yet.{" "}
+            No sites yet.{' '}
             <Link to="/dashboard/sites/new" className="underline">
               Create your first site
             </Link>
@@ -153,11 +148,7 @@ function Sites() {
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <a
-                          href={`/site/${s.slug}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
+                        <a href={`/site/${s.slug}`} target="_blank" rel="noopener noreferrer">
                           <ExternalLink className="h-4 w-4 mr-2" /> View Live
                         </a>
                       </DropdownMenuItem>
@@ -169,12 +160,10 @@ function Sites() {
                         </AlertDialogTrigger>
                         <AlertDialogContent>
                           <AlertDialogHeader>
-                            <AlertDialogTitle>
-                              Delete site "{s.name}"?
-                            </AlertDialogTitle>
+                            <AlertDialogTitle>Delete site "{s.name}"?</AlertDialogTitle>
                             <AlertDialogDescription>
-                              This action cannot be undone. This will
-                              permanently delete the site and its pages.
+                              This action cannot be undone. This will permanently delete the site
+                              and its pages.
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
@@ -201,7 +190,7 @@ function Sites() {
                   </div>
                   <div className="flex items-center gap-1">
                     <Globe className="h-4 w-4" />
-                    {s.published ? "Published" : "Draft"}
+                    {s.published ? 'Published' : 'Draft'}
                   </div>
                 </div>
                 <div className="flex gap-2">
@@ -210,11 +199,7 @@ function Sites() {
                       <Edit className="h-4 w-4" /> Edit
                     </Button>
                   </Link>
-                  <a
-                    href={`/site/${s.slug}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
+                  <a href={`/site/${s.slug}`} target="_blank" rel="noopener noreferrer">
                     <Button size="sm" className="gap-1">
                       <Eye className="h-4 w-4" /> View
                     </Button>

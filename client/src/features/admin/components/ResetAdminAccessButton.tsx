@@ -1,22 +1,16 @@
-import { useCallback } from "react";
-import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/navigation/button";
-import { LogOut } from "lucide-react";
-import { setAdminSecret as applyAdminHeader } from "@/api/client.api";
+import { useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/navigation/button';
+import { LogOut } from 'lucide-react';
+import { setAdminSecret as applyAdminHeader } from '@/api/client.api';
 
-const ADMIN_KEYS = ["ADMIN_SECRET", "admin_secret", "admin_token"];
+const ADMIN_KEYS = ['ADMIN_SECRET', 'admin_secret', 'admin_token'];
 
-export default function ResetAdminAccessButton({
-  redirectTo = "/",
-}: {
-  redirectTo?: string;
-}) {
+export default function ResetAdminAccessButton({ redirectTo = '/' }: { redirectTo?: string }) {
   const navigate = useNavigate();
 
   const handleReset = useCallback(() => {
-    const ok = window.confirm(
-      "Reset admin access? You'll need the admin link/password again."
-    );
+    const ok = window.confirm("Reset admin access? You'll need the admin link/password again.");
     if (!ok) return;
 
     try {

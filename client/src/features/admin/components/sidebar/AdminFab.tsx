@@ -1,14 +1,14 @@
-import { useAuth } from "@/context/AuthContext";
-import { useAdmin } from "@/features/admin/hooks/useAdminMode";
-import { Mail } from "lucide-react";
+import { useAuth } from '@/context/AuthContext';
+import { useAdmin } from '@/features/admin/hooks/useAdminMode';
+import { Mail } from 'lucide-react';
 
 export default function AdminFab() {
   const { isAuthenticated } = useAuth();
   const { isAdmin, toggleSidebar, unread, openInbox } = useAdmin();
 
-  if (!isAuthenticated) return null; 
-  
-  const avatar = import.meta.env.VITE_PROFILE_AVATAR || "/icons/avatar.png";
+  if (!isAuthenticated) return null;
+
+  const avatar = import.meta.env.VITE_PROFILE_AVATAR || '/icons/avatar.png';
 
   return (
     <div className="fixed bottom-6 right-6 z-[100] flex items-center gap-2">
