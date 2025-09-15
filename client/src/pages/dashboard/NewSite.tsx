@@ -1,8 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/navigation/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/data-display/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/data-display/card';
 import { Input } from '@/components/ui/form/input';
 import { Label } from '@/components/ui/form/label';
 import { Textarea } from '@/components/ui/form/textarea';
@@ -43,19 +49,19 @@ const NewSite = () => {
   const [loading, setLoading] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
   const [showTemplateDialog, setShowTemplateDialog] = useState(false);
-  
+
   const [formData, setFormData] = useState<SiteFormData>({
     name: '',
     slug: '',
-    description: ''
+    description: '',
   });
 
-  const username = user?.username ||user?.email?.split("@")[0] || "user";
+  const username = user?.username || user?.email?.split('@')[0] || 'user';
 
   const handleInputChange = (field: keyof SiteFormData, value: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
 
     // Auto-generate slug from name
@@ -66,9 +72,9 @@ const NewSite = () => {
         .replace(/\s+/g, '-')
         .replace(/-+/g, '-')
         .trim();
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
-        slug
+        slug,
       }));
     }
   };
@@ -103,15 +109,15 @@ const NewSite = () => {
     }
 
     setLoading(true);
-    
+
     try {
       const siteId = await createSiteFromTemplate(selectedTemplate, {
         name: formData.name,
         slug: formData.slug,
         description: formData.description,
-        userId: user?.id || ''
+        userId: user?.id || '',
       });
-      
+
       toast.success('Site created successfully!');
       navigate('/dashboard/sites');
     } catch (error) {
@@ -136,27 +142,37 @@ const NewSite = () => {
         </Button>
         <div>
           <h1 className="text-3xl font-bold">Create New Site</h1>
-          <p className="text-muted-foreground">
-            Set up your new portfolio website
-          </p>
+          <p className="text-muted-foreground">Set up your new portfolio website</p>
         </div>
       </div>
 
       {/* Progress Steps */}
       <div className="flex items-center gap-4">
-        <div className={`flex items-center gap-2 ${step === 'form' ? 'text-primary' : 'text-muted-foreground'}`}>
-          <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center text-sm font-medium ${
-            step === 'form' ? 'border-primary bg-primary text-primary-foreground' : 'border-muted-foreground'
-          }`}>
+        <div
+          className={`flex items-center gap-2 ${step === 'form' ? 'text-primary' : 'text-muted-foreground'}`}
+        >
+          <div
+            className={`w-8 h-8 rounded-full border-2 flex items-center justify-center text-sm font-medium ${
+              step === 'form'
+                ? 'border-primary bg-primary text-primary-foreground'
+                : 'border-muted-foreground'
+            }`}
+          >
             1
           </div>
           <span className="text-sm font-medium">Site Details</span>
         </div>
         <div className="flex-1 h-px bg-border"></div>
-        <div className={`flex items-center gap-2 ${selectedTemplate ? 'text-primary' : 'text-muted-foreground'}`}>
-          <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center text-sm font-medium ${
-            selectedTemplate ? 'border-primary bg-primary text-primary-foreground' : 'border-muted-foreground'
-          }`}>
+        <div
+          className={`flex items-center gap-2 ${selectedTemplate ? 'text-primary' : 'text-muted-foreground'}`}
+        >
+          <div
+            className={`w-8 h-8 rounded-full border-2 flex items-center justify-center text-sm font-medium ${
+              selectedTemplate
+                ? 'border-primary bg-primary text-primary-foreground'
+                : 'border-muted-foreground'
+            }`}
+          >
             2
           </div>
           <span className="text-sm font-medium">Choose Template</span>
@@ -170,9 +186,7 @@ const NewSite = () => {
             <Globe className="h-5 w-5" />
             Site Information
           </CardTitle>
-          <CardDescription>
-            Enter the basic information for your new site
-          </CardDescription>
+          <CardDescription>Enter the basic information for your new site</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
@@ -189,7 +203,7 @@ const NewSite = () => {
             <Label htmlFor="site-slug">Site URL *</Label>
             <div className="flex items-center gap-2">
               <span className="text-sm text-muted-foreground whitespace-nowrap">
-                {window.location.origin}/u/{username}/
+                {window.location.origin}/{username}/
               </span>
               <Input
                 id="site-slug"
@@ -239,19 +253,14 @@ const NewSite = () => {
                   <p className="text-sm text-muted-foreground">{selectedTemplate.description}</p>
                 </div>
               </div>
-              <Button
-                variant="outline"
-                onClick={() => setShowTemplateDialog(true)}
-              >
+              <Button variant="outline" onClick={() => setShowTemplateDialog(true)}>
                 Change Template
               </Button>
             </div>
           ) : (
             <div className="text-center py-8">
               <p className="text-muted-foreground mb-4">No template selected</p>
-              <Button onClick={() => setShowTemplateDialog(true)}>
-                Choose Template
-              </Button>
+              <Button onClick={() => setShowTemplateDialog(true)}>Choose Template</Button>
             </div>
           )}
         </CardContent>
@@ -259,10 +268,7 @@ const NewSite = () => {
 
       {/* Create Button */}
       <div className="flex justify-end gap-2">
-        <Button
-          variant="outline"
-          onClick={() => navigate('/dashboard/sites')}
-        >
+        <Button variant="outline" onClick={() => navigate('/dashboard/sites')}>
           Cancel
         </Button>
         <Button
@@ -286,9 +292,7 @@ const NewSite = () => {
         <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Choose a Template</DialogTitle>
-            <DialogDescription>
-              Select a template to start building your site
-            </DialogDescription>
+            <DialogDescription>Select a template to start building your site</DialogDescription>
           </DialogHeader>
           <TemplateSelector
             onSelectTemplate={handleSelectTemplate}

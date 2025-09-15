@@ -1,10 +1,10 @@
-import { useParams } from "react-router-dom";
-import { BuilderComponent } from "@builder.io/react";
-import type { BuilderContent } from "@builder.io/sdk";
-import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase";
-import { useStructuredData } from "@/lib/structuredData";
-import { useBreadcrumbStructuredData } from "@/lib/breadcrumbsStructuredData";
+import { useParams } from 'react-router-dom';
+import { BuilderComponent } from '@builder.io/react';
+import type { BuilderContent } from '@builder.io/sdk';
+import { useEffect, useState } from 'react';
+import { supabase } from '@/lib/supabase';
+import { useStructuredData } from '@/lib/structuredData';
+import { useBreadcrumbStructuredData } from '@/lib/breadcrumbsStructuredData';
 
 type ErrorStateProps = {
   message: string;
@@ -30,9 +30,8 @@ function ErrorState({ message }: ErrorStateProps) {
 export default function PublicSite() {
   const { username, pageSlug } = useParams();
   const apiKey = import.meta.env.VITE_BUILDER_PUBLIC_KEY as string;
-  const canonical =
-    typeof window !== "undefined" ? window.location.href : undefined;
-  const slug = pageSlug || "home";
+  const canonical = typeof window !== 'undefined' ? window.location.href : undefined;
+  const slug = pageSlug || 'home';
 
   const [content, setContent] = useState<BuilderContent | null>(null);
   const [loading, setLoading] = useState(true);
@@ -41,38 +40,42 @@ export default function PublicSite() {
   useEffect(() => {
     async function loadPage() {
       if (!apiKey) {
-        console.warn("Builder.io public key not found");
-        setError("Site misconfiguration: missing Builder.io key.");
+        console.warn('Builder.io public key not found');
+        setError('Site misconfiguration: missing Builder.io key.');
         setLoading(false);
         return;
       }
 
       try {
         if (!username) {
-          setError("Missing site username");
+          setError('Missing site username');
           setLoading(false);
           return;
         }
 
-        const siteSlug = username ?? "";
+        if (!username) {
+          setError('Missing username');
+          setLoading(false);
+          return;
+        }
 
         // Step 1: Check if site is published in Supabase
         const { data: site, error: siteError } = await supabase
-          .from("sites")
-          .select("published")
-          .eq("slug", siteSlug)
+          .from('sites')
+          .select('published')
+          .eq('slug', username)
           .single();
 
         if (siteError) throw siteError;
         if (!site?.published) {
-          setError("This site is not published.");
+          setError('This site is not published.');
           setLoading(false);
           return;
         }
 
         // Step 2: Fetch from Builder.io
         const q = encodeURIComponent(
-          JSON.stringify({ "data.siteSlug": username, "data.slug": slug })
+          JSON.stringify({ 'data.siteSlug': username, 'data.slug': slug })
         );
 
         const res = await fetch(
@@ -82,8 +85,8 @@ export default function PublicSite() {
 
         setContent(json?.results?.[0] || null);
       } catch (err: any) {
-        console.error("Error loading page:", err.message);
-        setError("Something went wrong while loading the page.");
+        console.error('Error loading page:', err.message);
+        setError('Something went wrong while loading the page.');
       } finally {
         setLoading(false);
       }
@@ -111,12 +114,9 @@ export default function PublicSite() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-4xl font-bold text-foreground mb-4">
-            Page Not Found
-          </h1>
+          <h1 className="text-4xl font-bold text-foreground mb-4">Page Not Found</h1>
           <p className="text-muted-foreground mb-8">
-            The page you&apos;re looking for doesn&apos;t exist or hasn&apos;t
-            been published yet.
+            The page you&apos;re looking for doesn&apos;t exist or hasn&apos;t been published yet.
           </p>
           <a
             href="/"
@@ -131,33 +131,27 @@ export default function PublicSite() {
 
   //  SEO values
   const pageTitle =
-    (content.data?.title as string) ||
-    (content.name as string) ||
-    `${username} | Vitefolio`;
+    (content.data?.title as string) || (content.name as string) || `${username} | Vitefolio`;
   const pageDescription =
-    (content.data?.description as string) ||
-    "Personal site powered by Vitefolio Essence";
-  const ogImage =
-    (content.data?.ogImage as string) ||
-    (content.data?.image as string) ||
-    undefined;
+    (content.data?.description as string) || 'Personal site powered by Vitefolio Essence';
+  const ogImage = (content.data?.ogImage as string) || (content.data?.image as string) || undefined;
 
   //  Inject Structured Data (Article)
   useStructuredData({
-    type: "Article",
+    type: 'Article',
     name: pageTitle,
-    url: canonical || "",
+    url: canonical || '',
     description: pageDescription,
     image: ogImage,
-    author: username || "Unknown",
+    author: username || 'Unknown',
     datePublished: (content as any)?.firstPublishedDate,
     dateModified: (content as any)?.lastUpdatedDate,
   });
 
   //  Inject BreadcrumbList
   useBreadcrumbStructuredData([
-    { name: "Home", url: "https://vitefolio.com" },
-    { name: username || "User", url: `https://vitefolio.com/${username}` },
+    { name: 'Home', url: 'https://vitefolio.com' },
+    { name: username || 'User', url: `https://vitefolio.com/${username}` },
     {
       name: slug,
       url: `https://vitefolio.com/${username}/${slug}`,
