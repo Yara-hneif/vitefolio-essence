@@ -4,6 +4,11 @@
 A modern, full-stack portfolio application built with **Vite + React + TypeScript** on the frontend and **Node.js + Express** on the backend.
 This project serves as a personal portfolio site template, offering a clean and professional structure for showcasing projects, contact forms, and future personal branding content.
 
+Problem:
+Developers struggle to showcase their work in a clean and customizable way.
+
+Solution:
+Vitefolio provides a simple platform to create and share personalized portfolio websites.
 ---
 
 ## ✨ Features
